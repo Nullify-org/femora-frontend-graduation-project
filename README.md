@@ -57,3 +57,105 @@ Angular CLI does not come with an end-to-end testing framework by default. You c
 ## Additional Resources
 
 For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+
+
+made by Mohamed Mostafa 
+Project Structure based on  Last Updated ERD 
+
+src/app/
+│
+├── core/                          → خدمات أساسية + يتحمل مرة واحدة فقط
+│   ├── auth/
+│   │   ├── auth.service.ts        → Login, Signup, Refresh Token
+│   │   ├── auth.guard.ts          → حماية المسارات حسب الدخول
+│   │   ├── role.guard.ts          → حماية حسب الدور (Buyer/Seller/Instructor)
+│   │   └── jwt.interceptor.ts     → إضافة التوكن لكل Request
+│   ├── models/                    → Interfaces مشتركة (User, Course, Product...)
+│   └── services/
+│       ├── notification.service.ts
+│       └── storage.service.ts
+│
+├── shared/                         → كومبونانتس وعناصر UI مشتركة
+│   ├── components/
+│   │   ├── navbar/
+│   │   ├── sidebar/
+│   │   ├── card/
+│   │   └── modal/
+│   ├── pipes/
+│   └── directives/
+│
+├── features/
+│   │
+│   ├── auth/                       → Sign Up, Login, Verification, Onboarding
+│   │   ├── pages/
+│   │   │   ├── sign-up/
+│   │   │   ├── login/
+│   │   │   ├── interests/          (شاشة 3: What are you interested in)
+│   │   │   ├── goal/                (شاشة 4: Your goal)
+│   │   │   └── verify-email/
+│   │   ├── auth-routing.module.ts
+│   │   └── auth.module.ts
+│   │
+│   ├── profile/                    → SellerProfile / InstructorProfile / TraineeProfile / Preferences
+│   │   ├── pages/
+│   │   │   ├── seller-profile/
+│   │   │   ├── instructor-profile/
+│   │   │   ├── trainee-profile/
+│   │   │   └── preferences/
+│   │   ├── services/profile.service.ts
+│   │   └── profile.module.ts
+│   │
+│   ├── dashboard/                  → الشاشة الرئيسية بعد تسجيل الدخول
+│   │   ├── pages/dashboard/
+│   │   ├── widgets/
+│   │   │   ├── continue-learning/
+│   │   │   ├── recommended-products/
+│   │   │   └── ai-widget/
+│   │   └── dashboard.module.ts
+│   │
+│   ├── lms/                         → Course, Module, Lesson, Enrollment, Quiz...
+│   │   ├── pages/
+│   │   │   ├── course-catalog/
+│   │   │   ├── course-details/
+│   │   │   ├── course-player/       → عرض الـLessons والـResources
+│   │   │   ├── quiz/
+│   │   │   ├── assignment-submission/
+│   │   │   └── instructor-dashboard/
+│   │   ├── services/
+│   │   │   ├── course.service.ts
+│   │   │   ├── enrollment.service.ts
+│   │   │   └── quiz.service.ts
+│   │   ├── lms-routing.module.ts
+│   │   └── lms.module.ts
+│   │
+│   ├── marketplace/                 → Product, Cart, Order, Payment
+│   │   ├── pages/
+│   │   │   ├── product-catalog/
+│   │   │   ├── product-details/
+│   │   │   ├── cart/
+│   │   │   ├── checkout/
+│   │   │   └── seller-dashboard/
+│   │   ├── services/
+│   │   │   ├── product.service.ts
+│   │   │   ├── cart.service.ts
+│   │   │   └── order.service.ts
+│   │   ├── marketplace-routing.module.ts
+│   │   └── marketplace.module.ts
+│   │
+│   ├── ai-assistant/                 → Conversation, Message, Recommendation
+│   │   ├── pages/chat/
+│   │   ├── components/
+│   │   │   ├── chat-window/
+│   │   │   ├── sources-panel/        (RAG sources)
+│   │   │   └── suggestions/
+│   │   ├── services/chat.service.ts
+│   │   └── ai-assistant.module.ts
+│   │
+│   └── messaging/                    → Conversation بين Buyer/Seller/Instructor
+│       ├── pages/conversations/
+│       └── messaging.module.ts
+│
+├── app-routing.module.ts            → تجميع كل الـLazy Routes
+├── app.module.ts
+└── app.component.ts
