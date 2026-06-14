@@ -8,5 +8,13 @@
         "parser": "angular"
       }
     }
+
+
   ]
+,
+  "plugins": {
+    "@tailwindcss/postcss": {}
+  }
+
+
 }

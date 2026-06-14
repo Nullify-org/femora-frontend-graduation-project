@@ -1,0 +1,54 @@
+<!-- <p>interests works!</p> -->
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="bg-white shadow-md rounded-2xl p-8 w-full max-w-md">
+
+    <!-- Progress Dots -->
+    <div class="flex justify-center gap-2 mb-6">
+      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-pink-600"></span>
+      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+    </div>
+
+    <!-- Title -->
+    <h2 class="text-xl font-semibold text-gray-800 text-center mb-1">
+      What are you interested in?
+    </h2>
+    <p class="text-sm text-gray-500 text-center mb-6">
+      Choose one or more
+    </p>
+
+    <!-- Options Grid -->
+    <div class="grid grid-cols-2 gap-3 mb-8">
+      <button
+        *ngFor="let option of options"
+        type="button"
+        (click)="toggle(option)"
+        [class.bg-pink-50]="option.selected"
+        [class.border-pink-500]="option.selected"
+        [class.text-pink-600]="option.selected"
+        [class.border-gray-300]="!option.selected"
+        [class.text-gray-700]="!option.selected"
+        class="border rounded-lg py-3 text-sm font-medium transition hover:border-pink-400"
+      >
+        {{ option.label }}
+      </button>
+    </div>
+
+    <!-- Next Button -->
+    <button
+      routerLink="/onboarding/goal"
+      class="w-full bg-pink-600 text-white py-2.5 rounded-lg font-medium hover:bg-pink-700 transition"
+    >
+      Next
+    </button>
+
+    <!-- Back Link -->
+    <div class="text-center mt-4">
+      <a routerLink="/register" class="text-sm text-gray-500 hover:text-pink-600">
+        Back
+      </a>
+    </div>
+
+  </div>
+</div>
