@@ -1,0 +1,40 @@
+<!-- <p>login works!</p> -->
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div class="bg-white shadow-md rounded-2xl p-8 w-full max-w-md">
+    
+    <!-- Logo -->
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-bold text-pink-600">FEMORA</h1>
+      <p class="text-sm text-gray-500">Welcome back 👋</p>
+    </div>
+
+    <!-- Form -->
+    <form class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input type="email" placeholder="nour.maher@example.com"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <input type="password" placeholder="••••••••"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500" />
+      </div>
+
+      <div class="flex justify-end text-sm">
+        <a href="#" class="text-pink-600 hover:underline">Forgot password?</a>
+      </div>
+
+      <button type="submit"
+        class="w-full bg-pink-600 text-white py-2 rounded-lg font-medium hover:bg-pink-700 transition">
+        Login
+      </button>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">
+      Don't have an account?
+     <a routerLink="/register" class="text-pink-600 font-medium hover:underline">Sign up</a>
+    </p>
+  </div>
+</div>
