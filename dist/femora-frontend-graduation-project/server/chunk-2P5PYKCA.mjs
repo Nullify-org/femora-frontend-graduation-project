@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as n}from"./chunk-HGGFXX6W.mjs";import"./chunk-FWQCOKMN.mjs";import{S as r,ka as o}from"./chunk-N7IKLXO7.mjs";import"./chunk-T55IDOPT.mjs";var i=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=r({type:t,selectors:[["app-instructor-profile"]],decls:1,vars:0,consts:[["title","\u0645\u0644\u0641 \u0627\u0644\u0645\u062F\u0631\u0628\u0629"]],template:function(e,u){e&1&&o(0,"app-feature-shell",0)},dependencies:[n],encapsulation:2})};export{i as InstructorProfile};

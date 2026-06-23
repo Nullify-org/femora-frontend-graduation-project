@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{B as n,k as e}from"./chunk-N7IKLXO7.mjs";var r=class s{counter=0;notifications=n([]);success(i){this.push("success",i)}error(i){this.push("error",i)}info(i){this.push("info",i)}dismiss(i){this.notifications.update(t=>t.filter(o=>o.id!==i))}push(i,t){let o=++this.counter;this.notifications.update(a=>[...a,{id:o,type:i,message:t}]),setTimeout(()=>this.dismiss(o),5e3)}static \u0275fac=function(t){return new(t||s)};static \u0275prov=e({token:s,factory:s.\u0275fac,providedIn:"root"})};export{r as a};

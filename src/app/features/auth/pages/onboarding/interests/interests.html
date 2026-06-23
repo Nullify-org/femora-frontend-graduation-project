@@ -1,22 +1,33 @@
-<!-- <p>interests works!</p> -->
-<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-  <div class="bg-white shadow-md rounded-2xl p-8 w-full max-w-md">
+<div class="min-h-screen flex items-center justify-center bg-[#FAF7F4] px-4">
 
-    <!-- Progress Dots -->
-    <div class="flex justify-center gap-2 mb-6">
-      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-pink-600"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
+  <!-- Decorative background -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <svg class="absolute top-0 left-0 w-56 opacity-10" viewBox="0 0 200 200" fill="none">
+      <path d="M10 10 Q70 70 10 190 Q80 130 190 10Z" fill="#C8956C"/>
+    </svg>
+    <svg class="absolute bottom-0 right-0 w-56 opacity-10" viewBox="0 0 200 200" fill="none">
+      <path d="M190 190 Q130 130 190 10 Q120 80 10 190Z" fill="#D4856A"/>
+    </svg>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-sm border border-[#F0E6DE] p-8 w-full max-w-md relative">
+
+    <!-- Logo -->
+    <div class="text-center mb-2">
+      <span class="text-xl font-bold text-[#C8956C]">✿ Femora</span>
     </div>
 
-    <!-- Title -->
-    <h2 class="text-xl font-semibold text-gray-800 text-center mb-1">
-      What are you interested in?
-    </h2>
-    <p class="text-sm text-gray-500 text-center mb-6">
-      Choose one or more
-    </p>
+    <!-- Progress Dots -->
+    <div class="flex items-center justify-center gap-2 my-5">
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-8 h-2 rounded-full bg-[#C8956C]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+    </div>
+
+    <h2 class="text-2xl font-bold text-[#3D2314] text-center mb-1">ما هي اهتماماتك؟</h2>
+    <p class="text-sm text-[#8B6355] text-center mb-6">اختاري المجالات التي تهمك لتحصلي على تجربة مخصصة</p>
 
     <!-- Options Grid -->
     <div class="grid grid-cols-2 gap-3 mb-8">
@@ -24,31 +35,30 @@
         *ngFor="let option of options"
         type="button"
         (click)="toggle(option)"
-        [class.bg-pink-50]="option.selected"
-        [class.border-pink-500]="option.selected"
-        [class.text-pink-600]="option.selected"
-        [class.border-gray-300]="!option.selected"
-        [class.text-gray-700]="!option.selected"
-        class="border rounded-lg py-3 text-sm font-medium transition hover:border-pink-400"
+        [class.bg-[#FDF0EA]]="option.selected"
+        [class.border-[#C8956C]]="option.selected"
+        [class.text-[#7A4B2A]]="option.selected"
+        [class.border-[#E8D5CB]]="!option.selected"
+        [class.text-[#8B6355]]="!option.selected"
+        class="flex flex-col items-center gap-2 border-2 rounded-2xl py-4 px-3 text-sm font-medium transition hover:border-[#C8956C] hover:bg-[#FDF7F4]"
       >
+        <span class="text-xl">{{ option.emoji }}</span>
         {{ option.label }}
       </button>
     </div>
 
     <!-- Next Button -->
     <button
-      routerLink="/onboarding/goal"
-      class="w-full bg-pink-600 text-white py-2.5 rounded-lg font-medium hover:bg-pink-700 transition"
+      type="button"
+      (click)="next()"
+      [disabled]="!hasSelection()"
+      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition mb-3 disabled:opacity-40 disabled:cursor-not-allowed"
     >
-      Next
+      التالي
     </button>
 
-    <!-- Back Link -->
-    <div class="text-center mt-4">
-      <a routerLink="/register" class="text-sm text-gray-500 hover:text-pink-600">
-        Back
-      </a>
+    <div class="text-center">
+      <a routerLink="/verify-email" class="text-sm text-[#8B6355] hover:text-[#C8956C] transition">رجوع</a>
     </div>
-
   </div>
 </div>

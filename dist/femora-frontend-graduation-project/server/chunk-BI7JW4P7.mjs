@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as s}from"./chunk-HGGFXX6W.mjs";import"./chunk-FWQCOKMN.mjs";import{S as a,ka as r}from"./chunk-N7IKLXO7.mjs";import"./chunk-T55IDOPT.mjs";var o=class t{static \u0275fac=function(e){return new(e||t)};static \u0275cmp=a({type:t,selectors:[["app-instructor-dashboard"]],decls:1,vars:0,consts:[["title","\u0644\u0648\u062D\u0629 \u0627\u0644\u0645\u062F\u0631\u0628\u0629"]],template:function(e,u){e&1&&r(0,"app-feature-shell",0)},dependencies:[s],encapsulation:2})};export{o as InstructorDashboard};

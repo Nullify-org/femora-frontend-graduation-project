@@ -1,0 +1,44 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-8">
+    <div class="max-w-xl mx-auto">
+      <h1 class="text-2xl font-bold text-navy font-display mb-6">إتمام الشراء</h1>
+
+      @if (success) {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
+          <img
+            src="/images/success-approval-state.png"
+            alt="تم تأكيد الطلب بنجاح"
+            class="w-32 h-32 object-cover rounded-full mx-auto mb-4 ring-4 ring-sage/20"
+          />
+          <p class="text-xl font-bold text-navy">شكراً لكِ!</p>
+          <p class="text-terracotta-dark mt-2">تم استلام طلبكِ وسيتم معالجته قريباً.</p>
+          <a routerLink="/dashboard" class="inline-block mt-6 text-terracotta hover:underline">العودة للوحة التحكم</a>
+        </div>
+      } @else {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8">
+          <p class="text-terracotta-dark mb-6">راجعي طلبكِ ثم أكّدي الشراء.</p>
+
+          @if (errorMessage) {
+            <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <button
+            type="button"
+            (click)="placeOrder()"
+            [disabled]="isPlacing"
+            class="w-full bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+          >
+            {{ isPlacing ? 'جاري التأكيد...' : 'تأكيد الطلب' }}
+          </button>
+
+          <a routerLink="/marketplace/cart" class="block text-center mt-4 text-sm text-terracotta hover:underline">
+            العودة للسلة
+          </a>
+        </div>
+      }
+    </div>
+  </main>
+</div>

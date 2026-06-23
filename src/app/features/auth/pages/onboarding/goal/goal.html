@@ -1,67 +1,69 @@
-<!-- <p>goal works!</p> -->
-<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-  <div class="bg-white shadow-md rounded-2xl p-8 w-full max-w-md">
+<div class="min-h-screen flex items-center justify-center bg-[#FAF7F4] px-4">
 
-    <!-- Progress Dots -->
-    <div class="flex justify-center gap-2 mb-6">
-      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-gray-300"></span>
-      <span class="w-2.5 h-2.5 rounded-full bg-pink-600"></span>
+  <!-- Decorative background -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <svg class="absolute top-0 right-0 w-56 opacity-10" viewBox="0 0 200 200" fill="none">
+      <path d="M190 10 Q80 80 190 190 Q120 100 10 190Z" fill="#C8956C"/>
+    </svg>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-sm border border-[#F0E6DE] p-8 w-full max-w-md relative">
+
+    <!-- Logo -->
+    <div class="text-center mb-2">
+      <span class="text-xl font-bold text-[#C8956C]">✿ Femora</span>
     </div>
 
-    <!-- Title -->
-    <h2 class="text-xl font-semibold text-gray-800 text-center mb-1">
-      What is your main goal?
-    </h2>
+    <!-- Progress Dots -->
+    <div class="flex items-center justify-center gap-2 my-5">
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-8 h-2 rounded-full bg-[#C8956C]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+    </div>
+
+    <h2 class="text-2xl font-bold text-[#3D2314] text-center mb-1">ما هو هدفك الرئيسي؟</h2>
+    <p class="text-sm text-[#8B6355] text-center mb-6">اختاري هدفاً واحداً يناسب طموحاتك</p>
 
     <!-- Options List -->
-    <div class="space-y-3 my-6">
+    <div class="space-y-3 mb-8">
       <button
         *ngFor="let option of options"
         type="button"
         (click)="select(option.label)"
-        [class.border-pink-500]="selected === option.label"
-        [class.bg-pink-50]="selected === option.label"
-        [class.border-gray-300]="selected !== option.label"
-        class="w-full flex items-center gap-3 border rounded-lg px-4 py-3 text-left transition hover:border-pink-400"
+        [class.border-[#C8956C]]="selected === option.label"
+        [class.bg-[#FDF0EA]]="selected === option.label"
+        [class.border-[#E8D5CB]]="selected !== option.label"
+        class="w-full flex items-center gap-4 border-2 rounded-2xl px-4 py-3.5 text-right transition hover:border-[#C8956C] hover:bg-[#FDF7F4]"
       >
-        <!-- Radio circle -->
+        <span class="text-2xl shrink-0">{{ option.emoji }}</span>
+        <div class="flex-1 text-right">
+          <p class="text-sm font-semibold text-[#3D2314]">{{ option.label }}</p>
+          <p class="text-xs text-[#8B6355]">{{ option.desc }}</p>
+        </div>
+        <!-- Radio -->
         <span
-          class="w-4 h-4 rounded-full border-2 flex items-center justify-center"
-          [class.border-pink-600]="selected === option.label"
-          [class.border-gray-300]="selected !== option.label"
+          class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
+          [class.border-[#C8956C]]="selected === option.label"
+          [class.border-[#E8D5CB]]="selected !== option.label"
         >
-          <span
-            *ngIf="selected === option.label"
-            class="w-2 h-2 rounded-full bg-pink-600"
-          ></span>
-        </span>
-
-        <span
-          class="text-sm font-medium"
-          [class.text-pink-600]="selected === option.label"
-          [class.text-gray-700]="selected !== option.label"
-        >
-          {{ option.label }}
+          <span *ngIf="selected === option.label" class="w-2.5 h-2.5 rounded-full bg-[#C8956C]"></span>
         </span>
       </button>
     </div>
 
-    <!-- Create Account Button -->
     <button
-      routerLink="/verify-email"
-      class="w-full bg-pink-600 text-white py-2.5 rounded-lg font-medium hover:bg-pink-700 transition"
+      type="button"
+      (click)="next()"
+      [disabled]="!selected"
+      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition disabled:opacity-40 disabled:cursor-not-allowed mb-3"
     >
-      Create Account
+      التالي
     </button>
 
-    <!-- Back Link -->
-    <div class="text-center mt-4">
-      <a routerLink="/onboarding/interests" class="text-sm text-gray-500 hover:text-pink-600">
-        Back
-      </a>
+    <div class="text-center">
+      <a routerLink="/onboarding/interests" class="text-sm text-[#8B6355] hover:text-[#C8956C] transition">رجوع</a>
     </div>
-
   </div>
 </div>

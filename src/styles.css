@@ -1,2 +1,52 @@
-/* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+@theme {
+  --color-terracotta: #c96a3a;
+  --color-terracotta-dark: #b07855;
+  --color-cream: #f7f0e8;
+  --color-cream-light: #faf7f4;
+  --color-navy: #1a1a2e;
+  --color-blush: #e8d5c4;
+  --color-sage: #4caf80;
+  --color-amber: #f4a261;
+  --font-display: "Cairo", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cream-light);
+  color: var(--color-navy);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+.femora-shadow {
+  box-shadow: 0 4px 24px rgba(201, 106, 58, 0.08);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s ease-out forwards;
+}

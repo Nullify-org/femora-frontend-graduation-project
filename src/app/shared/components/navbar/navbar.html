@@ -1,0 +1,48 @@
+<nav
+  class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+  [class.bg-transparent]="transparent()"
+  [class.bg-navy/95]="!transparent()"
+  [class.backdrop-blur-md]="!transparent()"
+  [class.shadow-lg]="!transparent()"
+>
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a routerLink="/" class="text-2xl font-bold text-terracotta font-display">✿ Femora</a>
+
+    <div class="hidden md:flex items-center gap-8 text-sm">
+      <a routerLink="/lms/catalog" class="text-white/80 hover:text-white transition">الدورات</a>
+      <a routerLink="/marketplace/catalog" class="text-white/80 hover:text-white transition">المنتجات</a>
+      <a routerLink="/ai/chat" class="text-white/80 hover:text-white transition">المساعد الذكي</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      @if (auth.isAuthenticated()) {
+        <a
+          routerLink="/dashboard"
+          class="text-sm text-white/90 hover:text-white transition hidden sm:block"
+        >
+          {{ auth.displayName() || 'لوحة التحكم' }}
+        </a>
+        <button
+          type="button"
+          (click)="logout()"
+          class="text-sm border border-white/30 text-white px-4 py-2 rounded-xl hover:bg-white/10 transition"
+        >
+          خروج
+        </button>
+      } @else {
+        <a
+          routerLink="/login"
+          class="text-sm text-white/90 hover:text-white transition hidden sm:block"
+        >
+          دخول
+        </a>
+        <a
+          routerLink="/register"
+          class="text-sm bg-terracotta text-white px-5 py-2.5 rounded-xl hover:bg-terracotta-dark transition font-medium"
+        >
+          ابدئي رحلتك
+        </a>
+      }
+    </div>
+  </div>
+</nav>

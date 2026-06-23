@@ -1,0 +1,17 @@
+<aside class="w-64 shrink-0 bg-navy text-white min-h-screen p-6 hidden lg:block">
+  <div class="mb-8">
+    <a routerLink="/" class="text-xl font-bold text-terracotta font-display">✿ Femora</a>
+  </div>
+  <nav class="space-y-1">
+    @for (link of links(); track link.path) {
+      <a
+        [routerLink]="link.path"
+        routerLinkActive="bg-white/10 text-terracotta"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/80 hover:bg-white/5 hover:text-white transition"
+      >
+        <span>{{ link.icon }}</span>
+        {{ link.label }}
+      </a>
+    }
+  </nav>
+</aside>

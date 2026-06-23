@@ -1,12 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NotificationService } from './core/services/notification.service';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
   templateUrl: './app.html',
-  styleUrls: ['./app.css']
 })
 export class App {
-  protected readonly title = signal('femora-frontend-graduation-project');
+  readonly notifications = inject(NotificationService).notifications;
 }

@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as r}from"./chunk-HGGFXX6W.mjs";import"./chunk-FWQCOKMN.mjs";import{S as t,ka as s}from"./chunk-N7IKLXO7.mjs";import"./chunk-T55IDOPT.mjs";var l=class a{static \u0275fac=function(e){return new(e||a)};static \u0275cmp=t({type:a,selectors:[["app-seller-dashboard"]],decls:1,vars:0,consts:[["title","\u0644\u0648\u062D\u0629 \u0627\u0644\u0628\u0627\u0626\u0639\u0629"]],template:function(e,n){e&1&&s(0,"app-feature-shell",0)},dependencies:[r],encapsulation:2})};export{l as SellerDashboard};
