@@ -1,0 +1,26 @@
+<app-card title="تابعي التعلّم" subtitle="دوراتك الجارية">
+  <div class="space-y-4">
+    @if (isLoading) {
+      <p class="text-xs text-terracotta-dark text-center">جاري التحميل...</p>
+    } @else if (enrollments.length === 0) {
+      <p class="text-xs text-terracotta-dark text-center">لم تسجّلي في أي دورة بعد</p>
+    } @else {
+      @for (enrollment of enrollments; track enrollment.enrollmentId ?? enrollment.courseId) {
+        <div class="flex items-center gap-4 p-3 bg-cream rounded-xl">
+          <span class="text-3xl">{{ courseEmoji() }}</span>
+          <div class="flex-1">
+            <p class="text-sm font-semibold text-navy">{{ title(enrollment) }}</p>
+            <div class="w-full bg-blush/50 rounded-full h-2 mt-2">
+              <div class="bg-terracotta h-2 rounded-full" [style.width.%]="progress(enrollment)"></div>
+            </div>
+            <p class="text-xs text-terracotta-dark mt-1">{{ progress(enrollment) }}% مكتمل</p>
+          </div>
+          <a [routerLink]="['/lms/player', enrollment.courseId]" class="text-xs bg-terracotta text-white px-3 py-1.5 rounded-lg shrink-0">متابعة</a>
+        </div>
+      }
+    }
+    <p class="text-xs text-terracotta-dark text-center">
+      <a routerLink="/lms/catalog" class="text-terracotta hover:underline">استكشفي المزيد من الدورات</a>
+    </p>
+  </div>
+</app-card>

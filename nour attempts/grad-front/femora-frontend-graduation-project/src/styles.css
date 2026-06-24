@@ -1,0 +1,254 @@
+@import "tailwindcss";
+@import "swiper/css";
+@import "swiper/css/effect-fade";
+@import "swiper/css/navigation";
+@import "swiper/css/pagination";
+
+@theme {
+  --color-primary: #c4714a;
+  --color-primary-dark: #a85c38;
+  --color-primary-light: #d4926e;
+  --color-terracotta: #c4714a;
+  --color-terracotta-dark: #a85c38;
+  --color-cream: #f5efe6;
+  --color-cream-light: #fdfaf6;
+  --color-sand: #e8d5c0;
+  --color-warm-white: #fdfaf6;
+  --color-text-dark: #2c1a0e;
+  --color-text-medium: #5c3d2e;
+  --color-text-light: #9c7b6a;
+  --color-success: #5a8a6a;
+  --color-error: #c45a4a;
+  --color-navy: #2c1a0e;
+  --color-blush: #e8d5c0;
+  --color-sage: #5a8a6a;
+  --color-amber: #f4a261;
+  --font-display: "Cairo", "Tajawal", sans-serif;
+  --font-body: "Cairo", "Tajawal", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cream-light);
+  color: var(--color-text-dark);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+/* ── Shadows ─────────────────────────────────────────────────── */
+.femora-shadow {
+  box-shadow: 0 4px 20px rgba(196, 113, 74, 0.12);
+}
+.femora-shadow-hover {
+  box-shadow: 0 8px 32px rgba(196, 113, 74, 0.22);
+}
+
+/* ── Navbar ──────────────────────────────────────────────────── */
+nav {
+  background-color: transparent;
+  transition:
+    background-color 0.35s ease,
+    box-shadow       0.35s ease,
+    border-color     0.35s ease;
+}
+
+.navbar-scrolled {
+  background: linear-gradient(135deg, #C96A3A 0%, #D4856A 45%, #1A1A2E 100%) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.85);
+}
+.nav-link:hover {
+  color: #f4a261;
+}
+
+/* ── Hero Animations ─────────────────────────────────────────── */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Hero word stagger */
+.hero-word {
+  display: block;
+  opacity: 0;
+  transform: translateY(34px) scale(0.96);
+  animation: hero-word-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+}
+.hero-word:nth-child(1) { animation-delay: 0.1s; }
+.hero-word:nth-child(2) { animation-delay: 0.25s; }
+.hero-word:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes hero-word-reveal {
+  0% {
+    opacity: 0;
+    transform: translateY(34px) scale(0.96);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Brandline badge */
+.hero-badge {
+  opacity: 0;
+  animation: fade-in-up 0.7s 0.05s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* CTA buttons */
+.hero-cta {
+  opacity: 0;
+  animation: fade-in-up 0.7s 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Hero image */
+.hero-image {
+  opacity: 0;
+  animation: hero-image-in 1s 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.hero-background-image {
+  transform: scale(1.02);
+  animation: hero-background-pan 18s ease-in-out infinite alternate;
+  background-attachment: fixed;
+}
+.hero-slide-media {
+  transform: scale(1.02);
+  will-change: transform;
+}
+.swiper-slide-active .hero-slide-media {
+  animation: hero-media-zoom 8s ease-in-out infinite alternate;
+}
+@keyframes hero-image-in {
+  from { opacity: 0; transform: scale(0.95) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes hero-background-pan {
+  0% { transform: scale(1.02) translateX(0px) translateY(0px); }
+  100% { transform: scale(1.06) translateX(6px) translateY(-4px); }
+}
+@keyframes hero-media-zoom {
+  0% { transform: scale(1.02); }
+  100% { transform: scale(1.12); }
+}
+
+.ambient-orb {
+  animation: ambient-drift 16s ease-in-out infinite alternate;
+}
+@keyframes ambient-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(24px, -18px, 0) scale(1.06); }
+}
+
+/* Floating badge pulse */
+@keyframes float-badge {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+.float-badge {
+  animation: float-badge 3.5s ease-in-out infinite;
+}
+
+/* ── Number Counter Pulse ────────────────────────────────────── */
+@keyframes counter-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+.counter-pop {
+  animation: counter-pop 0.4s ease-out;
+}
+
+/* Stat card slide-up */
+@keyframes stat-appear {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.stat-card {
+  opacity: 0;
+}
+.stat-card.animated {
+  animation: stat-appear 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.stat-card:nth-child(1).animated { animation-delay: 0s;    }
+.stat-card:nth-child(2).animated { animation-delay: 0.12s; }
+.stat-card:nth-child(3).animated { animation-delay: 0.24s; }
+
+/* Section / card scroll animations are driven by GSAP in landing.ts.
+   Do not hide content in CSS — keeps prerender and no-JS fallbacks readable. */
+
+/* ── Pulse Ring ──────────────────────────────────────────────── */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(196, 113, 74, 0.5); }
+  70%  { transform: scale(1);    box-shadow: 0 0 0 12px rgba(196, 113, 74, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(196, 113, 74, 0); }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 2s infinite;
+}
+
+/* ── Typing Dots ─────────────────────────────────────────────── */
+@keyframes bounce-dot {
+  0%, 80%, 100% { transform: translateY(0); }
+  40%            { transform: translateY(-6px); }
+}
+.typing-dot {
+  animation: bounce-dot 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+/* ── Swiper bullets ──────────────────────────────────────────── */
+.hero-swiper .swiper-pagination-bullet {
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+}
+.hero-swiper .swiper-pagination-bullet-active {
+  background: #fff;
+}
+
+/* ── Hover lift on cards ─────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.card-hover:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 16px 40px rgba(196, 113, 74, 0.18);
+}
+
+.animate-float-slow {
+  animation: float-slow 5s ease-in-out infinite alternate;
+}
+
+@keyframes float-slow {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-8px); }
+}

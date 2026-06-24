@@ -1,0 +1,79 @@
+<div class="min-h-screen flex items-center justify-center bg-[#FAF7F4] px-4">
+
+  <!-- Decorative background leaves -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <svg class="absolute top-0 left-0 w-48 opacity-20" viewBox="0 0 200 200" fill="none">
+      <path d="M20 180 Q60 80 180 20 Q120 100 20 180Z" fill="#C8956C"/>
+    </svg>
+    <svg class="absolute bottom-0 right-0 w-48 opacity-20" viewBox="0 0 200 200" fill="none">
+      <path d="M180 20 Q140 120 20 180 Q80 100 180 20Z" fill="#D4856A"/>
+    </svg>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-sm border border-[#F0E6DE] p-10 w-full max-w-md relative">
+
+    <!-- Progress steps -->
+    <div class="flex items-center justify-center gap-1.5 mb-8">
+      <span class="w-8 h-1.5 rounded-full bg-[#C8956C]"></span>
+      <span class="w-8 h-1.5 rounded-full bg-[#C8956C]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+    </div>
+
+    <!-- Envelope illustration -->
+    <div class="flex justify-center mb-6">
+      <div class="w-24 h-24 bg-[#FDF0EA] rounded-full flex items-center justify-center">
+        <svg class="w-14 h-14" viewBox="0 0 80 80" fill="none">
+          <rect x="8" y="20" width="64" height="44" rx="6" fill="#F5C9B0" stroke="#D4856A" stroke-width="2"/>
+          <path d="M8 26 L40 46 L72 26" stroke="#D4856A" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="60" cy="26" r="10" fill="#C8956C"/>
+          <path d="M54 26 L58 30 L67 21" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-bold text-[#3D2314] text-center mb-2">تحقق من بريدك الإلكتروني</h2>
+    <p class="text-sm text-[#8B6355] text-center mb-2">
+      لقد أرسلنا رابطاً لتفعيل حسابك إلى
+    </p>
+    <p class="text-sm font-semibold text-[#C8956C] text-center mb-6">
+      {{ email }}
+    </p>
+
+    <p class="text-xs text-[#A07060] text-center mb-8">
+      يرجى التحقق من بريدك والنقر على الرابط للانتهاء من إنشاء حسابك.
+    </p>
+
+    <!-- Countdown resend -->
+    <div class="text-center mb-6">
+      <span *ngIf="countdown > 0" class="text-sm text-[#A07060]">
+        إعادة الإرسال متاحة خلال
+        <span class="font-semibold text-[#C8956C]">({{ formatCountdown() }})</span>
+      </span>
+      <button
+        *ngIf="countdown === 0"
+        (click)="resendEmail()"
+        class="text-sm font-semibold text-[#C8956C] hover:text-[#B07855] transition underline"
+      >
+        إعادة إرسال الرابط
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <button
+      routerLink="/email-verified"
+      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition mb-3"
+    >
+      لقد تحققت من بريدي ✓
+    </button>
+
+    <button
+      routerLink="/register"
+      class="w-full border border-[#E8D5CB] text-[#8B6355] py-3 rounded-xl font-medium hover:bg-[#FAF7F4] transition"
+    >
+      رجوع
+    </button>
+
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-8">
+    <div class="max-w-2xl mx-auto">
+      @if (isLoading) {
+        <p class="text-terracotta-dark">جاري التحميل...</p>
+      } @else if (errorMessage && !quiz) {
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
+      } @else if (quiz) {
+        <h1 class="text-2xl font-bold text-navy font-display mb-2">{{ quiz.title ?? 'الاختبار' }}</h1>
+
+        @if (result) {
+          <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
+            <p class="text-4xl mb-4">{{ result.isPassed ? '🎉' : '📝' }}</p>
+            <p class="text-xl font-bold text-navy">{{ result.score }} / {{ result.maxScore }}</p>
+            <p class="text-terracotta-dark mt-2">
+              {{ result.isPassed ? 'نجحتِ في الاختبار!' : 'لم تنجحي هذه المرة — حاولي مجدداً' }}
+            </p>
+            @if (quiz.courseId) {
+              <a [routerLink]="['/lms/player', quiz.courseId]" class="inline-block mt-6 text-terracotta hover:underline">
+                العودة للدورة
+              </a>
+            }
+          </div>
+        } @else {
+          @if (errorMessage) {
+            <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <div class="space-y-6">
+            @for (question of quiz.questions ?? []; track question.questionId) {
+              <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
+                <p class="font-semibold text-navy mb-4">{{ question.text }}</p>
+                <div class="space-y-2">
+                  @for (choice of question.choices ?? []; track choice.choiceId) {
+                    <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-cream cursor-pointer">
+                      <input
+                        type="radio"
+                        [name]="question.questionId"
+                        [value]="choice.choiceId"
+                        [(ngModel)]="answers[question.questionId]"
+                      />
+                      <span class="text-sm text-terracotta-dark">{{ choice.text }}</span>
+                    </label>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          <button
+            type="button"
+            (click)="submit()"
+            [disabled]="isSubmitting"
+            class="w-full mt-8 bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+          >
+            {{ isSubmitting ? 'جاري الإرسال...' : 'إرسال الإجابات' }}
+          </button>
+        }
+      }
+    </div>
+  </main>
+</div>

@@ -1,0 +1,45 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-8">
+    <div class="max-w-3xl mx-auto">
+      <a routerLink="/marketplace/catalog" class="text-terracotta hover:underline text-sm mb-6 inline-block">← العودة للمنتجات</a>
+
+      @if (isLoading) {
+        <p class="text-terracotta-dark">جاري التحميل...</p>
+      } @else if (errorMessage && !product) {
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
+      } @else if (product) {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 overflow-hidden">
+          <div class="h-48 bg-gradient-to-br from-terracotta/20 to-blush flex items-center justify-center text-7xl">
+            {{ productEmoji(product.category) }}
+          </div>
+          <div class="p-8">
+            <h1 class="text-3xl font-bold text-navy font-display">{{ product.name }}</h1>
+            @if (product.sellerName) {
+              <p class="text-sm text-terracotta-dark mt-2">بواسطة {{ product.sellerName }}</p>
+            }
+            @if (product.category) {
+              <p class="text-xs text-terracotta-dark mt-1">{{ product.category }}</p>
+            }
+            <p class="text-2xl font-bold text-terracotta mt-6">{{ formatPrice(product.price) }}</p>
+
+            @if (errorMessage) {
+              <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mt-4">
+                {{ errorMessage }}
+              </div>
+            }
+
+            <button
+              type="button"
+              (click)="addToCart()"
+              [disabled]="isAdding"
+              class="mt-6 bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+            >
+              {{ isAdding ? 'جاري الإضافة...' : 'أضيفي إلى السلة' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>

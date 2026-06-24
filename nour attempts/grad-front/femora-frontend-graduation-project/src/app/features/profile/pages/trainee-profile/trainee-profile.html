@@ -1,0 +1,54 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-8">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-2xl font-bold text-navy font-display mb-6">ملف المتدربة</h1>
+
+      @if (auth.user(); as user) {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 mb-6">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-full bg-blush flex items-center justify-center text-2xl">👤</div>
+            <div>
+              <p class="text-xl font-bold text-navy">{{ user.firstName }} {{ user.lastName }}</p>
+              <p class="text-sm text-terracotta-dark">{{ user.email }}</p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6 mb-6">
+        <h2 class="font-bold text-navy mb-4">دوراتي</h2>
+        @if (enrollments.length === 0) {
+          <p class="text-sm text-terracotta-dark">لم تسجّلي في دورات بعد.</p>
+          <a routerLink="/lms/catalog" class="text-sm text-terracotta hover:underline mt-2 inline-block">استكشفي الدورات</a>
+        } @else {
+          <div class="space-y-3">
+            @for (e of enrollments; track e.enrollmentId ?? e.courseId) {
+              <a [routerLink]="['/lms/player', e.courseId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
+                <p class="text-sm font-semibold text-navy">{{ e.courseTitle ?? e.title ?? 'دورة' }}</p>
+              </a>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
+        <h2 class="font-bold text-navy mb-4">طلباتي</h2>
+        @if (isLoading) {
+          <p class="text-sm text-terracotta-dark">جاري التحميل...</p>
+        } @else if (orders.length === 0) {
+          <p class="text-sm text-terracotta-dark">لا توجد طلبات بعد.</p>
+        } @else {
+          <div class="space-y-3">
+            @for (order of orders; track order.orderId ?? order.id) {
+              <div class="p-3 bg-cream rounded-xl flex justify-between items-center">
+                <span class="text-sm text-navy">طلب #{{ (order.orderId ?? order.id)?.slice(0, 8) }}</span>
+                <span class="text-sm text-terracotta font-semibold">{{ formatPrice(order.total) }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </main>
+</div>
