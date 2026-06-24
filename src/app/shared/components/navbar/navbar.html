@@ -1,48 +1,200 @@
 <nav
-  class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
-  [class.bg-transparent]="transparent()"
-  [class.bg-navy/95]="!transparent()"
-  [class.backdrop-blur-md]="!transparent()"
-  [class.shadow-lg]="!transparent()"
+  class="sticky top-0 z-[100] border-b transition-all duration-300"
+  [class.navbar-scrolled]="scrolled() || !transparent()"
+  [style.background]="(scrolled() || !transparent()) ? 'linear-gradient(135deg, #C96A3A 0%, #D4856A 45%, #1A1A2E 100%)' : 'linear-gradient(135deg, rgba(201, 106, 58, 0.95) 0%, rgba(212, 133, 106, 0.95) 45%, rgba(26, 26, 46, 0.95) 100%)'"
+  [style.backdrop-filter]="'blur(14px)'"
+  [style.box-shadow]="'0 10px 30px rgba(0, 0, 0, 0.18)'"
+  [style.border-color]="'rgba(255, 255, 255, 0.12)'"
 >
-  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a routerLink="/" class="text-2xl font-bold text-terracotta font-display">✿ Femora</a>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
 
-    <div class="hidden md:flex items-center gap-8 text-sm">
-      <a routerLink="/lms/catalog" class="text-white/80 hover:text-white transition">الدورات</a>
-      <a routerLink="/marketplace/catalog" class="text-white/80 hover:text-white transition">المنتجات</a>
-      <a routerLink="/ai/chat" class="text-white/80 hover:text-white transition">المساعد الذكي</a>
-    </div>
+    <!-- Logo -->
+    <a
+      routerLink="/"
+      class="text-2xl font-bold font-display shrink-0 transition-colors duration-300"
+      [style.color]="(scrolled() || !transparent()) ? '#c4714a' : 'white'"
+    >✿ Femora</a>
 
-    <div class="flex items-center gap-3">
-      @if (auth.isAuthenticated()) {
+    <!-- Desktop Nav Links -->
+    <div class="hidden lg:flex items-center gap-7 text-sm font-medium">
+      @for (link of navLinks; track link.labelKey) {
         <a
-          routerLink="/dashboard"
-          class="text-sm text-white/90 hover:text-white transition hidden sm:block"
+          [routerLink]="link.path"
+          [fragment]="link.fragment"
+          class="nav-link whitespace-nowrap transition-colors duration-200"
+          [class.scrolled-link]="scrolled() || !transparent()"
         >
-          {{ auth.displayName() || 'لوحة التحكم' }}
-        </a>
-        <button
-          type="button"
-          (click)="logout()"
-          class="text-sm border border-white/30 text-white px-4 py-2 rounded-xl hover:bg-white/10 transition"
-        >
-          خروج
-        </button>
-      } @else {
-        <a
-          routerLink="/login"
-          class="text-sm text-white/90 hover:text-white transition hidden sm:block"
-        >
-          دخول
-        </a>
-        <a
-          routerLink="/register"
-          class="text-sm bg-terracotta text-white px-5 py-2.5 rounded-xl hover:bg-terracotta-dark transition font-medium"
-        >
-          ابدئي رحلتك
+          {{ link.labelKey | translate }}
         </a>
       }
     </div>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
+
+      @if (auth.isAuthenticated()) {
+        <!-- Bell Icon -->
+        <button
+          type="button"
+          class="p-2 transition-colors hidden sm:block"
+          aria-label="Notifications"
+          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'"
+        >
+          <svg lucideBell [size]="20"></svg>
+        </button>
+
+        <!-- Cart -->
+        <a
+          routerLink="/cart"
+          class="relative p-2 transition-colors"
+          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'"
+        >
+          <svg lucideShoppingCart [size]="20"></svg>
+          @if (cartCount() > 0) {
+            <span class="absolute -top-0.5 -start-0.5 bg-primary text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+              {{ cartCount() }}
+            </span>
+          }
+        </a>
+
+        <!-- User Dropdown -->
+        <div class="relative hidden sm:block">
+          <button
+            type="button"
+            (click)="toggleDropdown()"
+            class="flex items-center gap-2 rounded-xl px-3 py-1.5 transition-all duration-200 border"
+            [style.border-color]="(scrolled() || !transparent()) ? 'rgba(196,113,74,0.35)' : 'rgba(255,255,255,0.25)'"
+          >
+            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold shrink-0">
+              {{ auth.user()?.firstName?.charAt(0) ?? '?' }}
+            </div>
+            <div class="text-start hidden md:block max-w-[100px]">
+              <p class="text-xs font-semibold leading-tight truncate"
+                [style.color]="(scrolled() || !transparent()) ? '#2c1a0e' : 'white'">
+                {{ auth.displayName() }}
+              </p>
+              @if (auth.activeProfile()) {
+                <p class="text-[10px] truncate"
+                  [style.color]="(scrolled() || !transparent()) ? '#9c7b6a' : 'rgba(255,255,255,0.60)'">
+                  {{ auth.activeProfile() }}
+                </p>
+              }
+            </div>
+            <svg lucideChevronDown [size]="16"
+              [style.color]="(scrolled() || !transparent()) ? '#c4714a' : 'rgba(255,255,255,0.50)'">
+            </svg>
+          </button>
+
+          @if (dropdownOpen()) {
+            <div class="absolute end-0 mt-2 w-56 bg-warm-white rounded-xl femora-shadow border border-sand/60 py-2 z-50 animate-fade-in-up">
+              <div class="px-4 py-2 border-b border-sand/40">
+                <p class="text-sm font-semibold text-text-dark">{{ auth.displayName() }}</p>
+                @if (auth.activeProfile()) {
+                  <span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{{ auth.activeProfile() }}</span>
+                }
+              </div>
+              <a [routerLink]="profileRoute()" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                <svg lucideUser [size]="16"></svg> {{ 'NAV.PROFILE' | translate }}
+              </a>
+              <a routerLink="/profile/preferences" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                ✏️ {{ 'NAV.EDIT_PROFILE' | translate }}
+              </a>
+              @if (showMyCourses()) {
+                <a routerLink="/dashboard/trainee" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                  <svg lucideBookOpen [size]="16"></svg> {{ 'NAV.MY_COURSES' | translate }}
+                </a>
+              }
+              @if (showMyOrders()) {
+                <a routerLink="/marketplace/cart" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                  <svg lucidePackage [size]="16"></svg> {{ 'NAV.MY_ORDERS' | translate }}
+                </a>
+              }
+              <a routerLink="/dashboard" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                <svg lucideLayoutDashboard [size]="16"></svg> {{ 'NAV.DASHBOARD' | translate }}
+              </a>
+              @if (auth.pendingProfiles().length > 1) {
+                <div class="border-t border-sand/40 my-1"></div>
+                <p class="px-4 py-1 text-[10px] text-text-light uppercase">{{ 'NAV.SWITCH_ROLE' | translate }}</p>
+                @for (p of auth.pendingProfiles(); track p.id) {
+                  <button type="button" (click)="switchProfile(p.name)" class="w-full text-start px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                    🔄 {{ p.displayName }}
+                  </button>
+                }
+              }
+              <div class="border-t border-sand/40 my-1"></div>
+              <button type="button" (click)="logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-cream transition">
+                <svg lucideLogOut [size]="16"></svg> {{ 'NAV.LOGOUT' | translate }}
+              </button>
+            </div>
+          }
+        </div>
+
+      } @else {
+        <a
+          routerLink="/login"
+          class="text-sm transition-colors hidden sm:block whitespace-nowrap"
+          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.85)'"
+        >
+          {{ 'NAV.LOGIN' | translate }}
+        </a>
+        <a
+          routerLink="/register"
+          class="text-sm px-4 py-2 rounded-xl font-semibold transition-all whitespace-nowrap btn-shimmer"
+          [class.bg-primary]="!(scrolled() || !transparent())"
+          [class.text-white]="true"
+          [class.hover:bg-primary-dark]="true"
+          [style.background]="(scrolled() || !transparent()) ? '#c4714a' : ''"
+        >
+          {{ 'NAV.REGISTER' | translate }}
+        </a>
+      }
+
+      <!-- Mobile Menu Toggle -->
+      <button
+        type="button"
+        (click)="toggleMenu()"
+        class="lg:hidden p-2 transition-colors"
+        [style.color]="(scrolled() || !transparent()) ? '#2c1a0e' : 'white'"
+        aria-label="Menu"
+      >
+        @if (menuOpen()) {
+          <svg lucideX [size]="22"></svg>
+        } @else {
+          <svg lucideMenu [size]="22"></svg>
+        }
+      </button>
+    </div>
   </div>
+
+  <!-- Mobile Menu -->
+  @if (menuOpen()) {
+    <div class="lg:hidden border-t px-4 py-4 space-y-1 animate-fade-in-up"
+      [style.background]="(scrolled() || !transparent()) ? 'rgba(253,250,246,0.97)' : 'rgba(44,26,14,0.95)'"
+      [style.border-color]="(scrolled() || !transparent()) ? 'rgba(196,113,74,0.2)' : 'rgba(196,113,74,0.2)'"
+    >
+      @for (link of navLinks; track link.labelKey) {
+        <a
+          [routerLink]="link.path"
+          [fragment]="link.fragment"
+          (click)="toggleMenu()"
+          class="block py-2.5 px-3 rounded-lg transition font-medium hover:bg-primary/10"
+          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'"
+        >
+          {{ link.labelKey | translate }}
+        </a>
+      }
+      @if (!auth.isAuthenticated()) {
+        <div class="border-t border-primary/15 pt-3 mt-2 flex flex-col gap-2">
+          <a routerLink="/login" (click)="toggleMenu()"
+            class="block py-2.5 px-3 rounded-lg transition"
+            [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'">
+            {{ 'NAV.LOGIN' | translate }}
+          </a>
+          <a routerLink="/register" (click)="toggleMenu()" class="block py-2.5 px-3 bg-primary text-white rounded-xl text-center font-semibold hover:bg-primary-dark transition btn-shimmer">
+            {{ 'NAV.REGISTER' | translate }}
+          </a>
+        </div>
+      }
+    </div>
+  }
 </nav>

@@ -1,19 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ApiClient } from '../../../core/services/api-client.service';
 import { Cart, CartItem } from '../../../core/models/api.model';
 import { unwrapList } from '../../../core/utils/api-response.util';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private readonly base = `${environment.apiUrl}/api/cart`;
-
-  constructor(private readonly http: HttpClient) {}
+  private readonly api = inject(ApiClient);
+  private readonly base = '/api/cart';
 
   getCart(userId?: string): Observable<Cart> {
     const params = userId ? { UserId: userId } : undefined;
-    return this.http.get<Cart>(this.base, { params, withCredentials: true }).pipe(
+    return this.api.get<Cart>(this.base, { params }).pipe(
       map((cart) => ({
         ...cart,
         items: cart.items ?? unwrapList<CartItem>(cart),
@@ -22,17 +20,15 @@ export class CartService {
   }
 
   add(userId: string, productVariantId: string, quantity = 1): Observable<unknown> {
-    return this.http.post(
+    return this.api.post(
       `${this.base}/add`,
       { userId, productVariantId, quantity },
-      { withCredentials: true },
     );
   }
 
   remove(cartItemId: string): Observable<unknown> {
-    return this.http.delete(`${this.base}/remove`, {
+    return this.api.delete(`${this.base}/remove`, {
       params: { CartItemId: cartItemId },
-      withCredentials: true,
     });
   }
 }

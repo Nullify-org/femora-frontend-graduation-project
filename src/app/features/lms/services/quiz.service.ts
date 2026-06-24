@@ -1,33 +1,28 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ApiClient } from '../../../core/services/api-client.service';
 import { Quiz as QuizModel, SubmitQuizResult } from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class QuizService {
-  private readonly base = `${environment.apiUrl}/api/quizzes`;
-
-  constructor(private readonly http: HttpClient) {}
+  private readonly api = inject(ApiClient);
+  private readonly base = '/api/quizzes';
 
   generate(moduleId: string, questionCount = 5): Observable<{ quizId: string }> {
-    return this.http.post<{ quizId: string }>(
+    return this.api.post<{ quizId: string }>(
       `${this.base}/generate`,
       { moduleId, questionCount },
-      { withCredentials: true },
     );
   }
 
   getById(quizId: string): Observable<QuizModel> {
-    return this.http.get<QuizModel>(`${this.base}/${quizId}`, { withCredentials: true });
+    return this.api.get<QuizModel>(`${this.base}/${quizId}`);
   }
 
   submit(
     quizId: string,
     body: { traineeProfileId?: string; answers: { questionId: string; choiceId: string }[] },
   ): Observable<SubmitQuizResult> {
-    return this.http.post<SubmitQuizResult>(`${this.base}/${quizId}/submit`, body, {
-      withCredentials: true,
-    });
+    return this.api.post<SubmitQuizResult>(`${this.base}/${quizId}/submit`, body);
   }
 }

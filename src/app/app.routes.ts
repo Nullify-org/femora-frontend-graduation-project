@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard, guestGuard, profileSelectionGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
+import { adminGuard } from './core/auth/admin.guard';
 
 export const routes: Routes = [
   {
@@ -8,6 +9,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/landing/pages/landing/landing').then((m) => m.Landing),
   },
+  { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
+  { path: 'courses', redirectTo: 'lms/catalog', pathMatch: 'full' },
+  {
+    path: 'courses/:id',
+    loadComponent: () =>
+      import('./features/lms/pages/course-details/course-details').then((m) => m.CourseDetails),
+  },
+  { path: 'cart', redirectTo: 'marketplace/cart', pathMatch: 'full' },
   {
     path: 'login',
     canActivate: [guestGuard],
@@ -64,8 +74,46 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/dashboard/pages/dashboard/dashboard').then((m) => m.Dashboard),
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard-redirect/dashboard-redirect').then(
+            (m) => m.DashboardRedirect,
+          ),
+      },
+      {
+        path: 'trainee',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+      {
+        path: 'instructor',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-dashboard/instructor-dashboard').then(
+            (m) => m.InstructorDashboard,
+          ),
+      },
+      {
+        path: 'seller',
+        canActivate: [roleGuard],
+        data: { roles: ['Seller'] },
+        loadComponent: () =>
+          import('./features/marketplace/pages/seller-dashboard/seller-dashboard').then(
+            (m) => m.SellerDashboard,
+          ),
+      },
+      {
+        path: 'admin',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/dashboard/pages/admin-dashboard/admin-dashboard').then(
+            (m) => m.AdminDashboard,
+          ),
+      },
+    ],
   },
   {
     path: 'lms/catalog',
@@ -90,12 +138,8 @@ export const routes: Routes = [
   },
   {
     path: 'lms/instructor',
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Instructor'] },
-    loadComponent: () =>
-      import('./features/lms/pages/instructor-dashboard/instructor-dashboard').then(
-        (m) => m.InstructorDashboard,
-      ),
+    redirectTo: 'dashboard/instructor',
+    pathMatch: 'full',
   },
   {
     path: 'marketplace/catalog',
@@ -124,12 +168,8 @@ export const routes: Routes = [
   },
   {
     path: 'marketplace/seller',
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Seller'] },
-    loadComponent: () =>
-      import('./features/marketplace/pages/seller-dashboard/seller-dashboard').then(
-        (m) => m.SellerDashboard,
-      ),
+    redirectTo: 'dashboard/seller',
+    pathMatch: 'full',
   },
   {
     path: 'ai/chat',
@@ -144,6 +184,16 @@ export const routes: Routes = [
       import('./features/messaging/pages/conversations/conversations').then(
         (m) => m.Conversations,
       ),
+  },
+  {
+    path: 'profile',
+    redirectTo: 'profile/trainee',
+    pathMatch: 'full',
+  },
+  {
+    path: 'profile/edit',
+    redirectTo: 'profile/preferences',
+    pathMatch: 'full',
   },
   {
     path: 'profile/trainee',

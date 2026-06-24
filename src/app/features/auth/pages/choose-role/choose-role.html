@@ -52,11 +52,13 @@
         </div>
         <span class="text-sm font-semibold text-[#3D2314]">متدربة</span>
         <span class="text-xs text-[#8B6355] text-center leading-relaxed">تعلمي مهارات جديدة</span>
-        <div *ngIf="hasRole('trainee')" class="absolute top-2 right-2 w-5 h-5 bg-[#C8956C] rounded-full flex items-center justify-center">
-          <svg class="w-3 h-3" fill="white" viewBox="0 0 12 12">
-            <path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          </svg>
-        </div>
+        @if (hasRole('trainee')) {
+          <div class="absolute top-2 right-2 w-5 h-5 bg-[#C8956C] rounded-full flex items-center justify-center">
+            <svg class="w-3 h-3" fill="white" viewBox="0 0 12 12">
+              <path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+        }
       </button>
 
       <!-- Instructor -->
@@ -77,11 +79,13 @@
         </div>
         <span class="text-sm font-semibold text-[#3D2314]">مدربة</span>
         <span class="text-xs text-[#8B6355] text-center leading-relaxed">شاركي خبرتك ودخلاً ثابتاً</span>
-        <div *ngIf="hasRole('instructor')" class="absolute top-2 right-2 w-5 h-5 bg-[#C8956C] rounded-full flex items-center justify-center">
-          <svg class="w-3 h-3" fill="white" viewBox="0 0 12 12">
-            <path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          </svg>
-        </div>
+        @if (hasRole('instructor')) {
+          <div class="absolute top-2 right-2 w-5 h-5 bg-[#C8956C] rounded-full flex items-center justify-center">
+            <svg class="w-3 h-3" fill="white" viewBox="0 0 12 12">
+              <path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+        }
       </button>
 
       <!-- Seller -->
@@ -103,11 +107,13 @@
         </div>
         <span class="text-sm font-semibold text-[#3D2314]">بائعة</span>
         <span class="text-xs text-[#8B6355] text-center leading-relaxed">بيعي منتجاتك واكسبي دخلاً</span>
-        <div *ngIf="hasRole('seller')" class="absolute top-2 right-2 w-5 h-5 bg-[#C8956C] rounded-full flex items-center justify-center">
-          <svg class="w-3 h-3" fill="white" viewBox="0 0 12 12">
-            <path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          </svg>
-        </div>
+        @if (hasRole('seller')) {
+          <div class="absolute top-2 right-2 w-5 h-5 bg-[#C8956C] rounded-full flex items-center justify-center">
+            <svg class="w-3 h-3" fill="white" viewBox="0 0 12 12">
+              <path d="M2 6l3 3 5-5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+        }
       </button>
 
     </div>

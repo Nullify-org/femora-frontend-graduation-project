@@ -1,24 +1,22 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ApiClient } from '../../../core/services/api-client.service';
 import { Order } from '../../../core/models/api.model';
 import { unwrapList } from '../../../core/utils/api-response.util';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
-  private readonly base = `${environment.apiUrl}/api/orders`;
-
-  constructor(private readonly http: HttpClient) {}
+  private readonly api = inject(ApiClient);
+  private readonly base = '/api/orders';
 
   placeOrder(userId: string): Observable<unknown> {
-    return this.http.post(this.base, { userId }, { withCredentials: true });
+    return this.api.post(this.base, { userId });
   }
 
   myOrders(userId?: string): Observable<Order[]> {
     const params = userId ? { UserId: userId } : undefined;
-    return this.http
-      .get<unknown>(`${this.base}/my-orders`, { params, withCredentials: true })
+    return this.api
+      .get<unknown>(`${this.base}/my-orders`, { params })
       .pipe(map((res) => unwrapList<Order>(res)));
   }
 }

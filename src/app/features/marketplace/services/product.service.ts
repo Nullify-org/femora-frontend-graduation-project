@@ -1,21 +1,18 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ApiClient } from '../../../core/services/api-client.service';
 import { RecommendedProduct } from '../../../core/models/api.model';
 import { unwrapList } from '../../../core/utils/api-response.util';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private readonly recommendationsBase = `${environment.apiUrl}/api/ai/recommendations/products`;
-
-  constructor(private readonly http: HttpClient) {}
+  private readonly api = inject(ApiClient);
+  private readonly recommendationsBase = '/api/ai/recommendations/products';
 
   list(top = 20): Observable<RecommendedProduct[]> {
-    return this.http
+    return this.api
       .get<unknown>(this.recommendationsBase, {
         params: { top: String(top) },
-        withCredentials: true,
       })
       .pipe(map((res) => unwrapList<RecommendedProduct>(res).map((p) => this.normalizeProduct(p))));
   }

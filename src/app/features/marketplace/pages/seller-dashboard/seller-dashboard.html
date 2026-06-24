@@ -1,0 +1,52 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+
+  <main class="flex-1 p-6 lg:p-10">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-text-dark font-display">مركز البائعة</h1>
+        <p class="text-text-light text-sm mt-1">إدارة منتجاتك وطلباتك</p>
+      </div>
+      <button type="button" (click)="showApply.set(true)" class="text-sm bg-primary text-white px-4 py-2 rounded-xl hover:bg-primary-dark">
+        طلب التحقق كبائعة
+      </button>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div class="bg-warm-white rounded-2xl p-6 femora-shadow">
+        <h2 class="font-bold text-text-dark mb-4">منتجاتي</h2>
+        <div class="text-center py-8">
+          <p class="text-text-medium mb-4">لا توجد منتجات بعد</p>
+          <button type="button" class="bg-primary text-white px-6 py-2 rounded-xl text-sm">أضيفي منتجك الأول</button>
+        </div>
+      </div>
+
+      <div class="bg-warm-white rounded-2xl p-6 femora-shadow">
+        <h2 class="font-bold text-text-dark mb-4">طلباتي</h2>
+        @if (orders().length === 0) {
+          <p class="text-text-medium text-sm">لا توجد طلبات</p>
+        } @else {
+          <ul class="space-y-2 text-sm text-text-medium">
+            @for (order of orders(); track $index) {
+              <li class="border-b border-sand/30 pb-2">طلب #{{ $index + 1 }}</li>
+            }
+          </ul>
+        }
+      </div>
+    </div>
+
+    @if (showApply()) {
+      <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+        <div class="bg-warm-white rounded-2xl p-6 w-full max-w-lg femora-shadow">
+          <h3 class="font-bold text-text-dark mb-4">طلب التحقق كبائعة</h3>
+          <input [(ngModel)]="applyShopName" maxlength="100" class="w-full border border-sand rounded-xl p-3 text-sm mb-3" placeholder="اسم المتجر" />
+          <textarea [(ngModel)]="applyDescription" rows="3" maxlength="500" class="w-full border border-sand rounded-xl p-3 text-sm mb-4" placeholder="وصف المتجر (اختياري)"></textarea>
+          <div class="flex gap-2 justify-end">
+            <button type="button" (click)="showApply.set(false)" class="px-4 py-2 text-sm">إلغاء</button>
+            <button type="button" (click)="applySeller()" class="px-4 py-2 text-sm bg-primary text-white rounded-xl">إرسال</button>
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+</div>

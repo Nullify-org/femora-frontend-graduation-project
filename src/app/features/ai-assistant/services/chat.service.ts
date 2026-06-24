@@ -1,7 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ApiClient } from '../../../core/services/api-client.service';
 import {
   ConversationDetail,
   ConversationSummary,
@@ -11,42 +10,34 @@ import {
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
-  private readonly base = `${environment.apiUrl}/api/ai`;
-
-  constructor(private readonly http: HttpClient) {}
+  private readonly api = inject(ApiClient);
+  private readonly base = '/api/ai';
 
   sendMessage(message: string, conversationId?: string): Observable<SendMessageResult> {
-    return this.http.post<SendMessageResult>(
+    return this.api.post<SendMessageResult>(
       `${this.base}/chat`,
       { message, conversationId },
-      { withCredentials: true },
     );
   }
 
   getConversations(): Observable<ConversationSummary[]> {
-    return this.http.get<ConversationSummary[]>(`${this.base}/conversations`, {
-      withCredentials: true,
-    });
+    return this.api.get<ConversationSummary[]>(`${this.base}/conversations`);
   }
 
   getConversation(id: string): Observable<ConversationDetail> {
-    return this.http.get<ConversationDetail>(`${this.base}/conversations/${id}`, {
-      withCredentials: true,
-    });
+    return this.api.get<ConversationDetail>(`${this.base}/conversations/${id}`);
   }
 
   setInterests(courseCategoryIds: string[], productCategoryIds: string[]): Observable<unknown> {
-    return this.http.post(
+    return this.api.post(
       `${this.base}/interests`,
       { courseCategoryIds, productCategoryIds },
-      { withCredentials: true },
     );
   }
 
   recommendedCourses(top = 6): Observable<RecommendedCourse[]> {
-    return this.http.get<RecommendedCourse[]>(`${this.base}/recommendations/courses`, {
+    return this.api.get<RecommendedCourse[]>(`${this.base}/recommendations/courses`, {
       params: { top: String(top) },
-      withCredentials: true,
     });
   }
 }

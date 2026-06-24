@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as s}from"./chunk-QXP7J3HF.mjs";import"./chunk-RHNIZL7U.mjs";import"./chunk-XUIYS2II.mjs";import{Fa as r,ja as t}from"./chunk-FFXZCK7H.mjs";import"./chunk-5R5OPJSI.mjs";var a=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-preferences"]],decls:1,vars:0,consts:[["title","\u0627\u0644\u062A\u0641\u0636\u064A\u0644\u0627\u062A"]],template:function(e,c){e&1&&r(0,"app-feature-shell",0)},dependencies:[s],encapsulation:2})};export{a as Preferences};

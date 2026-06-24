@@ -15,16 +15,19 @@ import {
   setAngularAppManifest,
   withAppShell,
   withRoutes
-} from "./chunk-3G3ZRSXX.js";
+} from "./chunk-IMCF3OSS.js";
 import "./chunk-7VO7PY3Q.js";
-import "./chunk-BWBV2DK5.js";
-import "./chunk-2G4DTEF5.js";
-import "./chunk-NGDOTH3L.js";
-import "./chunk-2DY5HVSE.js";
-import "./chunk-2INKITRG.js";
-import "./chunk-2K757W7O.js";
-import "./chunk-O5J3CNTX.js";
-import "./chunk-6DU2HRTW.js";
+import "./chunk-HMB6RMDT.js";
+import "./chunk-IOMWBE2U.js";
+import "./chunk-VR4P6I7D.js";
+import "./chunk-I5VP7SUC.js";
+import "./chunk-OQYJ223A.js";
+import "./chunk-TMSJ62BI.js";
+import "./chunk-KUGHCGLL.js";
+import "./chunk-QCTLUR74.js";
+import "./chunk-TGWZDQAP.js";
+import "./chunk-56PZAZSL.js";
+import "./chunk-VIB2VHHA.js";
 export {
   AngularAppEngine,
   IS_DISCOVERING_ROUTES,

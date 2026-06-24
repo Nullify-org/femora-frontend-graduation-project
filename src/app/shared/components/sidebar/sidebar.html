@@ -9,7 +9,26 @@
         routerLinkActive="bg-white/10 text-terracotta"
         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/80 hover:bg-white/5 hover:text-white transition"
       >
-        <span>{{ link.icon }}</span>
+        <span class="w-5 h-5 text-white/80">
+          @if (link.path === '/dashboard') {
+            <svg lucideLayoutDashboard [size]="18"></svg>
+          }
+          @if (link.path === '/lms/catalog') {
+            <svg lucideBookOpen [size]="18"></svg>
+          }
+          @if (link.path === '/marketplace/catalog') {
+            <svg lucidePackage [size]="18"></svg>
+          }
+          @if (link.path === '/ai/chat') {
+            <svg lucideCpu [size]="18"></svg>
+          }
+          @if (link.path === '/messaging') {
+            <svg lucideBell [size]="18"></svg>
+          }
+          @if (link.path === '/profile/trainee') {
+            <svg lucideUser [size]="18"></svg>
+          }
+        </span>
         {{ link.label }}
       </a>
     }

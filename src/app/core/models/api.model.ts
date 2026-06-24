@@ -7,6 +7,7 @@ export interface Course {
   level?: string | null;
   language?: string | null;
   thumbnailUrl?: string | null;
+  isPublished?: boolean;
   instructorName?: string | null;
   instructorProfileId?: string;
   modules?: CourseModule[];

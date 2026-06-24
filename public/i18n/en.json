@@ -1,0 +1,50 @@
+{
+  "NAV": {
+    "HOME": "Home",
+    "COURSES": "Courses",
+    "PRODUCTS": "Products",
+    "WORKSHOPS": "Workshops",
+    "BLOG": "Blog",
+    "LOGIN": "Sign In",
+    "REGISTER": "Create Account",
+    "LOGOUT": "Sign Out",
+    "DASHBOARD": "Dashboard",
+    "PROFILE": "Profile",
+    "EDIT_PROFILE": "Edit Profile",
+    "MY_COURSES": "My Courses",
+    "MY_ORDERS": "My Orders",
+    "SWITCH_ROLE": "Switch Role",
+    "CART": "Cart"
+  },
+  "AUTH": {
+    "LOGIN": "Sign In",
+    "REGISTER": "Create Account",
+    "LOGOUT": "Sign Out"
+  },
+  "HERO": {
+    "HEADLINE": "Create. Learn. Sell.",
+    "SUBTITLE": "Your all-in-one platform to master crafts, get certified, and turn handmade products into real income.",
+    "CTA_PRIMARY": "Start Your Journey",
+    "CTA_SECONDARY": "Browse Products",
+    "BRANDLINE": "Femora — for home-made products",
+    "IMAGE_ALT_1": "Femora main banner",
+    "IMAGE_ALT_2": "Women learning crafts",
+    "IMAGE_ALT_3": "Handmade marketplace products"
+  },
+  "STATS": {
+    "SATISFACTION": "Customer Satisfaction",
+    "COURSES": "Courses Available",
+    "STUDENTS": "Active Students"
+  },
+  "ERRORS": {
+    "FORBIDDEN": "Unauthorized",
+    "SERVER": "Server error"
+  },
+  "COMMON": {
+    "LOADING": "Loading...",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "APPROVE": "Approve",
+    "REJECT": "Reject"
+  }
+}

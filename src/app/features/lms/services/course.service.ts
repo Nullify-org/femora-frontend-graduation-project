@@ -1,29 +1,36 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { ApiClient } from '../../../core/services/api-client.service';
 import { Course } from '../../../core/models/api.model';
 import { unwrapList } from '../../../core/utils/api-response.util';
 
 @Injectable({ providedIn: 'root' })
 export class CourseService {
-  private readonly base = `${environment.apiUrl}/api/courses`;
-
-  constructor(private readonly http: HttpClient) {}
+  private readonly api = inject(ApiClient);
+  private readonly base = '/api/courses';
 
   list(params?: Record<string, string | number>): Observable<Course[]> {
-    return this.http
-      .get<unknown>(this.base, {
-        params: params as Record<string, string>,
-        withCredentials: true,
-      })
+    return this.api
+      .get<unknown>(this.base, { params })
       .pipe(map((res) => unwrapList<Course>(res).map((c) => this.normalizeCourse(c))));
   }
 
   getById(id: string): Observable<Course> {
-    return this.http
-      .get<Course>(`${this.base}/${id}`, { withCredentials: true })
+    return this.api
+      .get<Course>(`${this.base}/${id}`)
       .pipe(map((c) => this.normalizeCourse(c)));
+  }
+
+  create(body: Record<string, unknown>): Observable<string> {
+    return this.api.post<string>(this.base, body);
+  }
+
+  update(id: string, body: Record<string, unknown>): Observable<unknown> {
+    return this.api.put(`${this.base}/${id}`, body);
+  }
+
+  publish(id: string): Observable<unknown> {
+    return this.api.post(`${this.base}/${id}/publish`, {});
   }
 
   private normalizeCourse(course: Course): Course {
