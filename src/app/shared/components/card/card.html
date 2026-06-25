@@ -1,0 +1,14 @@
+<div
+  class="bg-white rounded-2xl femora-shadow border border-blush/30"
+  [class.p-4]="padding() === 'sm'"
+  [class.p-6]="padding() === 'md'"
+  [class.p-8]="padding() === 'lg'"
+>
+  @if (title()) {
+    <h3 class="text-lg font-bold text-navy font-display mb-1">{{ title() }}</h3>
+  }
+  @if (subtitle()) {
+    <p class="text-sm text-terracotta-dark mb-4">{{ subtitle() }}</p>
+  }
+  <ng-content />
+</div>

@@ -1,0 +1,39 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-8">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-2xl font-bold text-navy font-display">منتجات Femora</h1>
+      <p class="text-terracotta-dark mt-2 mb-8">منتجات مقترحة من سيدات مصريات</p>
+
+      @if (errorMessage) {
+        <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">{{ errorMessage }}</div>
+      }
+
+      @if (isLoading) {
+        <p class="text-terracotta-dark text-center py-12">جاري التحميل...</p>
+      } @else if (products.length === 0) {
+        <p class="text-terracotta-dark text-center py-12">لا توجد منتجات متاحة حالياً</p>
+      } @else {
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (product of products; track product.id) {
+            <a
+              [routerLink]="['/marketplace/product', product.id]"
+              class="bg-white rounded-2xl overflow-hidden femora-shadow border border-blush/30 hover:-translate-y-1 transition-transform block"
+            >
+              <div class="h-36 bg-gradient-to-br from-terracotta/20 to-blush flex items-center justify-center text-5xl">
+                {{ productEmoji(product.category) }}
+              </div>
+              <div class="p-5">
+                <h3 class="font-bold text-navy font-display">{{ product.name }}</h3>
+                @if (product.sellerName) {
+                  <p class="text-xs text-terracotta-dark mt-1">{{ product.sellerName }}</p>
+                }
+                <p class="text-terracotta font-bold mt-3">{{ formatPrice(product.price) }}</p>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </main>
+</div>

@@ -1,0 +1,20 @@
+<router-outlet />
+
+<app-floating-chat />
+
+<!-- Toast notifications -->
+<div class="fixed bottom-6 left-6 z-[100] space-y-2 max-w-sm">
+  @for (n of notifications(); track n.id) {
+    <div
+      class="px-4 py-3 rounded-xl text-sm font-medium shadow-lg animate-fade-in-up"
+      [class.bg-sage]="n.type === 'success'"
+      [class.text-white]="n.type === 'success'"
+      [class.bg-red-500]="n.type === 'error'"
+      [class.text-white]="n.type === 'error'"
+      [class.bg-navy]="n.type === 'info'"
+      [class.text-white]="n.type === 'info'"
+    >
+      {{ n.message }}
+    </div>
+  }
+</div>

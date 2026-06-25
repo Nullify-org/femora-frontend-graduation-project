@@ -1,0 +1,81 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+
+  <main class="flex-1 p-6 lg:p-10">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-text-dark font-display">استوديو المدربة</h1>
+        <p class="text-text-light text-sm mt-1">إدارة الدورات والمحتوى التعليمي</p>
+      </div>
+      <div class="flex gap-2">
+        <button type="button" (click)="showApply.set(true)" class="text-sm border border-primary text-primary px-4 py-2 rounded-xl hover:bg-primary/5">
+          طلب التحقق
+        </button>
+        <button type="button" (click)="showCreate.set(true)" class="text-sm bg-primary text-white px-4 py-2 rounded-xl hover:bg-primary-dark">
+          + دورة جديدة
+        </button>
+      </div>
+    </div>
+
+    @if (courses().length === 0) {
+      <div class="bg-warm-white rounded-2xl p-10 text-center femora-shadow">
+        <p class="text-text-medium mb-4">لا توجد دورات بعد</p>
+        <button type="button" (click)="showCreate.set(true)" class="bg-primary text-white px-6 py-2 rounded-xl">أنشئي دورتك الأولى</button>
+      </div>
+    } @else {
+      <div class="grid md:grid-cols-2 gap-4">
+        @for (course of courses(); track course.id) {
+          <div class="bg-warm-white rounded-2xl p-5 femora-shadow border border-sand/40">
+            <h3 class="font-bold text-text-dark">{{ course.title }}</h3>
+            <p class="text-xs text-text-light mt-1">{{ course.category }} · {{ course.level }}</p>
+            <div class="flex gap-2 mt-4">
+              <a [routerLink]="['/courses', course.id]" class="text-xs border border-sand px-3 py-1.5 rounded-lg">عرض</a>
+              @if (course.isPublished !== true) {
+                <button type="button" (click)="publishCourse(course.id)" class="text-xs bg-primary text-white px-3 py-1.5 rounded-lg">نشر</button>
+              } @else {
+                <span class="text-xs bg-success/10 text-success px-3 py-1.5 rounded-lg">منشورة</span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (showApply()) {
+      <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+        <div class="bg-warm-white rounded-2xl p-6 w-full max-w-lg femora-shadow">
+          <h3 class="font-bold text-text-dark mb-4">طلب التحقق كمدربة</h3>
+          <textarea [(ngModel)]="applyBio" rows="4" maxlength="1000" class="w-full border border-sand rounded-xl p-3 text-sm mb-3" placeholder="اكتبي نبذة عن خبرتك..."></textarea>
+          <input [(ngModel)]="applyPortfolio" type="url" class="w-full border border-sand rounded-xl p-3 text-sm mb-4" placeholder="رابط Portfolio (اختياري)" />
+          <div class="flex gap-2 justify-end">
+            <button type="button" (click)="showApply.set(false)" class="px-4 py-2 text-sm">إلغاء</button>
+            <button type="button" (click)="applyInstructor()" class="px-4 py-2 text-sm bg-primary text-white rounded-xl">إرسال</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    @if (showCreate()) {
+      <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+        <div class="bg-warm-white rounded-2xl p-6 w-full max-w-lg femora-shadow max-h-[90vh] overflow-y-auto">
+          <h3 class="font-bold text-text-dark mb-4">إنشاء دورة جديدة</h3>
+          <div class="space-y-3">
+            <input [(ngModel)]="newCourse.title" class="w-full border border-sand rounded-xl p-3 text-sm" placeholder="عنوان الدورة" />
+            <textarea [(ngModel)]="newCourse.description" rows="3" class="w-full border border-sand rounded-xl p-3 text-sm" placeholder="الوصف"></textarea>
+            <input [(ngModel)]="newCourse.price" type="number" class="w-full border border-sand rounded-xl p-3 text-sm" placeholder="السعر" />
+            <select [(ngModel)]="newCourse.level" class="w-full border border-sand rounded-xl p-3 text-sm">
+              <option value="Beginner">مبتدئ</option>
+              <option value="Intermediate">متوسط</option>
+              <option value="Advanced">متقدم</option>
+              <option value="Expert">خبير</option>
+            </select>
+          </div>
+          <div class="flex gap-2 justify-end mt-4">
+            <button type="button" (click)="showCreate.set(false)" class="px-4 py-2 text-sm">إلغاء</button>
+            <button type="button" (click)="createCourse()" class="px-4 py-2 text-sm bg-primary text-white rounded-xl">إنشاء</button>
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+</div>

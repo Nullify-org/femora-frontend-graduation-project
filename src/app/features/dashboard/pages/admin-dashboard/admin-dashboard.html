@@ -1,0 +1,66 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+
+  <main class="flex-1 p-6 lg:p-10">
+    <h1 class="text-2xl font-bold text-text-dark font-display mb-2">لوحة الإدارة</h1>
+    <p class="text-text-light text-sm mb-8">إدارة طلبات الموافقة والتحقق</p>
+
+    @if (loading()) {
+      <p class="text-text-medium">جاري التحميل...</p>
+    } @else if (pending().length === 0) {
+      <div class="bg-warm-white rounded-2xl p-10 text-center femora-shadow">
+        <p class="text-text-medium">لا توجد طلبات معلّقة حالياً</p>
+      </div>
+    } @else {
+      <div class="bg-warm-white rounded-2xl femora-shadow overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-cream border-b border-sand/50">
+            <tr>
+              <th class="text-start p-4 font-semibold text-text-dark">المستخدم</th>
+              <th class="text-start p-4 font-semibold text-text-dark">النوع</th>
+              <th class="text-start p-4 font-semibold text-text-dark">التاريخ</th>
+              <th class="text-start p-4 font-semibold text-text-dark">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of pending(); track item.id) {
+              <tr class="border-b border-sand/30 hover:bg-cream/50">
+                <td class="p-4 text-text-medium">{{ item.userId }}</td>
+                <td class="p-4">
+                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">{{ typeLabel(item.type) }}</span>
+                </td>
+                <td class="p-4 text-text-light">{{ item.createdAt | date: 'short' }}</td>
+                <td class="p-4 flex gap-2">
+                  <button type="button" (click)="approve(item.id)" class="bg-success text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90">
+                    ✅ موافقة
+                  </button>
+                  <button type="button" (click)="openReject(item.id)" class="bg-error text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90">
+                    ❌ رفض
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (rejectTargetId()) {
+      <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
+        <div class="bg-warm-white rounded-2xl p-6 w-full max-w-md femora-shadow">
+          <h3 class="font-bold text-text-dark mb-3">سبب الرفض (اختياري)</h3>
+          <textarea
+            [(ngModel)]="rejectNote"
+            rows="3"
+            class="w-full border border-sand rounded-xl p-3 text-sm mb-4"
+            placeholder="اكتبي سبب الرفض..."
+          ></textarea>
+          <div class="flex gap-2 justify-end">
+            <button type="button" (click)="rejectTargetId.set(null)" class="px-4 py-2 text-sm text-text-medium">إلغاء</button>
+            <button type="button" (click)="confirmReject()" class="px-4 py-2 text-sm bg-error text-white rounded-xl">تأكيد الرفض</button>
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+</div>

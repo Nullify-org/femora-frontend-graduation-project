@@ -1,0 +1,59 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-8">
+    <div class="max-w-5xl mx-auto">
+      @if (isLoading) {
+        <p class="text-terracotta-dark">جاري التحميل...</p>
+      } @else if (errorMessage) {
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
+      } @else if (course) {
+        <div class="mb-6">
+          <a [routerLink]="['/lms/course', course.id]" class="text-terracotta hover:underline text-sm">← تفاصيل الدورة</a>
+          <h1 class="text-2xl font-bold text-navy font-display mt-2">{{ course.title }}</h1>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white rounded-2xl femora-shadow border border-blush/30 p-8 min-h-64">
+            @if (selectedLesson) {
+              <h2 class="text-xl font-bold text-navy font-display">{{ selectedLesson.title }}</h2>
+              <p class="text-terracotta-dark mt-4 leading-relaxed">
+                محتوى الدرس متاح من الخادم. يمكنكِ متابعة التعلّم والانتقال بين الدروس من القائمة.
+              </p>
+            } @else {
+              <p class="text-terracotta-dark">اخترِي درساً من القائمة للبدء.</p>
+            }
+          </div>
+
+          <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-5">
+            <h3 class="font-bold text-navy mb-4">محتوى الدورة</h3>
+            @if (course.modules?.length) {
+              <div class="space-y-4">
+                @for (module of course.modules; track module.id) {
+                  <div>
+                    <p class="text-sm font-semibold text-terracotta mb-2">{{ module.title }}</p>
+                    <div class="space-y-1">
+                      @for (lesson of module.lessons ?? []; track lesson.id) {
+                        <button
+                          type="button"
+                          (click)="selectLesson(lesson)"
+                          class="w-full text-right text-sm px-3 py-2 rounded-lg transition"
+                          [class.bg-terracotta]="selectedLesson?.id === lesson.id"
+                          [class.text-white]="selectedLesson?.id === lesson.id"
+                          [class.hover:bg-cream]="selectedLesson?.id !== lesson.id"
+                        >
+                          {{ lesson.title }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-sm text-terracotta-dark">لا توجد وحدات متاحة بعد.</p>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>
