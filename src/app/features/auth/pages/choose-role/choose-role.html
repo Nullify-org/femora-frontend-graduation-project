@@ -121,10 +121,9 @@
     <!-- Next -->
     <button
       (click)="next()"
-      [disabled]="selectedRoles.length === 0"
-      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition disabled:opacity-40 disabled:cursor-not-allowed mb-3"
+      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition mb-3"
     >
-      التالي
+      {{ selectedRoles.length > 0 ? 'التالي' : 'متابعة كـ مشترية' }}
     </button>
 
     <button

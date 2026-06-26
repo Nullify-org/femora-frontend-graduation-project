@@ -9,21 +9,17 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-4">
 
     <!-- Logo -->
-    <a
-      routerLink="/"
-      class="text-2xl font-bold font-display shrink-0 transition-colors duration-300"
-      [style.color]="(scrolled() || !transparent()) ? '#c4714a' : 'white'"
-    >✿ Femora</a>
+    <a routerLink="/" class="text-2xl font-bold font-display shrink-0 transition-colors duration-300"
+      [style.color]="(scrolled() || !transparent()) ? '#c4714a' : 'white'">
+      ✿ Femora
+    </a>
 
     <!-- Desktop Nav Links -->
     <div class="hidden lg:flex items-center gap-7 text-sm font-medium">
       @for (link of navLinks; track link.labelKey) {
-        <a
-          [routerLink]="link.path"
-          [fragment]="link.fragment"
+        <a [routerLink]="link.path" [fragment]="link.fragment"
           class="nav-link whitespace-nowrap transition-colors duration-200"
-          [class.scrolled-link]="scrolled() || !transparent()"
-        >
+          [class.scrolled-link]="scrolled() || !transparent()">
           {{ link.labelKey | translate }}
         </a>
       }
@@ -33,22 +29,15 @@
     <div class="flex items-center gap-2 sm:gap-3">
 
       @if (auth.isAuthenticated()) {
-        <!-- Bell Icon -->
-        <button
-          type="button"
-          class="p-2 transition-colors hidden sm:block"
-          aria-label="Notifications"
-          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'"
-        >
+        <!-- Bell -->
+        <button type="button" class="p-2 transition-colors hidden sm:block" aria-label="Notifications"
+          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'">
           <svg lucideBell [size]="20"></svg>
         </button>
 
         <!-- Cart -->
-        <a
-          routerLink="/cart"
-          class="relative p-2 transition-colors"
-          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'"
-        >
+        <a routerLink="/cart" class="relative p-2 transition-colors"
+          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'">
           <svg lucideShoppingCart [size]="20"></svg>
           @if (cartCount() > 0) {
             <span class="absolute -top-0.5 -start-0.5 bg-primary text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
@@ -59,70 +48,105 @@
 
         <!-- User Dropdown -->
         <div class="relative hidden sm:block">
-          <button
-            type="button"
-            (click)="toggleDropdown()"
+          <button type="button" (click)="toggleDropdown()"
             class="flex items-center gap-2 rounded-xl px-3 py-1.5 transition-all duration-200 border"
-            [style.border-color]="(scrolled() || !transparent()) ? 'rgba(196,113,74,0.35)' : 'rgba(255,255,255,0.25)'"
-          >
-            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold shrink-0">
-              {{ auth.user()?.firstName?.charAt(0) ?? '?' }}
-            </div>
-            <div class="text-start hidden md:block max-w-[100px]">
+            [style.border-color]="(scrolled() || !transparent()) ? 'rgba(196,113,74,0.35)' : 'rgba(255,255,255,0.25)'">
+
+            <!-- Avatar -->
+            @if (auth.user()?.profilePictureUrl) {
+              <img [src]="auth.user()!.profilePictureUrl!" alt="avatar"
+                class="w-8 h-8 rounded-full object-cover shrink-0"/>
+            } @else {
+              <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-bold shrink-0">
+                {{ auth.user()?.firstName?.charAt(0)?.toUpperCase() ?? '?' }}
+              </div>
+            }
+
+            <div class="text-start hidden md:block max-w-[110px]">
+              <!-- Always show name — comes from _user signal -->
               <p class="text-xs font-semibold leading-tight truncate"
                 [style.color]="(scrolled() || !transparent()) ? '#2c1a0e' : 'white'">
-                {{ auth.displayName() }}
+                {{ auth.displayName() || auth.user()?.firstName || 'مستخدم' }}
               </p>
               @if (auth.activeProfile()) {
                 <p class="text-[10px] truncate"
                   [style.color]="(scrolled() || !transparent()) ? '#9c7b6a' : 'rgba(255,255,255,0.60)'">
-                  {{ auth.activeProfile() }}
+                  {{ auth.activeProfileConfig()?.label ?? auth.activeProfile() }}
+                </p>
+              } @else {
+                <p class="text-[10px] truncate"
+                  [style.color]="(scrolled() || !transparent()) ? '#9c7b6a' : 'rgba(255,255,255,0.60)'">
+                  مستعرض
                 </p>
               }
             </div>
+
             <svg lucideChevronDown [size]="16"
               [style.color]="(scrolled() || !transparent()) ? '#c4714a' : 'rgba(255,255,255,0.50)'">
             </svg>
           </button>
 
+          <!-- Dropdown Menu -->
           @if (dropdownOpen()) {
-            <div class="absolute end-0 mt-2 w-56 bg-warm-white rounded-xl femora-shadow border border-sand/60 py-2 z-50 animate-fade-in-up">
-              <div class="px-4 py-2 border-b border-sand/40">
+            <div class="absolute end-0 mt-2 w-60 bg-warm-white rounded-xl femora-shadow border border-sand/60 py-2 z-50 animate-fade-in-up">
+
+              <!-- Header -->
+              <div class="px-4 py-2.5 border-b border-sand/40">
                 <p class="text-sm font-semibold text-text-dark">{{ auth.displayName() }}</p>
                 @if (auth.activeProfile()) {
-                  <span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{{ auth.activeProfile() }}</span>
+                  <span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    {{ auth.activeProfileConfig()?.label ?? auth.activeProfile() }}
+                  </span>
+                } @else {
+                  <span class="text-[10px] text-text-light">مستعرض حر</span>
                 }
               </div>
-              <a [routerLink]="profileRoute()" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+
+              <!-- Profile -->
+              <a [routerLink]="profileRoute()" (click)="closeDropdown()"
+                class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
                 <svg lucideUser [size]="16"></svg> {{ 'NAV.PROFILE' | translate }}
               </a>
-              <a routerLink="/profile/preferences" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
-                ✏️ {{ 'NAV.EDIT_PROFILE' | translate }}
+
+              <!-- Dashboard -->
+              <a [routerLink]="dashboardRoute()" (click)="closeDropdown()"
+                class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                <svg lucideLayoutDashboard [size]="16"></svg> {{ 'NAV.DASHBOARD' | translate }}
               </a>
+
               @if (showMyCourses()) {
-                <a routerLink="/dashboard/trainee" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                <a routerLink="/dashboard/trainee" (click)="closeDropdown()"
+                  class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
                   <svg lucideBookOpen [size]="16"></svg> {{ 'NAV.MY_COURSES' | translate }}
                 </a>
               }
+
               @if (showMyOrders()) {
-                <a routerLink="/marketplace/cart" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                <a routerLink="/marketplace/cart" (click)="closeDropdown()"
+                  class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
                   <svg lucidePackage [size]="16"></svg> {{ 'NAV.MY_ORDERS' | translate }}
                 </a>
               }
-              <a routerLink="/dashboard" (click)="closeDropdown()" class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
-                <svg lucideLayoutDashboard [size]="16"></svg> {{ 'NAV.DASHBOARD' | translate }}
-              </a>
-              @if (auth.pendingProfiles().length > 1) {
+
+              <!-- Switch Profile (only if user has multiple profiles to switch between) -->
+              @if (canSwitchProfile) {
                 <div class="border-t border-sand/40 my-1"></div>
-                <p class="px-4 py-1 text-[10px] text-text-light uppercase">{{ 'NAV.SWITCH_ROLE' | translate }}</p>
-                @for (p of auth.pendingProfiles(); track p.id) {
-                  <button type="button" (click)="switchProfile(p.name)" class="w-full text-start px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
-                    🔄 {{ p.displayName }}
-                  </button>
+                <p class="px-4 py-1 text-[10px] text-text-light uppercase tracking-wider">
+                  {{ 'NAV.SWITCH_ROLE' | translate }}
+                </p>
+                @for (p of auth.pendingProfiles(); track p.type) {
+                  @if (p.type !== auth.activeProfile()) {
+                    <button type="button" (click)="switchProfile(p)"
+                      class="w-full text-start px-4 py-2 text-sm text-text-medium hover:bg-cream transition flex items-center gap-2">
+                      🔄 {{ p.displayName ?? p.label ?? p.type }}
+                    </button>
+                  }
                 }
               }
+
               <div class="border-t border-sand/40 my-1"></div>
-              <button type="button" (click)="logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-cream transition">
+              <button type="button" (click)="logout()"
+                class="w-full flex items-center gap-2 px-4 py-2 text-sm text-error hover:bg-cream transition">
                 <svg lucideLogOut [size]="16"></svg> {{ 'NAV.LOGOUT' | translate }}
               </button>
             </div>
@@ -130,33 +154,21 @@
         </div>
 
       } @else {
-        <a
-          routerLink="/login"
+        <a routerLink="/login"
           class="text-sm transition-colors hidden sm:block whitespace-nowrap"
-          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.85)'"
-        >
+          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.85)'">
           {{ 'NAV.LOGIN' | translate }}
         </a>
-        <a
-          routerLink="/register"
-          class="text-sm px-4 py-2 rounded-xl font-semibold transition-all whitespace-nowrap btn-shimmer"
-          [class.bg-primary]="!(scrolled() || !transparent())"
-          [class.text-white]="true"
-          [class.hover:bg-primary-dark]="true"
-          [style.background]="(scrolled() || !transparent()) ? '#c4714a' : ''"
-        >
+        <a routerLink="/register"
+          class="text-sm px-4 py-2 rounded-xl font-semibold transition-all whitespace-nowrap btn-shimmer text-white"
+          [style.background]="'#c4714a'">
           {{ 'NAV.REGISTER' | translate }}
         </a>
       }
 
-      <!-- Mobile Menu Toggle -->
-      <button
-        type="button"
-        (click)="toggleMenu()"
-        class="lg:hidden p-2 transition-colors"
-        [style.color]="(scrolled() || !transparent()) ? '#2c1a0e' : 'white'"
-        aria-label="Menu"
-      >
+      <!-- Mobile Toggle -->
+      <button type="button" (click)="toggleMenu()" class="lg:hidden p-2 transition-colors"
+        [style.color]="(scrolled() || !transparent()) ? '#2c1a0e' : 'white'" aria-label="Menu">
         @if (menuOpen()) {
           <svg lucideX [size]="22"></svg>
         } @else {
@@ -169,28 +181,32 @@
   <!-- Mobile Menu -->
   @if (menuOpen()) {
     <div class="lg:hidden border-t px-4 py-4 space-y-1 animate-fade-in-up"
-      [style.background]="(scrolled() || !transparent()) ? 'rgba(253,250,246,0.97)' : 'rgba(44,26,14,0.95)'"
-      [style.border-color]="(scrolled() || !transparent()) ? 'rgba(196,113,74,0.2)' : 'rgba(196,113,74,0.2)'"
-    >
+      [style.background]="'rgba(44,26,14,0.96)'"
+      [style.border-color]="'rgba(196,113,74,0.2)'">
       @for (link of navLinks; track link.labelKey) {
-        <a
-          [routerLink]="link.path"
-          [fragment]="link.fragment"
-          (click)="toggleMenu()"
-          class="block py-2.5 px-3 rounded-lg transition font-medium hover:bg-primary/10"
-          [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'"
-        >
+        <a [routerLink]="link.path" [fragment]="link.fragment" (click)="toggleMenu()"
+          class="block py-2.5 px-3 rounded-lg transition font-medium hover:bg-primary/10 text-white/80">
           {{ link.labelKey | translate }}
         </a>
       }
-      @if (!auth.isAuthenticated()) {
-        <div class="border-t border-primary/15 pt-3 mt-2 flex flex-col gap-2">
-          <a routerLink="/login" (click)="toggleMenu()"
-            class="block py-2.5 px-3 rounded-lg transition"
-            [style.color]="(scrolled() || !transparent()) ? '#5c3d2e' : 'rgba(255,255,255,0.80)'">
+      @if (auth.isAuthenticated()) {
+        <div class="border-t border-primary/20 pt-3 mt-2">
+          <p class="px-3 py-1 text-xs text-white/50">{{ auth.displayName() }}</p>
+          <a [routerLink]="dashboardRoute()" (click)="toggleMenu()"
+            class="block py-2.5 px-3 rounded-lg text-white/80 hover:bg-primary/10 transition">
+            لوحة التحكم
+          </a>
+          <button type="button" (click)="logout()"
+            class="block w-full text-start py-2.5 px-3 rounded-lg text-red-300 hover:bg-primary/10 transition">
+            تسجيل الخروج
+          </button>
+        </div>
+      } @else {
+        <div class="border-t border-primary/20 pt-3 mt-2 flex flex-col gap-2">
+          <a routerLink="/login" (click)="toggleMenu()" class="block py-2.5 px-3 rounded-lg text-white/80">
             {{ 'NAV.LOGIN' | translate }}
           </a>
-          <a routerLink="/register" (click)="toggleMenu()" class="block py-2.5 px-3 bg-primary text-white rounded-xl text-center font-semibold hover:bg-primary-dark transition btn-shimmer">
+          <a routerLink="/register" (click)="toggleMenu()" class="block py-2.5 px-3 bg-primary text-white rounded-xl text-center font-semibold btn-shimmer">
             {{ 'NAV.REGISTER' | translate }}
           </a>
         </div>

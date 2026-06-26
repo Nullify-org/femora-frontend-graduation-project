@@ -33,8 +33,24 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => err);
       }
 
+      if (err.status === 0) {
+        notifications.error('لا يوجد اتصال بالإنترنت. يرجى التحقق من اتصالك.');
+        return throwError(() => err);
+      }
+
       const isAuthEndpoint = AUTH_PATHS.some((p) => req.url.includes(p));
-      if (err.status !== 401 || isAuthEndpoint || req.headers.has('X-Retry')) {
+
+      // Only attempt refresh if:
+      // 1. It's a 401 error
+      // 2. Not an auth endpoint itself
+      // 3. Not already a retry
+      // 4. User actually has a token (is authenticated) — prevents refresh on guest requests
+      if (
+        err.status !== 401 ||
+        isAuthEndpoint ||
+        req.headers.has('X-Retry') ||
+        !auth.isAuthenticated()
+      ) {
         return throwError(() => err);
       }
 

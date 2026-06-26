@@ -1,32 +1,52 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { StorageService } from '../../../../../core/services/storage.service';
+import { FormsModule } from '@angular/forms';
 
 interface GoalOption {
   label: string;
-  desc: string;
   emoji: string;
+  desc: string;
 }
 
 @Component({
   selector: 'app-goal',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './goal.html',
+  styleUrl: './goal.css',
 })
 export class Goal {
   private readonly router = inject(Router);
-  private readonly storage = inject(StorageService);
 
-  selected = '';
+  selected: string | null = null;
 
   options: GoalOption[] = [
-    { label: 'تطوير مهارة جديدة', desc: 'اكتسبي مهارات وطوّري نفسك في مجال جديد', emoji: '🌱' },
-    { label: 'تعلم مهارات تجارية', desc: 'تحسين مهاراتك في مجال العمل الحر', emoji: '📈' },
-    { label: 'الحصول على شهادة', desc: 'احصلي على شهادات معتمدة وتميزي', emoji: '🎓' },
-    { label: 'تغيير مسار عملي', desc: 'ابدئي مسيرة مهنية جديدة بثقة', emoji: '🚀' },
-    { label: 'إنشاء مشروع خاص', desc: 'ابدئي مشروعك التجاري من المنزل', emoji: '💡' },
+    {
+      label: 'تعلم حرفة يدوية جديدة',
+      emoji: '🧶',
+      desc: 'اكتسبي مهارة جديدة في الكروشيه، التطريز، أو الخزف',
+    },
+    {
+      label: 'تطوير مهاراتي الحالية',
+      emoji: '🎨',
+      desc: 'حسّني مستواكِ في الحرف التي تمارسينها بالفعل',
+    },
+    {
+      label: 'تحويل هوايتي إلى مصدر دخل',
+      emoji: '💰',
+      desc: 'ابدئي ببيع منتجاتك اليدوية وكسب دخل ثابت',
+    },
+    {
+      label: 'بناء مشروع حرفي خاص',
+      emoji: '🛍️',
+      desc: 'أسّسي علامتكِ التجارية ومتجركِ الخاص',
+    },
+    {
+      label: 'مشاركة خبرتي وتدريب الأخريات',
+      emoji: '👩‍🏫',
+      desc: 'علّمي مهاراتكِ وأثّري في مجتمع Femora',
+    },
   ];
 
   select(label: string): void {
@@ -34,8 +54,10 @@ export class Goal {
   }
 
   next(): void {
-    if (!this.selected) return;
-    this.storage.set('femora_onboarding_goal', this.selected);
     this.router.navigate(['/onboarding/choose-role']);
+  }
+
+  get isValid(): boolean {
+    return this.selected !== null;
   }
 }

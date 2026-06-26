@@ -16,7 +16,7 @@ import {
 import { AuthService } from '../../../core/auth/auth.service';
 import { CartService } from '../../../features/marketplace/services/cart.service';
 import { runInBrowser } from '../../../core/utils/platform.util';
-import { ProfileType } from '../../../core/models/user.model';
+import { ProfileType, AvailableProfile } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-navbar',
@@ -49,19 +49,16 @@ export class Navbar implements OnInit {
   readonly cartCount = signal(0);
 
   readonly navLinks = [
-    { path: '/', labelKey: 'NAV.HOME' },
-    { path: '/courses', labelKey: 'NAV.COURSES' },
-    { path: '/marketplace/catalog', labelKey: 'NAV.PRODUCTS' },
+    { path: '/',                     labelKey: 'NAV.HOME' },
+    { path: '/lms/catalog',          labelKey: 'NAV.COURSES' },
+    { path: '/marketplace/catalog',  labelKey: 'NAV.PRODUCTS' },
     { path: '/', fragment: 'workshops', labelKey: 'NAV.WORKSHOPS' },
-    { path: '/', fragment: 'blog', labelKey: 'NAV.BLOG' },
+    { path: '/', fragment: 'blog',   labelKey: 'NAV.BLOG' },
   ];
 
   ngOnInit(): void {
     runInBrowser(() => {
-      window.addEventListener('scroll', () => {
-        this.scrolled.set(window.scrollY > 80);
-      });
-
+      window.addEventListener('scroll', () => this.scrolled.set(window.scrollY > 80));
       const userId = this.auth.user()?.id;
       if (this.auth.isAuthenticated() && userId) {
         this.cartApi.getCart(userId).subscribe({
@@ -72,47 +69,52 @@ export class Navbar implements OnInit {
     });
   }
 
-  toggleMenu(): void {
-    this.menuOpen.update((v) => !v);
-  }
-
-  toggleDropdown(): void {
-    this.dropdownOpen.update((v) => !v);
-  }
-
-  closeDropdown(): void {
-    this.dropdownOpen.set(false);
-  }
+  toggleMenu(): void    { this.menuOpen.update(v => !v); }
+  toggleDropdown(): void { this.dropdownOpen.update(v => !v); }
+  closeDropdown(): void  { this.dropdownOpen.set(false); }
 
   logout(): void {
     this.auth.logout().subscribe({
-      error: () => this.auth.logoutLocal(),
+      error: ()    => this.auth.logoutLocal(),
       complete: () => this.auth.logoutLocal(),
     });
   }
 
+  /** Route for "My Profile" link — based on active profile */
   profileRoute(): string {
-    const profile = this.auth.activeProfile();
-    if (profile === 'Instructor') return '/profile/instructor';
-    if (profile === 'Seller') return '/profile/seller';
+    const p = this.auth.activeProfile();
+    if (p === 'Instructor' || p === 'instructor') return '/profile/instructor';
+    if (p === 'Seller')                            return '/profile/seller';
     return '/profile/trainee';
   }
 
+  /** Dashboard route for the current active profile */
+  dashboardRoute(): string {
+    return this.auth.getDashboardRoute();
+  }
+
   showMyCourses(): boolean {
-    return this.auth.activeProfile() === 'Trainee';
+    const p = this.auth.activeProfile();
+    return p === 'Trainee' || p === 'student';
   }
 
   showMyOrders(): boolean {
     const p = this.auth.activeProfile();
-    return p === 'Trainee' || p === 'Seller';
+    return p === 'Trainee' || p === 'student' || p === 'Instructor' || p === 'instructor';
   }
 
-  switchProfile(profile: ProfileType): void {
-    this.auth.selectProfile(profile).subscribe({
+  /** Switch to a different profile from the dropdown */
+  switchProfile(profile: AvailableProfile): void {
+    this.auth.selectProfile(profile.type).subscribe({
       next: () => {
         this.closeDropdown();
-        void this.router.navigate(['/dashboard']);
+        this.router.navigate([this.auth.getDashboardRoute()]);
       },
     });
+  }
+
+  /** True when user has multiple profiles to switch between */
+  get canSwitchProfile(): boolean {
+    return this.auth.pendingProfiles().length > 1;
   }
 }

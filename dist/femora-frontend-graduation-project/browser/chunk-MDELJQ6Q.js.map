@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/features/profile/pages/preferences/preferences.ts"],
+  "sourcesContent": ["import { Component } from '@angular/core';\nimport { FeatureShell } from '../../../../shared/components/feature-shell/feature-shell';\n\n@Component({\n  selector: 'app-preferences',\n  standalone: true,\n  imports: [FeatureShell],\n  template: `<app-feature-shell title=\"التفضيلات\" />`,\n})\nexport class Preferences {}\n"],
+  "mappings": ";;;;;;;;;;;;;;AASM,IAAO,cAAP,MAAO,aAAW;;qCAAX,cAAW;EAAA;yEAAX,cAAW,WAAA,CAAA,CAAA,iBAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,SAAA,wDAAA,CAAA,GAAA,UAAA,SAAA,qBAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAFX,MAAA,oBAAA,GAAA,qBAAA,CAAA;;oBADD,YAAY,GAAA,eAAA,EAAA,CAAA;;;sEAGX,aAAW,CAAA;UANvB;WAAU;MACT,UAAU;MACV,YAAY;MACZ,SAAS,CAAC,YAAY;MACtB,UAAU;KACX;;;;6EACY,aAAW,EAAA,WAAA,eAAA,UAAA,6DAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": []
+}

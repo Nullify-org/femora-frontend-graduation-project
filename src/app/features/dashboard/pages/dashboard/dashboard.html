@@ -7,10 +7,10 @@
         مرحباً، {{ auth.user()?.firstName ?? 'بك' }} 👋
       </h1>
       <p class="text-terracotta-dark text-sm mt-1">
-        @if (auth.activeProfile()) {
-          مساحة {{ auth.activeProfile() }} — استمري من حيث توقفت
+        @if (auth.activeProfile() === 'Trainee' || auth.activeProfile() === 'student') {
+          مساحة المتدربة — استمري من حيث توقفتِ
         } @else {
-          لوحة التحكم الرئيسية
+          مساحة المشترية — تصفحي الدورات والمنتجات
         }
       </p>
     </div>

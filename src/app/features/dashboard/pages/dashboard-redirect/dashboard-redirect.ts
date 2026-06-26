@@ -21,6 +21,11 @@ export class DashboardRedirect implements OnInit {
   private readonly router = inject(Router);
 
   ngOnInit(): void {
+    // If there are pending profiles waiting for selection, go there first
+    if (this.auth.pendingProfiles().length > 0) {
+      this.router.navigate(['/select-profile'], { replaceUrl: true });
+      return;
+    }
     const route = this.auth.getDashboardRoute();
     this.router.navigate([route], { replaceUrl: true });
   }
