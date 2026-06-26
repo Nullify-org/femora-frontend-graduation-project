@@ -1,0 +1,35 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+
+  <main class="flex-1 p-6 lg:p-10">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-navy font-display">
+        مرحباً، {{ auth.user()?.firstName ?? 'بك' }} 👋
+      </h1>
+      <p class="text-terracotta-dark text-sm mt-1">
+        @if (auth.activeProfile() === 'Trainee' || auth.activeProfile() === 'student') {
+          مساحة المتدربة — استمري من حيث توقفتِ
+        } @else {
+          مساحة المشترية — تصفحي الدورات والمنتجات
+        }
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-6">
+        <app-continue-learning />
+        <app-recommended-products />
+      </div>
+      <div>
+        <app-ai-widget />
+        <app-card title="روابط سريعة" class="mt-6 block">
+          <div class="space-y-2">
+            <a routerLink="/lms/catalog" class="block text-sm text-terracotta hover:underline">تصفّح الدورات</a>
+            <a routerLink="/marketplace/catalog" class="block text-sm text-terracotta hover:underline">تصفّح المنتجات</a>
+            <a routerLink="/ai/chat" class="block text-sm text-terracotta hover:underline">المساعد الذكي</a>
+          </div>
+        </app-card>
+      </div>
+    </div>
+  </main>
+</div>

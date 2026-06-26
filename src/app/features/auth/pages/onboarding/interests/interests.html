@@ -1,0 +1,85 @@
+<div class="min-h-screen flex items-center justify-center bg-[#FAF7F4] px-4 py-8" dir="rtl">
+
+  <!-- Decorative background -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <svg class="absolute top-0 right-0 w-56 opacity-10" viewBox="0 0 200 200" fill="none">
+      <path d="M190 10 Q80 80 190 190 Q120 100 10 190Z" fill="#C8956C"/>
+    </svg>
+    <svg class="absolute bottom-0 left-0 w-56 opacity-10" viewBox="0 0 200 200" fill="none">
+      <path d="M10 190 Q110 110 190 10 Q100 90 10 190Z" fill="#D4856A"/>
+    </svg>
+  </div>
+
+  <div class="bg-white rounded-3xl shadow-sm border border-[#F0E6DE] p-8 w-full max-w-lg relative">
+
+    <!-- Logo -->
+    <div class="text-center mb-2">
+      <span class="text-xl font-bold text-[#C8956C]">✿ Femora</span>
+    </div>
+
+    <!-- Progress Dots -->
+    <div class="flex items-center justify-center gap-2 my-5">
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-8 h-2 rounded-full bg-[#C8956C]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+      <span class="w-2 h-2 rounded-full bg-[#E8D5CB]"></span>
+    </div>
+
+    <h2 class="text-2xl font-bold text-[#3D2314] text-center mb-1">ما الذي يثير اهتمامك؟</h2>
+    <p class="text-sm text-[#8B6355] text-center mb-6">اختاري مجالاً أو أكثر لنخصص تجربتك</p>
+
+    <!-- Interests Grid -->
+    <div class="grid grid-cols-2 gap-3 mb-6">
+      @for (item of interests; track item.id) {
+        <button
+          type="button"
+          (click)="toggle(item.id)"
+          class="flex flex-col items-start gap-1 border-2 rounded-2xl px-4 py-3.5 text-right transition hover:border-[#C8956C] hover:bg-[#FDF7F4]"
+          [class.border-[#C8956C]]="isSelected(item.id)"
+          [class.bg-[#FDF0EA]]="isSelected(item.id)"
+          [class.border-[#E8D5CB]]="!isSelected(item.id)"
+        >
+          <div class="flex items-center justify-between w-full">
+            <p class="text-sm font-semibold text-[#3D2314]">{{ item.label }}</p>
+            <!-- Checkbox indicator -->
+            <span
+              class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition"
+              [class.border-[#C8956C]]="isSelected(item.id)"
+              [class.bg-[#C8956C]]="isSelected(item.id)"
+              [class.border-[#D4C4BC]]="!isSelected(item.id)"
+            >
+              @if (isSelected(item.id)) {
+                <svg viewBox="0 0 12 10" fill="none" class="w-3 h-3">
+                  <path d="M1 5l3 3 7-7" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              }
+            </span>
+          </div>
+          <p class="text-xs text-[#8B6355] leading-snug">{{ item.desc }}</p>
+        </button>
+      }
+    </div>
+
+    <!-- Selected Count -->
+    @if (selected().length > 0) {
+      <p class="text-center text-xs text-[#C8956C] font-medium mb-4">
+        تم اختيار {{ selected().length }} {{ selected().length === 1 ? 'مجال' : 'مجالات' }}
+      </p>
+    }
+
+    <button
+      type="button"
+      (click)="next()"
+      [disabled]="selected().length === 0"
+      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition disabled:opacity-40 disabled:cursor-not-allowed mb-3"
+    >
+      التالي
+    </button>
+
+    <div class="text-center">
+      <a routerLink="/email-verified" class="text-sm text-[#8B6355] hover:text-[#C8956C] transition">رجوع</a>
+    </div>
+
+  </div>
+</div>

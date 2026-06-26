@@ -1,2 +1,0 @@
-import './polyfills.server.mjs';
-import{a as o}from"./chunk-QXP7J3HF.mjs";import"./chunk-RHNIZL7U.mjs";import"./chunk-XUIYS2II.mjs";import{Fa as s,ja as t}from"./chunk-FFXZCK7H.mjs";import"./chunk-5R5OPJSI.mjs";var a=class n{static \u0275fac=function(e){return new(e||n)};static \u0275cmp=t({type:n,selectors:[["app-conversations"]],decls:1,vars:0,consts:[["title","\u0627\u0644\u0645\u062D\u0627\u062F\u062B\u0627\u062A"]],template:function(e,r){e&1&&s(0,"app-feature-shell",0)},dependencies:[o],encapsulation:2})};export{a as Conversations};

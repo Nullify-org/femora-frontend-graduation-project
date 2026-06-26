@@ -1,0 +1,60 @@
+<aside class="w-64 shrink-0 bg-navy text-white min-h-screen p-6 hidden lg:flex lg:flex-col">
+  <!-- Logo -->
+  <div class="mb-8">
+    <a routerLink="/" class="text-xl font-bold text-terracotta font-display">✿ Femora</a>
+  </div>
+
+  <!-- Nav links -->
+  <nav class="space-y-1 flex-1">
+    @for (link of links(); track link.path) {
+      <a
+        [routerLink]="link.path"
+        routerLinkActive="bg-white/10 text-terracotta"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/80 hover:bg-white/5 hover:text-white transition"
+      >
+        <span class="w-5 h-5 text-white/80">
+          @if (link.path === '/dashboard') {
+            <svg lucideLayoutDashboard [size]="18"></svg>
+          }
+          @if (link.path === '/lms/catalog') {
+            <svg lucideBookOpen [size]="18"></svg>
+          }
+          @if (link.path === '/marketplace/catalog') {
+            <svg lucidePackage [size]="18"></svg>
+          }
+          @if (link.path === '/ai/chat') {
+            <svg lucideCpu [size]="18"></svg>
+          }
+          @if (link.path === '/messaging') {
+            <svg lucideBell [size]="18"></svg>
+          }
+          @if (link.path === '/profile/trainee') {
+            <svg lucideUser [size]="18"></svg>
+          }
+        </span>
+        {{ link.label }}
+      </a>
+    }
+  </nav>
+
+  <!-- User info + logout -->
+  <div class="border-t border-white/10 pt-4 mt-4">
+    <div class="flex items-center gap-3 px-2 mb-3">
+      <div class="w-8 h-8 rounded-full bg-terracotta/20 flex items-center justify-center text-terracotta text-xs font-bold shrink-0">
+        {{ (auth.user()?.firstName ?? '؟')[0] }}
+      </div>
+      <div class="min-w-0">
+        <p class="text-sm text-white font-medium truncate">{{ auth.user()?.firstName }} {{ auth.user()?.lastName }}</p>
+        <p class="text-xs text-white/50 truncate">{{ auth.user()?.email }}</p>
+      </div>
+    </div>
+    <button
+      type="button"
+      (click)="logout()"
+      class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/70 hover:bg-red-500/10 hover:text-red-400 transition"
+    >
+      <svg lucideLogOut [size]="18"></svg>
+      تسجيل الخروج
+    </button>
+  </div>
+</aside>
