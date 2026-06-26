@@ -161,13 +161,18 @@ export class Landing implements AfterViewInit, OnDestroy {
   constructor() {
     runInBrowser(() => {
       if (this.auth.isAuthenticated()) {
-        this.chatApi.recommendedCourses(6).subscribe({
-          next: (courses) => {
-            this.courses = courses.slice(0, 6);
-            this.animateCardsStagger();
-          },
-          error: () => this.loadFallbackCourses(),
-        });
+        // Buyer (no activeProfile) has no TraineeProfile → skip AI recommendations
+        if (this.auth.activeProfile()) {
+          this.chatApi.recommendedCourses(6).subscribe({
+            next: (courses) => {
+              this.courses = courses.slice(0, 6);
+              this.animateCardsStagger();
+            },
+            error: () => this.loadFallbackCourses(),
+          });
+        } else {
+          this.loadFallbackCourses();
+        }
         this.subscriptionsApi.getStatus().subscribe({
           next: (s) => {
             this.currentPlanName = s.planName;

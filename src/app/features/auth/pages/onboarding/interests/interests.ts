@@ -1,65 +1,48 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../../../core/auth/auth.service';
-import { NotificationService } from '../../../../../core/services/notification.service';
-import { INTEREST_OPTIONS, InterestOption } from '../../../../../core/models/user.model';
-import { environment } from '../../../../../../environments/environment';
+import { Router, RouterLink } from '@angular/router';
+
+interface Interest {
+  id: string;
+  label: string;
+  desc: string;
+}
 
 @Component({
   selector: 'app-interests',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './interests.html',
+  styleUrl: './interests.css',
 })
 export class Interests {
   private readonly router = inject(Router);
-  private readonly http = inject(HttpClient);
-  private readonly notifications = inject(NotificationService);
 
-  readonly isLoading = signal(false);
+  selected = signal<string[]>([]);
 
-  options: Array<InterestOption & { selected: boolean }> =
-    INTEREST_OPTIONS.map(o => ({ ...o, selected: false }));
+  readonly interests: Interest[] = [
+    { id: 'crochet',      label: 'الكروشيه والتريكو',    desc: 'صنع الملابس، الإكسسوارات، والديكور بالخيوط' },
+    { id: 'embroidery',   label: 'التطريز والخياطة',      desc: 'التطريز اليدوي، الكيلت، والتطريز الآلي' },
+    { id: 'clay',         label: 'الطين والخزف',          desc: 'صنع الأواني، التماثيل، والإكسسوارات الطينية' },
+    { id: 'resin',        label: 'الراتنج والإيبوكسي',   desc: 'مجوهرات الراتنج، الطاولات، واللوحات' },
+    { id: 'candles',      label: 'الشموع والصابون',       desc: 'شموع عطرية، صابون طبيعي، وبوم بوم باث' },
+    { id: 'macrame',      label: 'الماكرامية والحبال',    desc: 'تعليقات الحائط، الحقائب، والحلي' },
+    { id: 'decoupage',    label: 'الديكوباج والرسم',      desc: 'تزيين الأخشاب، الزجاج، والأقمشة' },
+    { id: 'jewelry',      label: 'المجوهرات اليدوية',     desc: 'أساور، قلائد، وحلق بالخرز والمعادن' },
+  ];
 
-  toggle(option: InterestOption & { selected: boolean }): void {
-    option.selected = !option.selected;
-  }
-
-  hasSelection(): boolean {
-    return this.options.some(o => o.selected);
-  }
-
-  get selectedCount(): number {
-    return this.options.filter(o => o.selected).length;
-  }
-
-  next(): void {
-    const selected = this.options.filter(o => o.selected).map(o => o.label);
-
-    if (selected.length === 0) {
-      this.router.navigate(['/onboarding/goal']);
-      return;
-    }
-
-    this.isLoading.set(true);
-
-    // Call POST /api/ai/interests to save selected interests
-    this.http.post(`${environment.apiUrl}/api/ai/interests`, { interests: selected }).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.router.navigate(['/onboarding/goal']);
-      },
-      error: () => {
-        // Non-blocking — navigate anyway
-        this.isLoading.set(false);
-        this.router.navigate(['/onboarding/goal']);
-      },
+  toggle(id: string): void {
+    this.selected.update((prev) => {
+      if (prev.includes(id)) return prev.filter((i) => i !== id);
+      return [...prev, id];
     });
   }
 
-  skip(): void {
+  isSelected(id: string): boolean {
+    return this.selected().includes(id);
+  }
+
+  next(): void {
     this.router.navigate(['/onboarding/goal']);
   }
 }

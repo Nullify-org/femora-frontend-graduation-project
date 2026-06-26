@@ -29,9 +29,10 @@ export class ChooseRole {
     return this.selectedRoles.includes(role);
   }
 
+  // إذا لم يختر المستخدمة أي دور تُسجَّل كـ Buyer تلقائياً
   next(): void {
-    if (this.selectedRoles.length === 0) return;
-    this.storage.set('femora_onboarding_roles', this.selectedRoles);
+    const roles = this.selectedRoles.length > 0 ? this.selectedRoles : ['buyer'];
+    this.storage.set('femora_onboarding_roles', roles);
     this.router.navigate(['/onboarding/welcome']);
   }
 }

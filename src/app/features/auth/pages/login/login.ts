@@ -1,10 +1,10 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { RouterLink, Router } from '@angular/router';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { NotificationService } from '../../../../core/services/notification.service';
 import { ValidationMessage } from '../../../../shared/components/validation-message/validation-message';
+import { SigninResponse } from '../../../../core/models/auth.model';
 
 @Component({
   selector: 'app-login',
@@ -13,71 +13,66 @@ import { ValidationMessage } from '../../../../shared/components/validation-mess
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnInit {
+  private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly notifications = inject(NotificationService);
-  private readonly fb = inject(FormBuilder);
 
-  form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]],
-    rememberMe: [false],
-  });
-
-  readonly showPassword = signal(false);
-  readonly isLoading = signal(false);
-  readonly apiError = signal('');
+  form!: FormGroup;
+  apiError = signal<string | null>(null);
+  isLoading = signal(false);
+  showPassword = signal(false);
   submitted = false;
 
-  get emailCtrl() { return this.form.get('email'); }
-  get passwordCtrl() { return this.form.get('password'); }
-
-  togglePassword(): void {
-    this.showPassword.update(v => !v);
-  }
-
-  loginWithGoogle(): void {
-    // Google OAuth redirect — backend handles OAuth flow
-    window.location.href = `${window.location.origin}/api/auth/google/login`;
-  }
-
-  loginWithFacebook(): void {
-    window.location.href = `${window.location.origin}/api/auth/facebook/login`;
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      email:      ['', [Validators.required, Validators.email]],
+      password:   ['', [Validators.required, Validators.minLength(6)]],
+      rememberMe: [false],
+    });
+    const remembered = this.auth.getRememberedEmail();
+    if (remembered) this.form.patchValue({ email: remembered, rememberMe: true });
   }
 
   submit(): void {
     this.submitted = true;
-    this.apiError.set('');
-
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
+      this.apiError.set('الرجاء ملء جميع الحقول بشكل صحيح');
       return;
     }
-
     this.isLoading.set(true);
-    const { email, password } = this.form.getRawValue();
+    this.apiError.set(null);
 
-    this.auth.signin({ email: email!, password: password! }).subscribe({
-      next: (res) => {
+    this.auth.signin(this.form.value).subscribe({
+      next: (res: SigninResponse) => {
         this.isLoading.set(false);
-        if (res.requiresProfileSelection) {
-          this.router.navigate(['/select-profile']);
-        } else {
-          this.notifications.success('مرحباً بعودتك! 🌸');
-          const route = this.auth.getDashboardRoute();
-          this.router.navigate([route]);
-        }
+        this.navigateAfterLogin(res);
       },
       error: (err) => {
         this.isLoading.set(false);
-        const msg =
-          err?.error?.title ??
-          err?.error?.detail ??
-          err?.error?.message ??
-          'البريد الإلكتروني أو كلمة المرور غير صحيحة';
-        this.apiError.set(msg);
+        this.apiError.set(
+          err?.error?.message ?? err?.error?.title ?? err?.error?.detail
+          ?? 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.'
+        );
       },
     });
+  }
+
+  togglePassword(): void { this.showPassword.update(v => !v); }
+
+  loginWithGoogle(): void { /* OAuth redirect — handled server-side */ }
+  loginWithFacebook(): void { /* OAuth redirect — handled server-side */ }
+
+  get emailCtrl()    { return this.form.get('email'); }
+  get passwordCtrl() { return this.form.get('password'); }
+
+  private navigateAfterLogin(res: SigninResponse): void {
+    if (res.requiresProfileSelection) {
+      this.router.navigate(['/select-profile']);
+    } else {
+      // getDashboardRoute() returns '/' for buyers (no activeProfile)
+      const route = this.auth.getDashboardRoute();
+      this.router.navigate([route]);
+    }
   }
 }

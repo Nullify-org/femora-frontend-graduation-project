@@ -1,39 +1,43 @@
-export type ProfileType = 'Trainee' | 'Instructor' | 'Seller' | 'Admin';
+export type ProfileType =
+  | 'Trainee'
+  | 'Instructor'
+  | 'Seller'
+  | 'Admin'
+  | 'student'
+  | 'instructor';
 
 export interface User {
   id: string;
   firstName: string;
   lastName: string;
   email: string;
-  avatarUrl?: string | null;
-  role: string;
+  role?: string | null;
+  selectedGoal?: string | null;
+  profilePictureUrl?: string | null;
+  isEmailVerified?: boolean;
 }
 
 export interface AvailableProfile {
-  id: number;
-  name: ProfileType;
-  displayName: string;
-  description: string;
-  icon: string;
+  id?: string;
+  type: ProfileType;
+  name?: string;
+  displayName?: string;
+  label?: string;
+  description?: string;
+  dashboardRoute?: string;
 }
 
-export interface InterestOption {
-  id: string;
+export interface ProfileConfig {
+  type: ProfileType;
   label: string;
-  emoji: string;
+  dashboardRoute: string;
 }
 
-export const INTEREST_OPTIONS: InterestOption[] = [
-  { id: 'crochet', label: 'الكروشيه والتريكو', emoji: '🧶' },
-  { id: 'cooking', label: 'الطبخ والحلويات', emoji: '🍳' },
-  { id: 'painting', label: 'الرسم والفنون', emoji: '🎨' },
-  { id: 'pottery', label: 'الفخار والسيراميك', emoji: '🏺' },
-  { id: 'jewelry', label: 'صناعة المجوهرات', emoji: '💍' },
-  { id: 'accessories', label: 'الإكسسوارات والحقائب', emoji: '👜' },
-  { id: 'decor', label: 'الديكور المنزلي', emoji: '🏡' },
-  { id: 'photography', label: 'تصوير المنتجات', emoji: '📸' },
-  { id: 'woodwork', label: 'أعمال خشبية', emoji: '🪵' },
-  { id: 'sewing', label: 'الخياطة والتفصيل', emoji: '🧵' },
-  { id: 'candles', label: 'صناعة الشموع والعطور', emoji: '🕯️' },
-  { id: 'other', label: 'أخرى', emoji: '✨' },
+export const PROFILE_CONFIGS: ProfileConfig[] = [
+  { type: 'Trainee',    label: 'متدرب',  dashboardRoute: '/dashboard/trainee' },
+  { type: 'Instructor', label: 'مدرب',   dashboardRoute: '/dashboard/instructor' },
+  { type: 'Seller',     label: 'بائع',   dashboardRoute: '/dashboard/seller' },
+  { type: 'Admin',      label: 'مدير',   dashboardRoute: '/dashboard/admin' },
+  { type: 'student',    label: 'طالب',   dashboardRoute: '/dashboard/trainee' },
+  { type: 'instructor', label: 'مدرب',   dashboardRoute: '/dashboard/instructor' },
 ];
