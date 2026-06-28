@@ -30,8 +30,8 @@ export class TraineeProfile {
     runInBrowser(() => {
       const userId = this.auth.user()?.id;
 
-      this.enrollmentsApi.myEnrollments().subscribe({
-        next: (items) => (this.enrollments = items),
+      this.enrollmentsApi.getMyEnrollments().subscribe({
+        next: (response) => (this.enrollments = response.data),
       });
 
       this.ordersApi.myOrders(userId).subscribe({

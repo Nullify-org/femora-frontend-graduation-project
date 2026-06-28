@@ -22,9 +22,9 @@ export class ContinueLearning {
 
   constructor() {
     runInBrowser(() => {
-      this.enrollmentsApi.myEnrollments(1, 3).subscribe({
-        next: (items) => {
-          this.enrollments = items;
+      this.enrollmentsApi.getMyEnrollments(1, 3).subscribe({
+        next: (response) => {
+          this.enrollments = response.data;
           this.isLoading = false;
         },
         error: () => {
@@ -35,10 +35,10 @@ export class ContinueLearning {
   }
 
   title(enrollment: Enrollment): string {
-    return enrollment.courseTitle ?? enrollment.title ?? 'دورة';
+    return enrollment.courseTitle ?? enrollment.courseTitle ?? 'دورة';
   }
 
   progress(enrollment: Enrollment): number {
-    return enrollment.progressPercent ?? enrollment.progress ?? 0;
+    return enrollment.progressPercent ?? enrollment.progressPercent ?? 0;
   }
 }

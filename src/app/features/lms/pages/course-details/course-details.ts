@@ -1,5 +1,4 @@
 import { Component, inject, signal } from '@angular/core';
-// ﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -39,6 +38,8 @@ export class CourseDetails {
   readonly formatPrice = formatPrice;
   readonly courseEmoji = courseEmoji;
 
+  readonly enrollmentId = signal<string | null>(null);
+
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
 
@@ -70,11 +71,7 @@ export class CourseDetails {
 
   enroll(): void {
     const course = this.course();
-
-    if (!course) {
-      return;
-    }
-//     if (!course) return;
+    if (!course) return;
 
     if (!this.auth.isAuthenticated()) {
       this.router.navigate(['/login']);
@@ -82,23 +79,24 @@ export class CourseDetails {
     }
 
     this.isEnrolling.set(true);
+
     this.enrollmentsApi.enroll(course.id).subscribe({
-      next: () => {
+      next: (response) => {
         this.isEnrolling.set(false);
         this.isEnrolled.set(true);
+        this.enrollmentId.set(response.enrollmentId);
         this.notifications.success('تم التسجيل في الدورة بنجاح');
-        this.router.navigate(['/lms/player', course.id]);
-      },
-      error: (err) => {
-        this.isEnrolling.set(false);
-        this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذر التسجيل');
+        this.router.navigate(['/lms/player', response.enrollmentId]);
       },
     });
   }
 
   private checkEnrollment(courseId: string): void {
     this.enrollmentsApi.isEnrolled(courseId).subscribe({
-      next: (value) => this.isEnrolled.set(value),
+      next: (status) => {
+        this.isEnrolled.set(status.isEnrolled);
+        this.enrollmentId.set(status.enrollmentId ?? null);
+      },
     });
   }
 }

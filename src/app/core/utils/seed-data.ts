@@ -139,29 +139,6 @@ export const MOCK_PRODUCTS: RecommendedProduct[] = [
   }
 ];
 
-export const MOCK_ENROLLMENTS: Enrollment[] = [
-  {
-    enrollmentId: 'e1',
-    id: 'e1',
-    courseId: '1',
-    courseTitle: 'صناعة الكروشيه للمبتدئين',
-    title: 'صناعة الكروشيه للمبتدئين',
-    progressPercent: 40,
-    progress: 0.4,
-    thumbnailUrl: '/images/learning-section.png'
-  },
-  {
-    enrollmentId: 'e2',
-    id: 'e2',
-    courseId: '2',
-    courseTitle: 'فن صناعة الشموع المعطرة',
-    title: 'فن صناعة الشموع المعطرة',
-    progressPercent: 0,
-    progress: 0,
-    thumbnailUrl: '/images/hero.png'
-  }
-];
-
 export const MOCK_RECOMMENDED_COURSES: RecommendedCourse[] = [
   {
     courseId: '1',
