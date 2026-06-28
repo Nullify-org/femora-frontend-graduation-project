@@ -1,11 +1,12 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
-import { CourseService } from '../../services/course.service';
-import { LearningService } from '../../services/learning.service';
-import { Course, CourseLesson, CourseModule } from '../../../../core/models/api.model';
-import { runInBrowser } from '../../../../core/utils/platform.util';
+import { EnrollmentService } from '../../services/enrollment.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+
+import { EnrollmentDetailsResponse } from '../../../../core/models/api.model';
 
 @Component({
   selector: 'app-course-player',
@@ -15,53 +16,65 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 })
 export class CoursePlayer {
   private readonly route = inject(ActivatedRoute);
-  private readonly coursesApi = inject(CourseService);
-  private readonly learning = inject(LearningService);
+  private readonly enrollmentsApi = inject(EnrollmentService);
+  private readonly notifications = inject(NotificationService);
 
-  course: Course | null = null;
-  selectedLesson: CourseLesson | null = null;
-  isLoading = true;
-  errorMessage = '';
+  readonly enrollment = signal<EnrollmentDetailsResponse | null>(null);
+  readonly isLoading = signal(true);
+  readonly errorMessage = signal('');
+  readonly isUnlocking = signal(false);
+
+  private enrollmentId = '';
 
   constructor() {
-    runInBrowser(() => {
-      const id = this.route.snapshot.paramMap.get('id');
-      if (!id) {
-        this.errorMessage = 'معرّف الدورة غير صالح';
-        this.isLoading = false;
-        return;
-      }
+    const id = this.route.snapshot.paramMap.get('enrollmentId');
 
-      this.coursesApi.getCourseById(id).subscribe({
-        next: (course) => {
-          this.course = course;
-          const modules = course.modules as CourseModule[] | undefined;
-          this.selectedLesson = modules?.[0]?.lessons?.[0] ?? null;
-          this.isLoading = false;
-        },
-        error: () => {
-          this.errorMessage = 'تعذّر تحميل محتوى الدورة';
-          this.isLoading = false;
-        },
-      });
+    if (!id) {
+      this.errorMessage.set('معرّف التسجيل غير صالح');
+      this.isLoading.set(false);
+      return;
+    }
+
+    this.enrollmentId = id;
+    this.loadEnrollment();
+  }
+
+  private loadEnrollment(): void {
+    this.isLoading.set(true);
+
+    this.enrollmentsApi.getEnrollmentDetails(this.enrollmentId).subscribe({
+      next: (data) => {
+        this.enrollment.set(data);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.errorMessage.set('تعذّر تحميل بيانات التسجيل');
+        this.isLoading.set(false);
+      },
     });
   }
 
-  selectLesson(lesson: CourseLesson): void {
-    this.selectedLesson = lesson;
-  }
+  unlockNextModule(moduleId: string): void {
+    this.isUnlocking.set(true);
 
-  completeLesson(lessonId: string): void {
-    this.learning.markLessonComplete(lessonId).subscribe(() => {
-      if (this.course?.id) {
-        this.coursesApi.getCourseById(this.course.id).subscribe({
-          next: (course) => {
-            this.course = course;
-            const modules = course.modules as CourseModule[] | undefined;
-            this.selectedLesson = modules?.[0]?.lessons?.[0] ?? null;
-          },
-        });
-      }
+    this.enrollmentsApi.unlockNextModule(moduleId).subscribe({
+      next: (response) => {
+        this.isUnlocking.set(false);
+
+        if (response.isLastModule) {
+          this.notifications.success('لا توجد وحدات أخرى لفتحها');
+        } else {
+          this.notifications.success(`تم فتح: ${response.unlockedModuleTitle}`);
+        }
+
+        this.loadEnrollment();
+      },
+      error: (err) => {
+        this.isUnlocking.set(false);
+        this.notifications.error(
+          err?.error?.title ?? err?.error?.detail ?? 'تعذّر فتح الوحدة التالية'
+        );
+      },
     });
   }
 }

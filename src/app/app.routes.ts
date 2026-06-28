@@ -125,17 +125,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/lms/pages/course-details/course-details').then((m) => m.CourseDetails),
   },
+
   {
-    path: 'lms/player/:id',
+    path: 'lms/player/:enrollmentId',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/lms/pages/course-player/course-player').then((m) => m.CoursePlayer),
   },
   {
-    path: 'lms/quiz/:id',
+    path: 'lms/my-learning',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
+    loadComponent: () =>
+      import(
+        './features/lms/pages/my-learning/my-learning'
+      ).then(
+        (m) => m.MyLearning
+      ),
   },
+
   {
     path: 'lms/instructor',
     redirectTo: 'dashboard/instructor',

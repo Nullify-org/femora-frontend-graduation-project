@@ -1,65 +1,68 @@
 <div class="flex min-h-screen bg-cream-light">
   <app-sidebar />
+
   <main class="flex-1 p-8">
-    <div class="max-w-5xl mx-auto">
-      @if (isLoading) {
+    <div class="max-w-4xl mx-auto">
+
+      @if (isLoading()) {
         <p class="text-terracotta-dark">جاري التحميل...</p>
-      } @else if (errorMessage) {
-        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
-      } @else if (course) {
+      }
+      @else if (errorMessage()) {
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">
+          {{ errorMessage() }}
+        </div>
+      }
+      @else if (enrollment(); as data) {
+
         <div class="mb-6">
-          <a [routerLink]="['/lms/course', course.id]" class="text-terracotta hover:underline text-sm">← تفاصيل الدورة</a>
-          <h1 class="text-2xl font-bold text-navy font-display mt-2">{{ course.title }}</h1>
+          <a [routerLink]="['/lms/course', data.courseId]" class="text-terracotta hover:underline text-sm">
+            ← تفاصيل الدورة
+          </a>
+          <h1 class="text-2xl font-bold text-navy font-display mt-2">{{ data.courseTitle }}</h1>
+
+          <div class="w-full h-2 rounded-full bg-stone-200 overflow-hidden mt-3 max-w-xs">
+            <div class="h-full bg-terracotta" [style.width.%]="data.progressPercent"></div>
+          </div>
+          <p class="text-sm text-stone-500 mt-1">{{ data.progressPercent }}% مكتمل</p>
         </div>
 
-        <div class="grid lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-2xl femora-shadow border border-blush/30 p-8 min-h-64">
-            @if (selectedLesson) {
-              <h2 class="text-xl font-bold text-navy font-display">{{ selectedLesson.title }}</h2>
-              <p class="text-terracotta-dark mt-4 leading-relaxed">
-                محتوى الدرس متاح من الخادم. يمكنكِ متابعة التعلّم والانتقال بين الدروس من القائمة.
-              </p>
-            } @else {
-              <p class="text-terracotta-dark">اخترِي درساً من القائمة للبدء.</p>
-            }
-          </div>
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
+          <h3 class="font-bold text-navy mb-4">وحدات الدورة</h3>
 
-          <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-5">
-            <h3 class="font-bold text-navy mb-4">محتوى الدورة</h3>
-            <div class="mb-5 rounded-xl border border-blush/30 bg-cream p-4">
-              <p class="text-sm font-semibold text-navy">اختبار سريع</p>
-              <p class="text-sm text-terracotta-dark mt-1">اختبري فهمك بعد إنهاء الدرس.</p>
-              <a [routerLink]="['/lms/quiz', 'demo-quiz']" class="mt-3 inline-flex rounded-lg bg-terracotta px-3 py-2 text-sm font-semibold text-white transition hover:bg-terracotta-dark">
-                ابدأ الاختبار
-              </a>
-            </div>
-            @if (course.modules?.length) {
-              <div class="space-y-4">
-                @for (module of course.modules; track module.id) {
-                  <div>
-                    <p class="text-sm font-semibold text-terracotta mb-2">{{ module.title }}</p>
-                    <div class="space-y-1">
-                      @for (lesson of module.lessons ?? []; track lesson.id) {
-                        <button
-                          type="button"
-                          (click)="selectLesson(lesson)"
-                          class="w-full text-right text-sm px-3 py-2 rounded-lg transition"
-                          [class.bg-terracotta]="selectedLesson?.id === lesson.id"
-                          [class.text-white]="selectedLesson?.id === lesson.id"
-                          [class.hover:bg-cream]="selectedLesson?.id !== lesson.id"
-                        >
-                          {{ lesson.title }}
-                        </button>
-                      }
-                    </div>
-                  </div>
+          <div class="space-y-3">
+            @for (module of data.modules; track module.moduleId) {
+              <div
+                class="border rounded-xl p-4 flex items-center justify-between"
+                [class.opacity-50]="!module.isUnlocked"
+              >
+                <div>
+                  <p class="font-semibold text-navy">{{ module.title }}</p>
+                  <p class="text-sm text-stone-500">
+                    الوحدة {{ module.orderIndex }} — {{ module.lessons.length }} درس
+                  </p>
+                </div>
+
+                @if (!module.isUnlocked) {
+                  <span class="text-sm text-stone-400">🔒 مقفولة</span>
+                }
+                @else if (module.isCompleted) {
+                  <span class="text-sm text-green-600">✓ مكتملة</span>
+                }
+                @else {
+                  <button
+                    type="button"
+                    (click)="unlockNextModule(module.moduleId)"
+                    [disabled]="isUnlocking() || !module.quizPassed"
+                    class="text-sm rounded-lg bg-terracotta px-4 py-2 text-white font-medium hover:bg-terracotta-dark transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {{ isUnlocking() ? 'جاري الفتح...' : 'فتح الوحدة التالية' }}
+                  </button>
                 }
               </div>
-            } @else {
-              <p class="text-sm text-terracotta-dark">لا توجد وحدات متاحة بعد.</p>
             }
           </div>
         </div>
+
       }
     </div>
   </main>
