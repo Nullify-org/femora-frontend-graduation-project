@@ -1,42 +1,82 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
-import { Course } from '../../../core/models/api.model';
-import { unwrapList } from '../../../core/utils/api-response.util';
+import { Course } from '../models/course.model';
+import { CourseDetails } from '../models/course-details.model';
+import { GetCoursesRequest } from '../models/get-courses-request.model';
+import { PagedResponse } from '../models/paged-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class CourseService {
   private readonly api = inject(ApiClient);
   private readonly base = '/api/courses';
 
-  list(params?: Record<string, string | number>): Observable<Course[]> {
+  getCourses(request?: GetCoursesRequest): Observable<PagedResponse<Course>> {
     return this.api
-      .get<unknown>(this.base, { params })
-      .pipe(map((res) => unwrapList<Course>(res).map((c) => this.normalizeCourse(c))));
+      .get<PagedResponse<Course>>(this.base, { params: this.toQueryParams(request) })
+      .pipe(
+        map((response) => ({
+          ...response,
+          data: response.data.map((course) => this.normalizeCourse(course)),
+        })),
+      );
   }
 
-  getById(id: string): Observable<Course> {
+  getCourseById(id: string): Observable<CourseDetails> {
     return this.api
-      .get<Course>(`${this.base}/${id}`)
-      .pipe(map((c) => this.normalizeCourse(c)));
+      .get<CourseDetails>(`${this.base}/${id}`)
+      .pipe(map((course) => this.normalizeCourseDetails(course)));
   }
 
-  create(body: Record<string, unknown>): Observable<string> {
-    return this.api.post<string>(this.base, body);
+  create(course: any) {
+    return this.api.post<string>(
+      '/api/courses',
+      course
+    );
   }
 
-  update(id: string, body: Record<string, unknown>): Observable<unknown> {
-    return this.api.put(`${this.base}/${id}`, body);
+  publish(id: string) {
+    return this.api.post<void>(
+      `/api/courses/${id}/publish`,
+      {}
+    );
   }
 
-  publish(id: string): Observable<unknown> {
-    return this.api.post(`${this.base}/${id}/publish`, {});
+  private toQueryParams(request?: GetCoursesRequest): Record<string, string> | undefined {
+    if (!request) {
+      return undefined;
+    }
+
+    const params: Record<string, string> = {};
+
+    if (request.search?.trim()) {
+      params['search'] = request.search.trim();
+    }
+    if (request.pageNumber !== undefined) {
+      params['pageNumber'] = String(request.pageNumber);
+    }
+    if (request.pageSize !== undefined) {
+      params['pageSize'] = String(request.pageSize);
+    }
+
+    return Object.keys(params).length > 0 ? params : undefined;
   }
 
   private normalizeCourse(course: Course): Course {
     return {
       ...course,
       id: String(course.id),
+    };
+  }
+
+  private normalizeCourseDetails(course: CourseDetails): CourseDetails {
+    return {
+      ...this.normalizeCourse(course),
+      totalLessons: course.totalLessons,
+      modules: course.modules.map((module) => ({
+        ...module,
+        id: String(module.id),
+      })),
     };
   }
 }
