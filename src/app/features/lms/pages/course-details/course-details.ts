@@ -26,7 +26,6 @@ export class CourseDetails {
   private readonly enrollmentsApi = inject(EnrollmentService);
 
 
-
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
 

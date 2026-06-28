@@ -4,7 +4,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
 import { LearningService } from '../../services/learning.service';
-// import { Course, CourseLesson } from '../../../../core/models/api.model';
 import { Course, CourseLesson, CourseModule } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
@@ -52,17 +51,17 @@ export class CoursePlayer {
     this.selectedLesson = lesson;
   }
 
- completeLesson(lessonId: string): void {
-  this.learning.markLessonComplete(lessonId).subscribe(() => {
-    if (this.course?.id) {
-      this.coursesApi.getCourseById(this.course.id).subscribe({  // ← الاسم الصحيح
-        next: (course) => {
-          this.course = course;
-          const modules = course.modules as CourseModule[] | undefined;
-          this.selectedLesson = modules?.[0]?.lessons?.[0] ?? null;
-        },
-      });
-    }
-  });
-}
+  completeLesson(lessonId: string): void {
+    this.learning.markLessonComplete(lessonId).subscribe(() => {
+      if (this.course?.id) {
+        this.coursesApi.getCourseById(this.course.id).subscribe({
+          next: (course) => {
+            this.course = course;
+            const modules = course.modules as CourseModule[] | undefined;
+            this.selectedLesson = modules?.[0]?.lessons?.[0] ?? null;
+          },
+        });
+      }
+    });
+  }
 }
