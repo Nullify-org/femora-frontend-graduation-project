@@ -121,9 +121,14 @@
     <!-- Next -->
     <button
       (click)="next()"
-      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition mb-3"
+      [disabled]="isLoading()"
+      class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition mb-3 disabled:opacity-60 disabled:cursor-not-allowed"
     >
-      {{ selectedRoles.length > 0 ? 'التالي' : 'متابعة كـ مشترية' }}
+      @if (isLoading()) {
+        <span>جاري التحميل...</span>
+      } @else {
+        {{ selectedRoles.length > 0 ? 'التالي' : 'متابعة كـ مشترية' }}
+      }
     </button>
 
     <button
