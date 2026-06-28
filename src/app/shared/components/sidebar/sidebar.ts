@@ -31,6 +31,7 @@ export class Sidebar {
   readonly links = input<SidebarLink[]>([
     { label: 'لوحة التحكم',  path: '/dashboard',          icon: '' },
     { label: 'دوراتي',        path: '/lms/catalog',         icon: '' },
+    { label: 'الاختبارات',    path: '/lms/quiz/demo-quiz',  icon: '' },
     { label: 'المنتجات',      path: '/marketplace/catalog', icon: '' },
     { label: 'المساعد الذكي', path: '/ai/chat',             icon: '' },
     { label: 'الرسائل',       path: '/messaging',           icon: '' },

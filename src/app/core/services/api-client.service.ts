@@ -148,8 +148,51 @@ export class ApiClient {
     }
 
     // ENROLLMENTS
-    if (cleanUrl.match(/\/api\/enrollments$/)) {
+    if (cleanUrl.match(/\/api\/enrollments$/) || cleanUrl.match(/\/api\/enrollments\/my$/)) {
       return seed.MOCK_ENROLLMENTS;
+    }
+
+    const enrollmentDetailMatch = cleanUrl.match(/\/api\/enrollments\/([^/]+)$/);
+    if (enrollmentDetailMatch) {
+      return {
+        enrollmentId: enrollmentDetailMatch[1],
+        courseId: 'course_1',
+        courseTitle: 'دورة تجريبية',
+        progressPercent: 45,
+        isCompleted: false,
+        modules: [],
+      };
+    }
+
+    if (cleanUrl.match(/\/api\/quizzes\/generate$/)) {
+      return { quizId: 'quiz_mock_id' };
+    }
+
+    const quizDetailMatch = cleanUrl.match(/\/api\/quizzes\/([^/]+)$/);
+    if (quizDetailMatch) {
+      return {
+        quizId: quizDetailMatch[1],
+        title: 'اختبار تجريبي',
+        questions: [
+          {
+            questionId: 'q1',
+            text: 'ما هو هدف Femora؟',
+            choices: [
+              { choiceId: 'c1', text: 'تعلّم مهارات جديدة', order: 1 },
+              { choiceId: 'c2', text: 'التسوق فقط', order: 2 },
+            ],
+          },
+        ],
+      };
+    }
+
+    const quizSubmitMatch = cleanUrl.match(/\/api\/quizzes\/([^/]+)\/submit$/);
+    if (quizSubmitMatch) {
+      return {
+        score: 1,
+        maxScore: 1,
+        isPassed: true,
+      };
     }
 
     // RECOMMENDATIONS
