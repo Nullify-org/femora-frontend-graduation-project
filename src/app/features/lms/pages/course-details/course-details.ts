@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+// ﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
@@ -8,6 +9,7 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { CourseDetails as CourseDetailsModel } from '../../models/course-details.model';
+
 import { courseEmoji, formatPrice } from '../../../../core/utils/api-response.util';
 
 @Component({
@@ -21,6 +23,10 @@ export class CourseDetails {
   private readonly router = inject(Router);
   private readonly coursesApi = inject(CourseService);
   private readonly enrollmentsApi = inject(EnrollmentService);
+
+//   private readonly coursesApi = inject(CourseService);
+//   private readonly enrollmentsApi = inject(EnrollmentService);
+
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
 
@@ -68,6 +74,7 @@ export class CourseDetails {
     if (!course) {
       return;
     }
+//     if (!course) return;
 
     if (!this.auth.isAuthenticated()) {
       this.router.navigate(['/login']);

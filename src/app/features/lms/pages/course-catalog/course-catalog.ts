@@ -1,4 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
+// ﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -13,7 +14,7 @@ import { CourseCard } from '../../components/course-card/course-card';
 @Component({
   selector: 'app-course-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, Sidebar, CourseCard],
+  imports: [CommonModule, FormsModule, RouterLink, Sidebar, CourseCard],
   templateUrl: './course-catalog.html',
 })
 export class CourseCatalog {

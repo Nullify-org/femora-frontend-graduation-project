@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
 import { Course } from '../models/course.model';
@@ -54,9 +54,11 @@ export class CourseService {
     if (request.search?.trim()) {
       params['search'] = request.search.trim();
     }
+
     if (request.pageNumber !== undefined) {
       params['pageNumber'] = String(request.pageNumber);
     }
+
     if (request.pageSize !== undefined) {
       params['pageSize'] = String(request.pageSize);
     }
