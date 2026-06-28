@@ -342,21 +342,17 @@ export class Landing implements AfterViewInit, OnDestroy {
   }
 
   private loadFallbackCourses(): void {
-<<<<<<< HEAD
-    this.coursesApi.list({ PageSize: 6 }).subscribe({
-      next: (courses) => {
-        this.courses = courses.slice(0, 6);
-        this.animateCardsStagger();
-      },
-=======
     this.coursesApi.getCourses({
       pageSize: 6,
-      pageNumber: 1
+      pageNumber: 1,
     }).subscribe({
       next: (response) => {
         this.courses = response.data;
-      }
->>>>>>> 7503e1241548e243f340694e984a32f69bf656b4
+        this.animateCardsStagger();
+      },
+      error: () => {
+        this.courses = [];
+      },
     });
   }
 

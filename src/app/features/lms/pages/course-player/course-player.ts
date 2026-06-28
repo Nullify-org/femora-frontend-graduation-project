@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-﻿import { Component, inject } from '@angular/core';
-=======
 import { Component, inject } from '@angular/core';
->>>>>>> 7503e1241548e243f340694e984a32f69bf656b4
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
@@ -34,17 +30,9 @@ export class CoursePlayer {
         return;
       }
 
-<<<<<<< HEAD
-      this.coursesApi.getById(id).subscribe({
-        next: (course) => {
-          this.course = course;
-          this.selectedLesson = course.modules?.[0]?.lessons?.[0] ?? null;
-=======
       this.coursesApi.getCourseById(id).subscribe({
         next: (course) => {
           this.course = course;
-          // this.selectedLesson = course.modules?.[0]?.lessons?.[0] ?? null;
->>>>>>> 7503e1241548e243f340694e984a32f69bf656b4
           this.isLoading = false;
         },
         error: () => {
