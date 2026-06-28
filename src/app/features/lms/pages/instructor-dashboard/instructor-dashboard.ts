@@ -41,19 +41,12 @@ export class InstructorDashboard implements OnInit {
   }
 
   loadCourses(): void {
-<<<<<<< HEAD
-    this.coursesApi.list({ PageSize: 50 }).subscribe({
-      next: (items) => this.courses.set(items),
-      error: () => this.courses.set([]),
-=======
     this.coursesApi.getCourses({
       pageSize: 50,
-      pageNumber: 1
+      pageNumber: 1,
     }).subscribe({
-      next: (response) => {
-        this.courses.set(response.data);
-      }
->>>>>>> 7503e1241548e243f340694e984a32f69bf656b4
+      next: (response) => this.courses.set(response.data),
+      error: () => this.courses.set([]),
     });
   }
 

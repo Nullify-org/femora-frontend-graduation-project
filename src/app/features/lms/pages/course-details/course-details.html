@@ -1,70 +1,8 @@
-<<<<<<< HEAD
-<div class="flex min-h-screen bg-cream-light">
-  <app-sidebar />
-  <main class="flex-1 p-8">
-    <div class="max-w-3xl mx-auto">
-      <a routerLink="/lms/catalog" class="text-terracotta hover:underline text-sm mb-6 inline-block">← العودة إلى قائمة الدورات</a>
-
-      @if (isLoading) {
-        <p class="text-terracotta-dark">جاري التحميل...</p>
-      } @else if (errorMessage && !course) {
-        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
-      } @else if (course) {
-        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 overflow-hidden">
-          <div class="h-48 bg-gradient-to-br from-blush to-cream flex items-center justify-center text-7xl">
-            {{ courseEmoji(course.category) }}
-          </div>
-          <div class="p-8">
-            <h1 class="text-3xl font-bold text-navy font-display">{{ course.title }}</h1>
-            @if (course.category || course.level) {
-              <p class="text-sm text-terracotta-dark mt-2">
-                {{ course.category }} @if (course.level) { · {{ course.level }} }
-              </p>
-            }
-            @if (course.description) {
-              <p class="text-terracotta-dark mt-4 leading-relaxed">{{ course.description }}</p>
-            }
-            <p class="text-2xl font-bold text-terracotta mt-6">{{ formatPrice(course.price) }}</p>
-
-            @if (errorMessage) {
-              <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mt-4">
-                {{ errorMessage }}
-              </div>
-            }
-
-            <div class="flex gap-3 mt-6">
-              @if (isEnrolled) {
-                <a
-                  [routerLink]="['/lms/player', course.id]"
-                  class="bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition"
-                >
-                  متابعة الدورة
-                </a>
-              } @else {
-                <button
-                  type="button"
-                  (click)="enroll()"
-                  [disabled]="isEnrolling"
-                  class="bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
-                >
-                  {{ isEnrolling ? 'جاري التسجيل...' : 'سجّلي في الدورة' }}
-                </button>
-              }
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  </main>
-=======
 <div class="flex min-h-screen bg-stone-50">
-
   <app-sidebar />
 
   <main class="flex-1 p-8">
-
     <div class="max-w-6xl mx-auto">
-
       <a
         routerLink="/lms/catalog"
         class="text-orange-500 hover:text-orange-600 mb-6 inline-flex items-center gap-2"
@@ -72,223 +10,107 @@
         ← العودة إلى قائمة الدورات
       </a>
 
-      @if(isLoading()) {
-
-        <div class="text-center py-20">
-          جاري التحميل...
-        </div>
-
-      }
-
-      @else if(errorMessage() && !course()) {
-
-        <div
-          class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4"
-        >
+      @if (isLoading()) {
+        <div class="text-center py-20">جاري التحميل...</div>
+      } @else if (errorMessage() && !course()) {
+        <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4">
           {{ errorMessage() }}
         </div>
-
-      }
-
-      @else if(course(); as course) {
-
+      } @else if (course(); as course) {
         <div class="grid lg:grid-cols-3 gap-8">
-
-          <!-- Main -->
-
           <div class="lg:col-span-2">
-
-            <div
-              class="bg-white rounded-3xl overflow-hidden shadow-sm"
-            >
-
-              <div
-                class="h-72 bg-gradient-to-br from-orange-100 to-orange-300 flex items-center justify-center text-8xl"
-              >
+            <div class="bg-white rounded-3xl overflow-hidden shadow-sm">
+              <div class="h-72 bg-gradient-to-br from-orange-100 to-orange-300 flex items-center justify-center text-8xl">
                 {{ courseEmoji(course.category) }}
               </div>
 
               <div class="p-8">
-
-                <div
-                  class="flex flex-wrap gap-2 mb-4"
-                >
-
-                  <span
-                    class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm"
-                  >
+                <div class="flex flex-wrap gap-2 mb-4">
+                  <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
                     {{ course.level }}
                   </span>
 
-                  <span
-                    class="bg-stone-100 text-stone-600 px-3 py-1 rounded-full text-sm"
-                  >
+                  <span class="bg-stone-100 text-stone-600 px-3 py-1 rounded-full text-sm">
                     {{ course.category }}
                   </span>
-
                 </div>
 
-                <h1
-                  class="text-4xl font-bold text-stone-800 mb-4"
-                >
+                <h1 class="text-4xl font-bold text-stone-800 mb-4">
                   {{ course.title }}
                 </h1>
 
-                <p
-                  class="text-stone-600 leading-8"
-                >
+                <p class="text-stone-600 leading-8">
                   {{ course.description }}
                 </p>
-
               </div>
-
             </div>
 
-            <!-- Modules -->
+            <div class="bg-white rounded-3xl shadow-sm mt-6 p-6">
+              <h2 class="text-2xl font-bold mb-6">محتوى الدورة</h2>
 
-            <div
-              class="bg-white rounded-3xl shadow-sm mt-6 p-6"
-            >
-
-              <h2
-                class="text-2xl font-bold mb-6"
-              >
-                محتوى الدورة
-              </h2>
-
-              @for(module of course.modules; track module.id) {
-
-                <div
-                  class="border rounded-2xl p-5 mb-4"
-                >
-
-                  <div
-                    class="flex justify-between items-center"
-                  >
-
+              @for (module of course.modules; track module.id) {
+                <div class="border rounded-2xl p-5 mb-4">
+                  <div class="flex justify-between items-center">
                     <div>
-
-                      <h3
-                        class="font-bold text-lg"
-                      >
-                        {{ module.title }}
-                      </h3>
-
-                      <p
-                        class="text-sm text-stone-500"
-                      >
-                        {{ module.lessonsCount }}
-                        درس
-                      </p>
-
+                      <h3 class="font-bold text-lg">{{ module.title }}</h3>
+                      <p class="text-sm text-stone-500">{{ module.lessonsCount }} درس</p>
                     </div>
 
-                    <span
-                      class="text-orange-500 font-bold"
-                    >
-                      الوحدة {{ module.orderIndex }}
-                    </span>
-
+                    <span class="text-orange-500 font-bold">الوحدة {{ module.orderIndex }}</span>
                   </div>
-
                 </div>
-
               }
-
             </div>
-
           </div>
 
-          <!-- Sidebar -->
-
           <div>
-
-            <div
-              class="bg-white rounded-3xl shadow-sm p-6 sticky top-6"
-            >
-
-              <div
-                class="text-4xl font-bold text-orange-600 mb-6"
-              >
+            <div class="bg-white rounded-3xl shadow-sm p-6 sticky top-6">
+              <div class="text-4xl font-bold text-orange-600 mb-6">
                 {{ formatPrice(course.price) }}
               </div>
 
               <div class="space-y-4 mb-8">
-
-                <div
-                  class="flex justify-between"
-                >
+                <div class="flex justify-between">
                   <span>المدرب</span>
-                  <span>
-                    {{ course.instructorName }}
-                  </span>
+                  <span>{{ course.instructorName }}</span>
                 </div>
 
-                <div
-                  class="flex justify-between"
-                >
+                <div class="flex justify-between">
                   <span>اللغة</span>
-                  <span>
-                    {{ course.language }}
-                  </span>
+                  <span>{{ course.language }}</span>
                 </div>
 
-                <div
-                  class="flex justify-between"
-                >
+                <div class="flex justify-between">
                   <span>الدروس</span>
-                  <span>
-                    {{ course.totalLessons }}
-                  </span>
+                  <span>{{ course.totalLessons }}</span>
                 </div>
 
-                <div
-                  class="flex justify-between"
-                >
+                <div class="flex justify-between">
                   <span>المشتركين</span>
-                  <span>
-                    {{ course.enrollmentsCount }}
-                  </span>
+                  <span>{{ course.enrollmentsCount }}</span>
                 </div>
-
               </div>
 
-              @if(isEnrolled()) {
-
+              @if (isEnrolled()) {
                 <a
                   [routerLink]="['/lms/player', course.id]"
                   class="block text-center bg-orange-500 text-white py-4 rounded-xl"
                 >
                   متابعة الدورة
                 </a>
-
               } @else {
-
                 <button
                   (click)="enroll()"
                   [disabled]="isEnrolling()"
                   class="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl"
                 >
-                  {{
-                    isEnrolling()
-                      ? 'جاري التسجيل...'
-                      : 'التسجيل في الدورة'
-                  }}
+                  {{ isEnrolling() ? 'جاري التسجيل...' : 'التسجيل في الدورة' }}
                 </button>
-
               }
-
             </div>
-
           </div>
-
         </div>
-
       }
-
     </div>
-
   </main>
-
->>>>>>> 7503e1241548e243f340694e984a32f69bf656b4
 </div>
