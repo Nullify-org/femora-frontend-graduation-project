@@ -35,12 +35,12 @@ export class ApprovalService {
   }
 
   getPending(): Observable<PendingApproval[]> {
-    return this.api.get<PendingApproval[]>(`${this.base}/admin/approvals/pending`);
+    return this.api.get<PendingApproval[]>(`/api/Approvals/admin/approvals/pending`);
   }
 
   review(approvalId: string, body: ReviewApprovalRequest): Observable<{ success: boolean }> {
     return this.api.post<{ success: boolean }>(
-      `${this.base}/admin/approvals/${approvalId}/review`,
+      `/api/Approvals/admin/approvals/${approvalId}/review`,
       body,
     );
   }

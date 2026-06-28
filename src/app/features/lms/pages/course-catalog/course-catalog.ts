@@ -1,7 +1,7 @@
-﻿import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+// ﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
@@ -67,7 +67,10 @@ export class CourseCatalog {
   }
 
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages()) return;
+    if (page < 1 || page > this.totalPages()) {
+      return;
+    }
+
     this.pageNumber.set(page);
     this.loadCourses();
     window.scrollTo({ top: 0, behavior: 'smooth' });

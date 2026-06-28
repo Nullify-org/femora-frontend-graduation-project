@@ -1,15 +1,13 @@
-﻿import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+// ﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
-
 import { CourseService } from '../../services/course.service';
 import { EnrollmentService } from '../../services/enrollment.service';
-
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-
 import { CourseDetails as CourseDetailsModel } from '../../models/course-details.model';
 
 import { courseEmoji, formatPrice } from '../../../../core/utils/api-response.util';
@@ -23,9 +21,11 @@ import { courseEmoji, formatPrice } from '../../../../core/utils/api-response.ut
 export class CourseDetails {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-
   private readonly coursesApi = inject(CourseService);
   private readonly enrollmentsApi = inject(EnrollmentService);
+
+//   private readonly coursesApi = inject(CourseService);
+//   private readonly enrollmentsApi = inject(EnrollmentService);
 
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
@@ -71,7 +71,10 @@ export class CourseDetails {
   enroll(): void {
     const course = this.course();
 
-    if (!course) return;
+    if (!course) {
+      return;
+    }
+//     if (!course) return;
 
     if (!this.auth.isAuthenticated()) {
       this.router.navigate(['/login']);
@@ -79,7 +82,6 @@ export class CourseDetails {
     }
 
     this.isEnrolling.set(true);
-
     this.enrollmentsApi.enroll(course.id).subscribe({
       next: () => {
         this.isEnrolling.set(false);

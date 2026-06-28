@@ -10,6 +10,13 @@
         ← العودة إلى قائمة الدورات
       </a>
 
+<!--       @if (isLoading()) {
+        <div class="text-center py-20">جاري التحميل...</div>
+      } @else if (errorMessage() && !course()) {
+        <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-4">
+          {{ errorMessage() }}
+        </div>
+      } @else if (course(); as course) { -->
       @if(isLoading()) {
         <div class="text-center py-20">جاري التحميل...</div>
       }
@@ -23,6 +30,7 @@
           <div class="lg:col-span-2">
             <div class="bg-white rounded-3xl overflow-hidden shadow-sm">
               <div class="h-72 bg-gradient-to-br from-orange-100 to-orange-300 flex items-center justify-center text-8xl">
+<!--                 {{ courseEmoji(course.category) }} -->
                 {{ courseEmoji(currentCourse.category) }}
               </div>
               <div class="p-8">
