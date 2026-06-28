@@ -10,7 +10,7 @@ import { GetCoursesRequest } from '../../models/get-courses-request.model';
 import { courseEmoji, formatPrice } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 import { CourseCard } from '../../components/course-card/course-card';
-
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-course-catalog',
   standalone: true,

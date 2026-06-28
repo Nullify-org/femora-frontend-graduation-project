@@ -1,32 +1,3 @@
 {
-  "routes": {
-    "/": {},
-    "/ai/chat": {},
-    "/auth/login": {},
-    "/auth/register": {},
-    "/cart": {},
-    "/courses": {},
-    "/email-verified": {},
-    "/lms/catalog": {},
-    "/lms/instructor": {},
-    "/login": {},
-    "/marketplace/cart": {},
-    "/marketplace/catalog": {},
-    "/marketplace/checkout": {},
-    "/marketplace/seller": {},
-    "/messaging": {},
-    "/onboarding/choose-role": {},
-    "/onboarding/goal": {},
-    "/onboarding/interests": {},
-    "/onboarding/welcome": {},
-    "/profile": {},
-    "/profile/edit": {},
-    "/profile/instructor": {},
-    "/profile/preferences": {},
-    "/profile/seller": {},
-    "/profile/trainee": {},
-    "/register": {},
-    "/select-profile": {},
-    "/verify-email": {}
-  }
+  "routes": {}
 }
