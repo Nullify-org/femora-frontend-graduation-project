@@ -39,11 +39,5 @@ Desktop.ini
 .vs/
 .history/
 .cache/
-<<<<<<< HEAD
-coverage/
-=======
 coverage/
 
-.angular/
-dist/
->>>>>>> 85a96e136346dc38ed9fd3e9bf7b9e967a737f41

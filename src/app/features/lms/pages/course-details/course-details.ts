@@ -2,7 +2,6 @@ import { Component, inject, signal } from '@angular/core';
 // ﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { runInBrowser } from '../../../../core/utils/platform.util';
 
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
@@ -25,6 +24,8 @@ export class CourseDetails {
   private readonly coursesApi = inject(CourseService);
   private readonly enrollmentsApi = inject(EnrollmentService);
 
+//   private readonly coursesApi = inject(CourseService);
+//   private readonly enrollmentsApi = inject(EnrollmentService);
 
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
@@ -46,7 +47,6 @@ export class CourseDetails {
       this.isLoading.set(false);
       return;
     }
-     runInBrowser(() => this.loadCourse(id));
 
     this.loadCourse(id);
   }
