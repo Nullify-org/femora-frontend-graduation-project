@@ -1,4 +1,4 @@
-﻿import { Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
@@ -30,10 +30,10 @@ export class CoursePlayer {
         return;
       }
 
-      this.coursesApi.getById(id).subscribe({
+      this.coursesApi.getCourseById(id).subscribe({
         next: (course) => {
           this.course = course;
-          this.selectedLesson = course.modules?.[0]?.lessons?.[0] ?? null;
+          // this.selectedLesson = course.modules?.[0]?.lessons?.[0] ?? null;
           this.isLoading = false;
         },
         error: () => {
