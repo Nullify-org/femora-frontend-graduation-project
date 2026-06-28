@@ -343,21 +343,21 @@ export class Landing implements AfterViewInit, OnDestroy {
     this.heroTypingTimers = [];
   }
 
-  private loadFallbackCourses(): void {
-    this.coursesApi.getCourses({
-      pageSize: 6,
-      pageNumber: 1,
-    }).subscribe({
-      next: (response) => {
-        this.courses = response.data;
-      }
-        this.animateCardsStagger();
-      },
-      error: () => {
-        this.courses = [];
-      },
-    });
-  }
+ private loadFallbackCourses(): void {
+  this.coursesApi.getCourses({
+    pageSize: 6,
+    pageNumber: 1,
+  }).subscribe({
+    next: (response) => {
+      this.courses = response.data;
+      this.animateCardsStagger(); // ← move inside the callback
+    },
+    error: () => {
+      this.courses = [];
+    },
+  });
+}
+  
 
   // ── Swiper ──────────────────────────────────────────────────────────────────
   private initHeroSwiper(): void {
