@@ -90,6 +90,26 @@ export interface Order {
   items?: CartItem[] | null;
 }
 
+export interface QuizAnswerRequest {
+  questionId: string;
+  choiceId: string;
+}
+
+export interface QuizSubmissionRequest {
+  enrollmentId?: string;
+  traineeProfileId?: string;
+  answers: QuizAnswerRequest[];
+}
+
+export interface GenerateQuizRequest {
+  moduleId: string;
+  questionCount?: number;
+}
+
+export interface GenerateQuizResponse {
+  quizId: string;
+}
+
 export interface QuizQuestion {
   questionId: string;
   text?: string | null;
@@ -114,11 +134,12 @@ export interface Quiz {
 }
 
 export interface SubmitQuizResult {
-  quizAttemptId: string;
+  quizAttemptId?: string;
   score: number;
-  maxScore: number;
+  maxScore?: number;
   isPassed: boolean;
-  attemptNumber: number;
+  attemptNumber?: number;
+  answerResults?: Array<{ questionId: string; isCorrect: boolean }>;
 }
 
 export interface ChatMessage {
@@ -143,4 +164,52 @@ export interface ConversationDetail {
 export interface SendMessageResult {
   conversationId: string;
   reply?: string | null;
+}
+
+
+export interface LearningCourse {
+    courseId:string;
+    title:string;
+    progress:number;
+    modules:LearningModule[];
+}
+
+export interface LearningModule {
+    moduleId:string;
+    title:string;
+    lessons:LearningLesson[];
+}
+
+export interface LearningLesson {
+    lessonId:string;
+    title:string;
+    completed:boolean;
+}
+
+export interface EnrollmentDetailsResponse {
+  enrollmentId: string;
+  courseId: string;
+  courseTitle: string;
+  thumbnailUrl?: string | null;
+  progressPercent: number;
+  isCompleted: boolean;
+  modules: EnrollmentModuleDetails[];
+}
+
+export interface EnrollmentModuleDetails {
+  moduleId: string;
+  title: string;
+  orderIndex: number;
+  isUnlocked: boolean;
+  isCompleted: boolean;
+  quizPassed: boolean;
+  lessons: EnrollmentLessonDetails[];
+}
+
+export interface EnrollmentLessonDetails {
+  lessonId: string;
+  title: string;
+  orderIndex: number;
+  isCompleted: boolean;
+  watchedSeconds: number;
 }

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["src/app/features/marketplace/services/order.service.ts"],
-  "sourcesContent": ["import { Injectable, inject } from '@angular/core';\nimport { map, Observable } from 'rxjs';\nimport { ApiClient } from '../../../core/services/api-client.service';\nimport { Order } from '../../../core/models/api.model';\nimport { unwrapList } from '../../../core/utils/api-response.util';\n\n@Injectable({ providedIn: 'root' })\nexport class OrderService {\n  private readonly api = inject(ApiClient);\n  private readonly base = '/api/orders';\n\n  placeOrder(userId: string): Observable<unknown> {\n    return this.api.post(this.base, { userId });\n  }\n\n  myOrders(userId?: string): Observable<Order[]> {\n    const params = userId ? { UserId: userId } : undefined;\n    return this.api\n      .get<unknown>(`${this.base}/my-orders`, { params })\n      .pipe(map((res) => unwrapList<Order>(res)));\n  }\n}\n"],
-  "mappings": ";;;;;;;;;;;;;;;;AAOM,IAAO,eAAP,MAAO,cAAY;EACN,MAAM,OAAO,SAAS;EACtB,OAAO;EAExB,WAAW,QAAc;AACvB,WAAO,KAAK,IAAI,KAAK,KAAK,MAAM,EAAE,OAAM,CAAE;EAC5C;EAEA,SAAS,QAAe;AACtB,UAAM,SAAS,SAAS,EAAE,QAAQ,OAAM,IAAK;AAC7C,WAAO,KAAK,IACT,IAAa,GAAG,KAAK,IAAI,cAAc,EAAE,OAAM,CAAE,EACjD,KAAK,IAAI,CAAC,QAAQ,WAAkB,GAAG,CAAC,CAAC;EAC9C;;qCAbW,eAAY;EAAA;4EAAZ,eAAY,SAAZ,cAAY,WAAA,YADC,OAAM,CAAA;;;sEACnB,cAAY,CAAA;UADxB;WAAW,EAAE,YAAY,OAAM,CAAE;;;",
-  "names": []
-}

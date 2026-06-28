@@ -1,20 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
-// ﻿import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
 import { Course } from '../../models/course.model';
 import { GetCoursesRequest } from '../../models/get-courses-request.model';
-import { courseEmoji, formatPrice } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 import { CourseCard } from '../../components/course-card/course-card';
 
 @Component({
   selector: 'app-course-catalog',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, Sidebar, CourseCard],
+  imports: [CommonModule, FormsModule, Sidebar, CourseCard],
   templateUrl: './course-catalog.html',
 })
 export class CourseCatalog {
@@ -29,9 +26,6 @@ export class CourseCatalog {
   search = '';
   pageNumber = signal(1);
   pageSize = 12;
-
-  readonly formatPrice = formatPrice;
-  readonly courseEmoji = courseEmoji;
 
   constructor() {
     runInBrowser(() => this.loadCourses());
@@ -67,22 +61,14 @@ export class CourseCatalog {
   }
 
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages()) {
-      return;
-    }
-
+    if (page < 1 || page > this.totalPages()) return;
     this.pageNumber.set(page);
     this.loadCourses();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  nextPage(): void {
-    this.goToPage(this.pageNumber() + 1);
-  }
-
-  prevPage(): void {
-    this.goToPage(this.pageNumber() - 1);
-  }
+  nextPage(): void { this.goToPage(this.pageNumber() + 1); }
+  prevPage(): void { this.goToPage(this.pageNumber() - 1); }
 
   get pagesArray(): number[] {
     return Array.from({ length: this.totalPages() }, (_, i) => i + 1);
