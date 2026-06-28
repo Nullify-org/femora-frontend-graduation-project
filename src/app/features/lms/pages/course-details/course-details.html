@@ -1,3 +1,62 @@
+<<<<<<< HEAD
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-8">
+    <div class="max-w-3xl mx-auto">
+      <a routerLink="/lms/catalog" class="text-terracotta hover:underline text-sm mb-6 inline-block">← العودة إلى قائمة الدورات</a>
+
+      @if (isLoading) {
+        <p class="text-terracotta-dark">جاري التحميل...</p>
+      } @else if (errorMessage && !course) {
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
+      } @else if (course) {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 overflow-hidden">
+          <div class="h-48 bg-gradient-to-br from-blush to-cream flex items-center justify-center text-7xl">
+            {{ courseEmoji(course.category) }}
+          </div>
+          <div class="p-8">
+            <h1 class="text-3xl font-bold text-navy font-display">{{ course.title }}</h1>
+            @if (course.category || course.level) {
+              <p class="text-sm text-terracotta-dark mt-2">
+                {{ course.category }} @if (course.level) { · {{ course.level }} }
+              </p>
+            }
+            @if (course.description) {
+              <p class="text-terracotta-dark mt-4 leading-relaxed">{{ course.description }}</p>
+            }
+            <p class="text-2xl font-bold text-terracotta mt-6">{{ formatPrice(course.price) }}</p>
+
+            @if (errorMessage) {
+              <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mt-4">
+                {{ errorMessage }}
+              </div>
+            }
+
+            <div class="flex gap-3 mt-6">
+              @if (isEnrolled) {
+                <a
+                  [routerLink]="['/lms/player', course.id]"
+                  class="bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition"
+                >
+                  متابعة الدورة
+                </a>
+              } @else {
+                <button
+                  type="button"
+                  (click)="enroll()"
+                  [disabled]="isEnrolling"
+                  class="bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+                >
+                  {{ isEnrolling ? 'جاري التسجيل...' : 'سجّلي في الدورة' }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+=======
 <div class="flex min-h-screen bg-stone-50">
 
   <app-sidebar />
@@ -231,4 +290,5 @@
 
   </main>
 
+>>>>>>> 7503e1241548e243f340694e984a32f69bf656b4
 </div>

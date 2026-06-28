@@ -67,12 +67,10 @@ export class Login implements OnInit {
   get passwordCtrl() { return this.form.get('password'); }
 
   private navigateAfterLogin(res: SigninResponse): void {
-    if (res.requiresProfileSelection) {
-      this.router.navigate(['/select-profile']);
-    } else {
-      // getDashboardRoute() returns '/' for buyers (no activeProfile)
-      const route = this.auth.getDashboardRoute();
-      this.router.navigate([route]);
-    }
+    // Delegate all routing logic to AuthService so it stays in one place.
+    // - requiresProfileSelection + multiple profiles → /select-profile
+    // - requiresProfileSelection + single profile → auto-select → dashboard
+    // - no profile selection needed → getDashboardRoute() (trainee / instructor / seller / admin)
+    this.auth.handlePostAuthNavigation();
   }
 }

@@ -54,7 +54,7 @@ export class Goal {
   }
 
   next(): void {
-    this.router.navigate(['/onboarding/choose-role']);
+    this.router.navigate(['/']);
   }
 
   get isValid(): boolean {
