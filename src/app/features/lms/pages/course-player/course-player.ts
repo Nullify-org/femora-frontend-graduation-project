@@ -1,10 +1,14 @@
-﻿import { Component, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
+<<<<<<< HEAD
 import { LearningService } from '../../services/learning.service';
 import { Course, CourseLesson } from '../../../../core/models/api.model';
+=======
+import { Course, CourseLesson, CourseModule } from '../../../../core/models/api.model';
+>>>>>>> 30086475590337001cb98e4fb46e2e5d2e3f3467
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
 @Component({
@@ -32,10 +36,11 @@ export class CoursePlayer {
         return;
       }
 
-      this.coursesApi.getById(id).subscribe({
+      this.coursesApi.getCourseById(id).subscribe({
         next: (course) => {
           this.course = course;
-          this.selectedLesson = course.modules?.[0]?.lessons?.[0] ?? null;
+          const modules = course.modules as CourseModule[] | undefined;
+          this.selectedLesson = modules?.[0]?.lessons?.[0] ?? null;
           this.isLoading = false;
         },
         error: () => {

@@ -19,6 +19,7 @@ const AUTH_STORAGE_KEY = 'femora_auth';
 const PROFILES_STORAGE_KEY = 'femora_pending_profiles';
 const REMEMBER_ME_KEY = 'femora_remember_me';
 const TOKEN_KEY = 'femora_access_token';
+const REFRESH_TOKEN_KEY = 'femora_refresh_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -35,7 +36,8 @@ export class AuthService {
   readonly accessToken = this._accessToken.asReadonly();
   readonly user = this._user.asReadonly();
   readonly activeProfile = this._activeProfile.asReadonly();
-  readonly pendingProfiles = this._pendingProfiles.asReadonly();
+  readonly pendingProfiles   = this._pendingProfiles.asReadonly();
+  readonly availableProfiles = this._pendingProfiles.asReadonly(); // alias
   readonly isLoading = this._isLoading.asReadonly();
   readonly isAuthenticated = computed(() => !!this._accessToken());
   readonly displayName = computed(() => {
@@ -97,6 +99,33 @@ export class AuthService {
       );
   }
 
+  /**
+   * Called after choose-role onboarding.
+   * Sends selected roles to backend → backend creates the profiles.
+   * Returns { navigateTo, pendingApproval }
+   */
+  setupProfiles(roles: ProfileType[]): Observable<{ navigateTo: string; pendingApproval: boolean }> {
+    return this.http
+      .post<any>(`${environment.apiUrl}/api/auth/setup-profiles`, { roles }, { withCredentials: true })
+      .pipe(
+        map((res) => {
+          const normalized = this.normalize(res);
+          this.apply(normalized);
+          const pendingApproval: boolean = res.pendingApproval ?? false;
+          let navigateTo = '/';
+          if (normalized.requiresProfileSelection) {
+            navigateTo = '/select-profile';
+          } else if (normalized.auth?.activeProfile) {
+            const config = PROFILE_CONFIGS.find(c => c.type === normalized.auth!.activeProfile);
+            navigateTo = config?.dashboardRoute ?? '/dashboard/trainee';
+          } else if (pendingApproval) {
+            navigateTo = '/pending-approval';
+          }
+          return { navigateTo, pendingApproval };
+        }),
+      );
+  }
+
   refreshToken(): Observable<AuthPayload> {
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
@@ -122,21 +151,61 @@ export class AuthService {
   }
 
   handlePostAuthNavigation(): void {
-    if (this._pendingProfiles().length > 0) {
+    const profiles = this._pendingProfiles();
+
+    // If only one profile available, auto-select and navigate directly
+    if (profiles.length === 1) {
+      const singleType = profiles[0].type;
+      this.selectProfile(singleType).subscribe({
+        next: () => {
+          this._pendingProfiles.set([]);
+          this.storage.remove(PROFILES_STORAGE_KEY);
+          this.router.navigate([this.getDashboardRoute()]);
+        },
+        error: () => {
+          // fallback to select-profile page on error
+          this.router.navigate(['/select-profile']);
+        },
+      });
+      return;
+    }
+
+    if (profiles.length > 1) {
       this.router.navigate(['/select-profile']);
       return;
     }
+
     this.router.navigate([this.getDashboardRoute()]);
   }
 
   /**
    * Route logic:
-   * - activeProfile = Trainee/Instructor/Seller → go to their dashboard
-   * - activeProfile = null + authenticated → user is a pure Buyer → go to '/' (landing)
+   * - activeProfile = Admin      → /dashboard/admin
+   * - activeProfile = Instructor → /dashboard/instructor
+   * - activeProfile = Seller     → /dashboard/seller
+   * - activeProfile = Trainee    → /dashboard/trainee
+   * - activeProfile = null       → /dashboard/trainee (default for Buyer / no profile)
    */
   getDashboardRoute(): string {
     const profile = this._activeProfile();
-    if (!profile) return '/';   // Buyer: authenticated but no profile = browse freely
+    const role    = this._user()?.role;
+
+    // Normalize to Title-case for lookup
+    const lookup = profile ?? role ?? '';
+    const normalized =
+      lookup.charAt(0).toUpperCase() + lookup.slice(1).toLowerCase();
+
+    // Admin check (activeProfile OR role)
+    if (
+      normalized === 'Admin' ||
+      role === 'admin' ||
+      role === 'Admin'
+    ) {
+      return '/dashboard/admin';
+    }
+
+    if (!profile) return '/';
+
     const config = PROFILE_CONFIGS.find((c) => c.type === profile);
     return config?.dashboardRoute ?? '/dashboard/trainee';
   }
@@ -159,7 +228,8 @@ export class AuthService {
    * Backend now always wraps inside { auth: { user, accessToken, activeProfile } }
    */
   private normalize(raw: any): SigninResponse {
-    const requiresProfileSelection: boolean = raw.requiresProfileSelection ?? false;
+    // Debug: log raw backend response (remove in production)
+    console.debug('[AuthService] raw signin response:', raw);
 
     const availableProfiles: AvailableProfile[] = (raw.availableProfiles ?? []).map(
       (p: any): AvailableProfile => ({
@@ -172,6 +242,10 @@ export class AuthService {
       }),
     );
 
+    // requiresProfileSelection: respect backend flag OR infer from availableProfiles
+    const requiresProfileSelection: boolean =
+      raw.requiresProfileSelection ?? availableProfiles.length > 0;
+
     // Backend wraps in .auth — extract it
     const src = raw.auth ?? raw;
     const auth: AuthPayload | undefined = src?.user ? {
@@ -180,6 +254,8 @@ export class AuthService {
       refreshToken: src.refreshToken,
       activeProfile: (src.activeProfile as ProfileType) ?? null,
     } : undefined;
+
+    console.debug('[AuthService] normalized:', { requiresProfileSelection, availableProfiles, auth });
 
     return { requiresProfileSelection, availableProfiles, auth };
   }
@@ -208,6 +284,11 @@ export class AuthService {
     this._user.set(auth.user);
     this._activeProfile.set(auth.activeProfile ?? null);
     this.storage.setString(TOKEN_KEY, auth.accessToken);
+    // Persist refresh token in localStorage if backend returns it in body
+    // (complements HttpOnly cookie — refresh works either way)
+    if (auth.refreshToken) {
+      this.storage.setString(REFRESH_TOKEN_KEY, auth.refreshToken);
+    }
     this.storage.set(AUTH_STORAGE_KEY, {
       user: auth.user,
       activeProfile: auth.activeProfile ?? null,
@@ -235,6 +316,7 @@ export class AuthService {
     this._activeProfile.set(null);
     this.clearPendingProfiles();
     this.storage.remove(TOKEN_KEY);
+    this.storage.remove(REFRESH_TOKEN_KEY);
     this.storage.remove(AUTH_STORAGE_KEY);
   }
 }

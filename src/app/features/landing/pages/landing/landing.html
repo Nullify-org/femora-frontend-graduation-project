@@ -1,5 +1,12 @@
 <app-navbar [transparent]="true" />
 
+<!-- Switch Role Panel — shown only for authenticated users (buyer behavior) -->
+@if (auth.isAuthenticated()) {
+  <div class="fixed bottom-6 left-6 z-50 w-72 shadow-xl rounded-2xl overflow-hidden">
+    <app-switch-role />
+  </div>
+}
+
 <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
 <section role="region" aria-labelledby="hero-heading"
   class="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-[#C96A3A] via-[#D4856A] to-[#1A1A2E]">

@@ -13,6 +13,7 @@ import { Course, RecommendedProduct, RecommendedCourse } from '../../../../core/
 import { courseEmoji, formatPrice, productEmoji } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 import { MOCK_PRODUCTS } from '../../../../core/utils/seed-data';
+import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 import { CountUp } from 'countup.js';
 import Swiper from 'swiper';
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
@@ -39,6 +40,7 @@ import {
     LucideAward,
     LucideChevronDown,
     LucideChevronUp,
+    SwitchRole,
   ],
   templateUrl: './landing.html',
 })
@@ -46,7 +48,7 @@ export class Landing implements AfterViewInit, OnDestroy {
   private readonly coursesApi  = inject(CourseService);
   private readonly productsApi = inject(ProductService);
   private readonly chatApi     = inject(ChatService);
-  private readonly auth        = inject(AuthService);
+  readonly auth        = inject(AuthService);
   private readonly language    = inject(LanguageService);
   private readonly translate   = inject(TranslateService);
   private readonly subscriptionsApi = inject(SubscriptionService);
@@ -341,14 +343,21 @@ export class Landing implements AfterViewInit, OnDestroy {
     this.heroTypingTimers = [];
   }
 
-  private loadFallbackCourses(): void {
-    this.coursesApi.list({ PageSize: 6 }).subscribe({
-      next: (courses) => {
-        this.courses = courses.slice(0, 6);
-        this.animateCardsStagger();
-      },
-    });
-  }
+ private loadFallbackCourses(): void {
+  this.coursesApi.getCourses({
+    pageSize: 6,
+    pageNumber: 1,
+  }).subscribe({
+    next: (response) => {
+      this.courses = response.data;
+      this.animateCardsStagger(); // ← move inside the callback
+    },
+    error: () => {
+      this.courses = [];
+    },
+  });
+}
+  
 
   // ── Swiper ──────────────────────────────────────────────────────────────────
   private initHeroSwiper(): void {
