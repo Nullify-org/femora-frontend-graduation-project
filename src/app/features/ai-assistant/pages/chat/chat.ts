@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { ChatService } from '../../services/chat.service';
+import { AiService } from '../../services/ai.service';
 import { ChatMessage, ConversationSummary } from '../../../../core/models/api.model';
 import { unwrapList } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
@@ -15,6 +16,7 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 })
 export class Chat {
   private readonly chatApi = inject(ChatService);
+  private readonly ai = inject(AiService);
 
   conversations: ConversationSummary[] = [];
   messages: ChatMessage[] = [];
@@ -66,7 +68,7 @@ export class Chat {
     this.isSending = true;
     this.errorMessage = '';
 
-    this.chatApi.sendMessage(text, this.activeConversationId ?? undefined).subscribe({
+    this.ai.sendChatMessage(text, this.activeConversationId ?? undefined).subscribe({
       next: (res) => {
         this.activeConversationId = res.conversationId;
         if (res.reply) {

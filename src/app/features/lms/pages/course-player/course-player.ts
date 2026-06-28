@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
+import { LearningService } from '../../services/learning.service';
 import { Course, CourseLesson } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
@@ -15,6 +16,7 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 export class CoursePlayer {
   private readonly route = inject(ActivatedRoute);
   private readonly coursesApi = inject(CourseService);
+  private readonly learning = inject(LearningService);
 
   course: Course | null = null;
   selectedLesson: CourseLesson | null = null;
@@ -46,5 +48,18 @@ export class CoursePlayer {
 
   selectLesson(lesson: CourseLesson): void {
     this.selectedLesson = lesson;
+  }
+
+  completeLesson(lessonId: string): void {
+    this.learning.markLessonComplete(lessonId).subscribe(() => {
+      if (this.course?.id) {
+        this.coursesApi.getById(this.course.id).subscribe({
+          next: (course) => {
+            this.course = course;
+            this.selectedLesson = course.modules?.[0]?.lessons?.[0] ?? null;
+          },
+        });
+      }
+    });
   }
 }

@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{a as s}from"./chunk-RZFE3CX6.mjs";import{b as n}from"./chunk-QWSNNFBE.mjs";import{B as o,h as i,x as a}from"./chunk-6OWTEALW.mjs";var p=class e{api=o(n);base="/api/orders";placeOrder(r){return this.api.post(this.base,{userId:r})}myOrders(r){let t=r?{UserId:r}:void 0;return this.api.get(`${this.base}/my-orders`,{params:t}).pipe(i(m=>s(m)))}static \u0275fac=function(t){return new(t||e)};static \u0275prov=a({token:e,factory:e.\u0275fac,providedIn:"root"})};export{p as a};

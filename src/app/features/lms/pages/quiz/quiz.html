@@ -1,13 +1,31 @@
 <div class="flex min-h-screen bg-cream-light">
   <app-sidebar />
   <main class="flex-1 p-8">
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-4xl mx-auto">
       @if (isLoading) {
-        <p class="text-terracotta-dark">جاري التحميل...</p>
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-10 text-center">
+          <div class="mx-auto h-12 w-12 rounded-full bg-terracotta/10 animate-pulse"></div>
+          <p class="mt-4 text-terracotta-dark">جاري التحميل...</p>
+        </div>
       } @else if (errorMessage && !quiz) {
         <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
       } @else if (quiz) {
-        <h1 class="text-2xl font-bold text-navy font-display mb-2">{{ quiz.title ?? 'الاختبار' }}</h1>
+        <div class="mb-6 rounded-2xl border border-blush/30 bg-white p-6 femora-shadow">
+          <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p class="text-sm font-semibold text-terracotta">اختبار تفاعلي</p>
+              <h1 class="text-2xl font-bold text-navy font-display mt-1">{{ quiz.title ?? 'الاختبار' }}</h1>
+              <p class="text-sm text-terracotta-dark mt-2">
+                قيّمي فهمك بسرعة وابدئي بحل الأسئلة خطوة بخطوة.
+              </p>
+            </div>
+            <div class="rounded-xl bg-cream px-4 py-3 text-right">
+              <p class="text-xs text-terracotta-dark">التقدم</p>
+              <p class="text-xl font-bold text-navy">{{ answeredQuestionsCount }}/{{ quiz.questions?.length ?? 0 }}</p>
+              <p class="text-xs text-terracotta-dark">{{ progressPercent }}% مكتمل</p>
+            </div>
+          </div>
+        </div>
 
         @if (result) {
           <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
@@ -16,11 +34,20 @@
             <p class="text-terracotta-dark mt-2">
               {{ result.isPassed ? 'نجحتِ في الاختبار!' : 'لم تنجحي هذه المرة — حاولي مجدداً' }}
             </p>
-            @if (quiz.courseId) {
-              <a [routerLink]="['/lms/player', quiz.courseId]" class="inline-block mt-6 text-terracotta hover:underline">
-                العودة للدورة
-              </a>
-            }
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+              @if (quiz.courseId) {
+                <a [routerLink]="['/lms/player', quiz.courseId]" class="inline-flex items-center rounded-xl border border-blush/40 px-4 py-2 text-sm text-terracotta hover:bg-cream">
+                  العودة للدورة
+                </a>
+              }
+              <button
+                type="button"
+                (click)="startQuiz('module_1')"
+                class="rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white transition hover:bg-terracotta-dark"
+              >
+                إعادة الاختبار
+              </button>
+            </div>
           </div>
         } @else {
           @if (errorMessage) {
@@ -29,13 +56,13 @@
             </div>
           }
 
-          <div class="space-y-6">
+          <div class="space-y-4">
             @for (question of quiz.questions ?? []; track question.questionId) {
               <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
                 <p class="font-semibold text-navy mb-4">{{ question.text }}</p>
                 <div class="space-y-2">
                   @for (choice of question.choices ?? []; track choice.choiceId) {
-                    <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-cream cursor-pointer">
+                    <label class="flex items-center gap-3 rounded-xl border border-transparent p-3 transition hover:bg-cream cursor-pointer">
                       <input
                         type="radio"
                         [name]="question.questionId"
@@ -50,15 +77,34 @@
             }
           </div>
 
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm text-terracotta-dark">إجاباتك محفوظة عند الإرسال فقط.</p>
+            <button
+              type="button"
+              (click)="submit()"
+              [disabled]="isSubmitting"
+              class="rounded-xl bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-terracotta-dark disabled:opacity-60"
+            >
+              {{ isSubmitting ? 'جاري الإرسال...' : 'إرسال الإجابات' }}
+            </button>
+          </div>
+        }
+      } @else {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
+          <div class="text-5xl mb-4">🧠</div>
+          <h1 class="text-2xl font-bold text-navy font-display">اختبار سريع لمتابعة التعلم</h1>
+          <p class="text-terracotta-dark mt-3 max-w-xl mx-auto">
+            اختبري معرفتك في دقائق قليلة، ثم راجعي النتيجة مباشرة.
+          </p>
           <button
             type="button"
-            (click)="submit()"
-            [disabled]="isSubmitting"
-            class="w-full mt-8 bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+            (click)="startQuiz('module_1')"
+            [disabled]="isGenerating"
+            class="mt-6 rounded-xl bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-terracotta-dark disabled:opacity-60"
           >
-            {{ isSubmitting ? 'جاري الإرسال...' : 'إرسال الإجابات' }}
+            {{ isGenerating ? 'جاري إنشاء الاختبار...' : 'إنشاء اختبار جديد' }}
           </button>
-        }
+        </div>
       }
     </div>
   </main>

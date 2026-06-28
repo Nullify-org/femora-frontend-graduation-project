@@ -32,7 +32,7 @@ export class CourseCatalog {
   loadCourses(): void {
     this.isLoading = true;
     this.errorMessage = '';
-    const params: Record<string, string | number> = { PageSize: 24 };
+    const params: Record<string, string | number> = { PageSize: 5 };
     if (this.search.trim()) params['Search'] = this.search.trim();
 
     this.coursesApi.list(params).subscribe({
