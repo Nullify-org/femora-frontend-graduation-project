@@ -11,36 +11,38 @@ import {
   SigninResponse,
   GoogleAuthRequest,
   FacebookAuthRequest,
+  VerifyEmailRequest,
+  ResendVerificationRequest,
 } from '../models/auth.model';
 import { AvailableProfile, ProfileType, User, PROFILE_CONFIGS } from '../models/user.model';
 import { StorageService } from '../services/storage.service';
 
-const AUTH_STORAGE_KEY = 'femora_auth';
+const AUTH_STORAGE_KEY   = 'femora_auth';
 const PROFILES_STORAGE_KEY = 'femora_pending_profiles';
-const REMEMBER_ME_KEY = 'femora_remember_me';
-const TOKEN_KEY = 'femora_access_token';
-const REFRESH_TOKEN_KEY = 'femora_refresh_token';
+const REMEMBER_ME_KEY    = 'femora_remember_me';
+const TOKEN_KEY          = 'femora_access_token';
+const REFRESH_TOKEN_KEY  = 'femora_refresh_token';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly http = inject(HttpClient);
-  private readonly router = inject(Router);
+  private readonly http    = inject(HttpClient);
+  private readonly router  = inject(Router);
   private readonly storage = inject(StorageService);
 
-  private readonly _accessToken = signal<string | null>(null);
-  private readonly _user = signal<User | null>(null);
-  private readonly _activeProfile = signal<ProfileType | null>(null);
+  private readonly _accessToken    = signal<string | null>(null);
+  private readonly _user           = signal<User | null>(null);
+  private readonly _activeProfile  = signal<ProfileType | null>(null);
   private readonly _pendingProfiles = signal<AvailableProfile[]>([]);
-  private readonly _isLoading = signal<boolean>(false);
+  private readonly _isLoading      = signal<boolean>(false);
 
-  readonly accessToken = this._accessToken.asReadonly();
-  readonly user = this._user.asReadonly();
-  readonly activeProfile = this._activeProfile.asReadonly();
-  readonly pendingProfiles   = this._pendingProfiles.asReadonly();
-  readonly availableProfiles = this._pendingProfiles.asReadonly(); // alias
-  readonly isLoading = this._isLoading.asReadonly();
-  readonly isAuthenticated = computed(() => !!this._accessToken());
-  readonly displayName = computed(() => {
+  readonly accessToken      = this._accessToken.asReadonly();
+  readonly user             = this._user.asReadonly();
+  readonly activeProfile    = this._activeProfile.asReadonly();
+  readonly pendingProfiles  = this._pendingProfiles.asReadonly();
+  readonly availableProfiles = this._pendingProfiles.asReadonly();
+  readonly isLoading        = this._isLoading.asReadonly();
+  readonly isAuthenticated  = computed(() => !!this._accessToken());
+  readonly displayName      = computed(() => {
     const u = this._user();
     return u ? `${u.firstName} ${u.lastName}`.trim() : '';
   });
@@ -49,10 +51,9 @@ export class AuthService {
     return p ? PROFILE_CONFIGS.find((c) => c.type === p) ?? null : null;
   });
 
-  constructor() {
-    this.restoreSession();
-  }
+  constructor() { this.restoreSession(); }
 
+  // ── Register ──────────────────────────────────────────────────────────────
   register(payload: RegisterRequest): Observable<SigninResponse> {
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/register`, payload, { withCredentials: true })
@@ -63,6 +64,7 @@ export class AuthService {
       );
   }
 
+  // ── Sign In ───────────────────────────────────────────────────────────────
   signin(payload: SigninRequest): Observable<SigninResponse> {
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/signin`, payload, { withCredentials: true })
@@ -77,33 +79,98 @@ export class AuthService {
       );
   }
 
-  signinWithGoogle(payload: GoogleAuthRequest): Observable<SigninResponse> {
+  // ── External Login (Google / Facebook) ───────────────────────────────────
+  /** Unified external login — provider: "Google" | "Facebook", token: id_token or access_token */
+  signinWithExternal(provider: 'Google' | 'Facebook', token: string): Observable<SigninResponse> {
     return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/google`, payload, { withCredentials: true })
-      .pipe(map((res) => this.normalize(res)), tap((res) => this.apply(res)));
-  }
-
-  signinWithFacebook(payload: FacebookAuthRequest): Observable<SigninResponse> {
-    return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/facebook`, payload, { withCredentials: true })
-      .pipe(map((res) => this.normalize(res)), tap((res) => this.apply(res)));
-  }
-
-  selectProfile(profile: ProfileType): Observable<AuthPayload> {
-    return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/select-profile`, { profile } as SelectProfileRequest, { withCredentials: true })
+      .post<any>(
+        `${environment.apiUrl}/api/auth/external-login`,
+        { provider, idToken: token },
+        { withCredentials: true },
+      )
       .pipe(
         map((res) => this.normalize(res)),
-        tap((res) => { this.apply(res); this.clearPendingProfiles(); }),
+        tap((res) => this.apply(res)),
+        catchError((err) => throwError(() => err)),
+      );
+  }
+
+  /** @deprecated use signinWithExternal('Google', token) */
+  signinWithGoogle(payload: GoogleAuthRequest): Observable<SigninResponse> {
+    const token = payload.idToken ?? payload.token ?? '';
+    return this.signinWithExternal('Google', token);
+  }
+
+  /** @deprecated use signinWithExternal('Facebook', token) */
+  signinWithFacebook(payload: FacebookAuthRequest): Observable<SigninResponse> {
+    const token = payload.accessToken ?? payload.token ?? '';
+    return this.signinWithExternal('Facebook', token);
+  }
+
+  // ── Email Verification ────────────────────────────────────────────────────
+  verifyEmail(userId: string, token: string): Observable<SigninResponse> {
+    return this.http
+      .get<any>(
+        `${environment.apiUrl}/api/auth/verify-email`,
+        { params: { userId, token }, withCredentials: true },
+      )
+      .pipe(
+        map((res) => this.normalize(res)),
+        tap((res) => this.apply(res)),
+        catchError((err) => throwError(() => err)),
+      );
+  }
+
+  resendVerificationEmail(email: string): Observable<void> {
+    return this.http
+      .post<void>(
+        `${environment.apiUrl}/api/auth/resend-verification`,
+        { email } as ResendVerificationRequest,
+        { withCredentials: true },
+      )
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
+  sendOtp(email: string): Observable<void> {
+    return this.http
+      .post<void>(
+        `${environment.apiUrl}/api/auth/send-otp`,
+        { email },
+        { withCredentials: true },
+      )
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
+  verifyOtp(email: string, otp: string): Observable<SigninResponse> {
+    return this.http
+      .post<any>(
+        `${environment.apiUrl}/api/auth/verify-otp`,
+        { email, otp },
+        { withCredentials: true },
+      )
+      .pipe(
+        map((res) => this.normalize(res)),
+        tap((res) => this.apply(res)),
+        catchError((err) => throwError(() => err)),
+      );
+  }
+
+  // ── Select Profile ────────────────────────────────────────────────────────
+  selectProfile(profile: ProfileType): Observable<AuthPayload> {
+    return this.http
+      .post<any>(
+        `${environment.apiUrl}/api/auth/select-profile`,
+        { profile } as SelectProfileRequest,
+        { withCredentials: true },
+      )
+      .pipe(
+        map((res) => this.normalize(res)),
+        tap((res) => { this.apply(res); }), // keep pendingProfiles for switch role
         map((res) => res.auth!),
       );
   }
 
-  /**
-   * Called after choose-role onboarding.
-   * Sends selected roles to backend → backend creates the profiles.
-   * Returns { navigateTo, pendingApproval }
-   */
+  // ── Setup Profiles ────────────────────────────────────────────────────────
   setupProfiles(roles: ProfileType[]): Observable<{ navigateTo: string; pendingApproval: boolean }> {
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/setup-profiles`, { roles }, { withCredentials: true })
@@ -126,6 +193,24 @@ export class AuthService {
       );
   }
 
+  // ── Payment / Stripe Checkout ─────────────────────────────────────────────
+  createCheckoutSession(courseId?: string, successUrl?: string, cancelUrl?: string): Observable<{ sessionId: string; sessionUrl: string }> {
+    const body: any = {
+      successUrl: successUrl ?? `${window.location.origin}/payment-success`,
+      cancelUrl:  cancelUrl  ?? `${window.location.origin}/payment-cancel`,
+    };
+    if (courseId) body['courseId'] = courseId;
+
+    return this.http
+      .post<{ sessionId: string; sessionUrl: string }>(
+        `${environment.apiUrl}/api/payments/checkout`,
+        body,
+        { withCredentials: true },
+      )
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
+  // ── Refresh / Logout ──────────────────────────────────────────────────────
   refreshToken(): Observable<AuthPayload> {
     return this.http
       .post<any>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
@@ -150,70 +235,41 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  // ── Navigation helpers ─────────────────────────────────────────────────────
   handlePostAuthNavigation(): void {
     const profiles = this._pendingProfiles();
-
-    // If only one profile available, auto-select and navigate directly
     if (profiles.length === 1) {
       const singleType = profiles[0].type;
       this.selectProfile(singleType).subscribe({
         next: () => {
-          this._pendingProfiles.set([]);
-          this.storage.remove(PROFILES_STORAGE_KEY);
           this.router.navigate([this.getDashboardRoute()]);
         },
-        error: () => {
-          // fallback to select-profile page on error
-          this.router.navigate(['/select-profile']);
-        },
+        error: () => this.router.navigate(['/select-profile']),
       });
       return;
     }
-
-    if (profiles.length > 1) {
-      this.router.navigate(['/select-profile']);
-      return;
-    }
-
+    if (profiles.length > 1) { this.router.navigate(['/select-profile']); return; }
     this.router.navigate([this.getDashboardRoute()]);
   }
 
-  /**
-   * Route logic:
-   * - activeProfile = Admin      → /dashboard/admin
-   * - activeProfile = Instructor → /dashboard/instructor
-   * - activeProfile = Seller     → /dashboard/seller
-   * - activeProfile = Trainee    → /dashboard/trainee
-   * - activeProfile = null       → /dashboard/trainee (default for Buyer / no profile)
-   */
   getDashboardRoute(): string {
     const profile = this._activeProfile();
     const role    = this._user()?.role;
+    const lookup  = profile ?? role ?? '';
+    const normalized = lookup.charAt(0).toUpperCase() + lookup.slice(1).toLowerCase();
 
-    // Normalize to Title-case for lookup
-    const lookup = profile ?? role ?? '';
-    const normalized =
-      lookup.charAt(0).toUpperCase() + lookup.slice(1).toLowerCase();
-
-    // Admin check (activeProfile OR role)
-    if (
-      normalized === 'Admin' ||
-      role === 'admin' ||
-      role === 'Admin'
-    ) {
-      return '/dashboard/admin';
-    }
-
+    if (normalized === 'Admin' || role === 'admin' || role === 'Admin') return '/dashboard/admin';
     if (!profile) return '/';
 
     const config = PROFILE_CONFIGS.find((c) => c.type === profile);
     return config?.dashboardRoute ?? '/dashboard/trainee';
   }
 
-  setPendingEmail(email: string): void { this.storage.setString('femora_pending_email', email); }
-  getPendingEmail(): string | null { return this.storage.getString('femora_pending_email'); }
-  clearPendingEmail(): void { this.storage.remove('femora_pending_email'); }
-  getRememberedEmail(): string | null { return this.storage.getString(REMEMBER_ME_KEY); }
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  setPendingEmail(email: string): void  { this.storage.setString('femora_pending_email', email); }
+  getPendingEmail(): string | null       { return this.storage.getString('femora_pending_email'); }
+  clearPendingEmail(): void              { this.storage.remove('femora_pending_email'); }
+  getRememberedEmail(): string | null    { return this.storage.getString(REMEMBER_ME_KEY); }
 
   checkEmailExists(email: string): Observable<{ exists: boolean }> {
     return this.http.get<{ exists: boolean }>(
@@ -221,16 +277,8 @@ export class AuthService {
     );
   }
 
-  // ── Private ───────────────────────────────────────────────────────────────
-
-  /**
-   * Normalise backend response into consistent SigninResponse.
-   * Backend now always wraps inside { auth: { user, accessToken, activeProfile } }
-   */
+  // ── Private ────────────────────────────────────────────────────────────────
   private normalize(raw: any): SigninResponse {
-    // Debug: log raw backend response (remove in production)
-    console.debug('[AuthService] raw signin response:', raw);
-
     const availableProfiles: AvailableProfile[] = (raw.availableProfiles ?? []).map(
       (p: any): AvailableProfile => ({
         id: p.id,
@@ -242,11 +290,9 @@ export class AuthService {
       }),
     );
 
-    // requiresProfileSelection: respect backend flag OR infer from availableProfiles
     const requiresProfileSelection: boolean =
       raw.requiresProfileSelection ?? availableProfiles.length > 0;
 
-    // Backend wraps in .auth — extract it
     const src = raw.auth ?? raw;
     const auth: AuthPayload | undefined = src?.user ? {
       user: { ...src.user, id: String(src.user?.id ?? '') },
@@ -255,19 +301,15 @@ export class AuthService {
       activeProfile: (src.activeProfile as ProfileType) ?? null,
     } : undefined;
 
-    console.debug('[AuthService] normalized:', { requiresProfileSelection, availableProfiles, auth });
-
     return { requiresProfileSelection, availableProfiles, auth };
   }
 
   private apply(res: SigninResponse): void {
     if (res.requiresProfileSelection) {
-      // Store token so select-profile request can be authorized
       if (res.auth?.accessToken) {
         this._accessToken.set(res.auth.accessToken);
         this.storage.setString(TOKEN_KEY, res.auth.accessToken);
       }
-      // Store user so navbar shows name on select-profile page
       if (res.auth?.user) {
         this._user.set(res.auth.user);
         this.storage.set(AUTH_STORAGE_KEY, { user: res.auth.user, activeProfile: null });
@@ -284,15 +326,8 @@ export class AuthService {
     this._user.set(auth.user);
     this._activeProfile.set(auth.activeProfile ?? null);
     this.storage.setString(TOKEN_KEY, auth.accessToken);
-    // Persist refresh token in localStorage if backend returns it in body
-    // (complements HttpOnly cookie — refresh works either way)
-    if (auth.refreshToken) {
-      this.storage.setString(REFRESH_TOKEN_KEY, auth.refreshToken);
-    }
-    this.storage.set(AUTH_STORAGE_KEY, {
-      user: auth.user,
-      activeProfile: auth.activeProfile ?? null,
-    });
+    if (auth.refreshToken) this.storage.setString(REFRESH_TOKEN_KEY, auth.refreshToken);
+    this.storage.set(AUTH_STORAGE_KEY, { user: auth.user, activeProfile: auth.activeProfile ?? null });
   }
 
   private restoreSession(): void {

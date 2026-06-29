@@ -9,9 +9,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/landing/pages/landing/landing').then((m) => m.Landing),
   },
-  { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
-  { path: 'courses', redirectTo: 'lms/catalog', pathMatch: 'full' },
+  { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
+  { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
   {
     path: 'courses/:id',
     loadComponent: () =>
@@ -29,6 +29,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/register/register').then((m) => m.Register),
   },
+
+  // ✅ Google OAuth Callback — لازم يكون بدون guard
+  {
+    path: 'signin-google',
+    loadComponent: () =>
+      import('./features/auth/pages/signin-google/signin-google').then((m) => m.SigninGoogle),
+  },
+
   {
     path: 'verify-email',
     canActivate: [authGuard],
@@ -136,11 +144,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
   },
-  {
-    path: 'lms/instructor',
-    redirectTo: 'dashboard/instructor',
-    pathMatch: 'full',
-  },
+  { path: 'lms/instructor',       redirectTo: 'dashboard/instructor', pathMatch: 'full' },
   {
     path: 'marketplace/catalog',
     loadComponent: () =>
@@ -166,11 +170,7 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/marketplace/pages/checkout/checkout').then((m) => m.Checkout),
   },
-  {
-    path: 'marketplace/seller',
-    redirectTo: 'dashboard/seller',
-    pathMatch: 'full',
-  },
+  { path: 'marketplace/seller', redirectTo: 'dashboard/seller', pathMatch: 'full' },
   {
     path: 'ai/chat',
     canActivate: [authGuard],
@@ -185,16 +185,8 @@ export const routes: Routes = [
         (m) => m.Conversations,
       ),
   },
-  {
-    path: 'profile',
-    redirectTo: 'profile/trainee',
-    pathMatch: 'full',
-  },
-  {
-    path: 'profile/edit',
-    redirectTo: 'profile/preferences',
-    pathMatch: 'full',
-  },
+  { path: 'profile',       redirectTo: 'profile/trainee',      pathMatch: 'full' },
+  { path: 'profile/edit',  redirectTo: 'profile/preferences',  pathMatch: 'full' },
   {
     path: 'profile/trainee',
     canActivate: [authGuard],

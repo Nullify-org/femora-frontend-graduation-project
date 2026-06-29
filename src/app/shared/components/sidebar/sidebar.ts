@@ -1,5 +1,6 @@
 import { Component, inject, input } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ProfileType } from '../../../core/models/user.model';
 import {
   LucideLayoutDashboard,
   LucideBookOpen,
@@ -27,6 +28,7 @@ export interface SidebarLink {
 })
 export class Sidebar {
   readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly links = input<SidebarLink[]>([
     { label: 'لوحة التحكم',  path: '/dashboard',          icon: '' },
@@ -38,9 +40,23 @@ export class Sidebar {
     { label: 'الملف الشخصي', path: '/profile/trainee',     icon: '' },
   ]);
 
+  switchProfile(type: ProfileType): void {
+    const current = this.auth.activeProfile();
+    if (current === type) {
+      this.router.navigate([this.auth.getDashboardRoute()]);
+      return;
+    }
+
+    this.auth.selectProfile(type).subscribe({
+      next: () => this.router.navigate([this.auth.getDashboardRoute()]),
+      error: () => {},
+    });
+  }
+
   logout(): void {
     this.auth.logout().subscribe({
-      error: () => this.auth.logoutLocal(),
+      error: ()    => this.auth.logoutLocal(),
+      complete: () => this.auth.logoutLocal(),
     });
   }
 }
