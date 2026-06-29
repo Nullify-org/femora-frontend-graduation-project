@@ -76,6 +76,14 @@ export class VerifyEmail implements OnInit, OnDestroy {
   // ── Verify ──────────────────────────────────────────────────────────────
   verifyOtp(): void {
     if (!this.isComplete || this.isVerifying()) return;
+    
+    // Log the data being sent for debugging
+    console.log('Verifying OTP:', { 
+      email: this.email, 
+      otpCode: this.otpCode,
+      otpLength: this.otpCode.length
+    });
+    
     this.isVerifying.set(true);
     this.verifyError.set(null);
 
@@ -87,7 +95,43 @@ export class VerifyEmail implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         this.isVerifying.set(false);
-        this.verifyError.set(err?.error?.detail ?? err?.error?.title ?? 'الكود غير صحيح. حاولي مرة أخرى.');
+        
+        // Log the full error response for debugging
+        console.error('OTP Verification Error:', { 
+          status: err.status,
+          error: err.error,
+          fullError: err 
+        });
+        
+        // Extract error message from various possible response formats
+        let errorMessage = 'الكود غير صحيح. حاولي مرة أخرى.';
+        
+        if (err?.error) {
+          // Check for common error response structures
+          if (err.error.detail) {
+            errorMessage = err.error.detail;
+          } else if (err.error.title) {
+            errorMessage = err.error.title;
+          } else if (err.error.message) {
+            errorMessage = err.error.message;
+          } else if (err.error.errors) {
+            // Handle validation errors object
+            const errors = err.error.errors;
+            if (typeof errors === 'object') {
+              const errorMessages = Object.values(errors).flat();
+              if (Array.isArray(errorMessages) && errorMessages.length > 0) {
+                errorMessage = errorMessages[0] as string;
+              } else if (typeof errors === 'string') {
+                errorMessage = errors;
+              }
+            }
+          } else if (typeof err.error === 'string') {
+            // Handle string error responses
+            errorMessage = err.error;
+          }
+        }
+        
+        this.verifyError.set(errorMessage);
         this.digits.set(['', '', '', '', '', '']);
         setTimeout(() => {
           this.otpInputs?.toArray().forEach(el => (el.nativeElement.value = ''));
@@ -114,7 +158,31 @@ export class VerifyEmail implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         this.isSending.set(false);
-        this.sendError.set(err?.error?.detail ?? 'فشل إرسال الكود. حاولي مرة أخرى.');
+        
+        // Extract error message from various possible response formats
+        let errorMessage = 'فشل إرسال الكود. حاولي مرة أخرى.';
+        
+        if (err?.error) {
+          if (err.error.detail) {
+            errorMessage = err.error.detail;
+          } else if (err.error.title) {
+            errorMessage = err.error.title;
+          } else if (err.error.message) {
+            errorMessage = err.error.message;
+          } else if (err.error.errors) {
+            const errors = err.error.errors;
+            if (typeof errors === 'object') {
+              const errorMessages = Object.values(errors).flat();
+              if (Array.isArray(errorMessages) && errorMessages.length > 0) {
+                errorMessage = errorMessages[0] as string;
+              }
+            }
+          } else if (typeof err.error === 'string') {
+            errorMessage = err.error;
+          }
+        }
+        
+        this.sendError.set(errorMessage);
       },
     });
   }
