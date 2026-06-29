@@ -1,10 +1,9 @@
-﻿import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { NotificationService } from '../../../../core/services/notification.service';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
 @Component({
@@ -15,41 +14,41 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 })
 export class Checkout {
   private readonly ordersApi = inject(OrderService);
-  private readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
-  private readonly notifications = inject(NotificationService);
+  private readonly auth      = inject(AuthService);
+  private readonly router    = inject(Router);
 
-  isPlacing = false;
-  errorMessage = '';
-  success = false;
+  isPlacing    = signal(false);
+  errorMessage = signal('');
 
   constructor() {
     runInBrowser(() => {
-      if (!this.auth.user()) {
-        this.router.navigate(['/login']);
-      }
+      if (!this.auth.user()) this.router.navigate(['/login']);
     });
   }
 
+  /** Redirect to Stripe Checkout for cart products */
   placeOrder(): void {
-    const user = this.auth.user();
-    if (!user) {
-      this.router.navigate(['/login']);
-      return;
-    }
+    if (!this.auth.user()) { this.router.navigate(['/login']); return; }
 
-    this.isPlacing = true;
-    this.errorMessage = '';
+    this.isPlacing.set(true);
+    this.errorMessage.set('');
 
-    this.ordersApi.placeOrder(user.id).subscribe({
-      next: () => {
-        this.isPlacing = false;
-        this.success = true;
-        this.notifications.success('تم تأكيد طلبكِ بنجاح!');
+    this.ordersApi.createCartCheckout().subscribe({
+      next: (res) => {
+        // Redirect to Stripe — page leaves, no need to set isPlacing false
+        if (res.sessionUrl) {
+          window.location.href = res.sessionUrl;
+        } else {
+          this.isPlacing.set(false);
+          this.errorMessage.set('لم يتم إنشاء جلسة الدفع. حاولي مرة أخرى.');
+        }
       },
       error: (err) => {
-        this.isPlacing = false;
-        this.errorMessage = err?.error?.title ?? err?.error?.detail ?? 'تعذّر إتمام الطلب';
+        this.isPlacing.set(false);
+        this.errorMessage.set(
+          err?.error?.message ?? err?.error?.title ?? err?.error?.detail
+          ?? 'تعذّر إتمام الطلب. يرجى المحاولة مرة أخرى.'
+        );
       },
     });
   }

@@ -1,4 +1,5 @@
-import { Component, ElementRef, inject, AfterViewInit, OnDestroy, effect, viewChild, NgZone, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, inject, AfterViewInit, OnDestroy, effect, viewChild, NgZone, ChangeDetectorRef, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Navbar } from '../../../../shared/components/navbar/navbar';
@@ -13,7 +14,6 @@ import { Course, RecommendedProduct, RecommendedCourse } from '../../../../core/
 import { courseEmoji, formatPrice, productEmoji } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 import { MOCK_PRODUCTS } from '../../../../core/utils/seed-data';
-import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 import { CountUp } from 'countup.js';
 import Swiper from 'swiper';
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules';
@@ -32,6 +32,7 @@ import {
   selector: 'app-landing',
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
     Navbar,
     TranslatePipe,
@@ -40,7 +41,6 @@ import {
     LucideAward,
     LucideChevronDown,
     LucideChevronUp,
-    SwitchRole,
   ],
   templateUrl: './landing.html',
 })
@@ -149,7 +149,7 @@ export class Landing implements AfterViewInit, OnDestroy {
     },
   ];
 
-  courses: (Course | RecommendedCourse)[] = [];
+  readonly courses = signal<(Course | RecommendedCourse)[]>([]);
   products: RecommendedProduct[] = [];
   billingCycle: 'Monthly' | 'Annual' = 'Monthly';
   currentPlanName = '';
@@ -160,21 +160,40 @@ export class Landing implements AfterViewInit, OnDestroy {
   readonly courseEmoji  = courseEmoji;
   readonly productEmoji = productEmoji;
 
+  // ── Course Pagination (3 per row × 2 rows = 6 per page) ──────────────────
+  readonly coursePage  = signal(0);
+  readonly pageSize    = 6;
+  readonly pagedCourses = computed(() => {
+    const start = this.coursePage() * this.pageSize;
+    return this.courses().slice(start, start + this.pageSize);
+  });
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.courses().length / this.pageSize)));
+  readonly pageNumbers = computed(() => Array.from({ length: this.totalPages() }, (_, i) => i));
+
+  nextPage(): void {
+    if (this.coursePage() < this.totalPages() - 1) this.coursePage.update(p => p + 1);
+  }
+  prevPage(): void {
+    if (this.coursePage() > 0) this.coursePage.update(p => p - 1);
+  }
+  goToPage(p: number): void { this.coursePage.set(p); }
+
   constructor() {
     runInBrowser(() => {
-      if (this.auth.isAuthenticated()) {
-        // Buyer (no activeProfile) has no TraineeProfile → skip AI recommendations
-        if (this.auth.activeProfile()) {
-          this.chatApi.recommendedCourses(6).subscribe({
-            next: (courses) => {
-              this.courses = courses.slice(0, 6);
+      // Always load courses — use AI recommendations if authenticated with profile, else fallback
+      this.loadFallbackCourses();
+      if (this.auth.isAuthenticated() && this.auth.activeProfile()) {
+        this.chatApi.recommendedCourses(6).subscribe({
+          next: (courses) => {
+            if (courses?.length) {
+              this.courses.set(courses.slice(0, 6));
               this.animateCardsStagger();
-            },
-            error: () => this.loadFallbackCourses(),
-          });
-        } else {
-          this.loadFallbackCourses();
-        }
+            }
+          },
+          error: () => {}, // fallback already loaded above
+        });
+      }
+      if (this.auth.isAuthenticated()) {
         this.subscriptionsApi.getStatus().subscribe({
           next: (s) => {
             this.currentPlanName = s.planName;
@@ -206,8 +225,7 @@ export class Landing implements AfterViewInit, OnDestroy {
     runInBrowser(() => {
       gsap.registerPlugin(ScrollTrigger);
       this.initHeroSwiper();
-      this.initCoursesSwiper();
-      this.initCountUp();
+        this.initCountUp();
       this.initScrollAnimations();
       // Animate static cards (value props, pricing) that are in the DOM at load time
       this.animateCardsStagger();
@@ -349,11 +367,13 @@ export class Landing implements AfterViewInit, OnDestroy {
     pageNumber: 1,
   }).subscribe({
     next: (response) => {
-      this.courses = response.data;
+      const data = Array.isArray(response.data) ? response.data :
+                   Array.isArray((response as any).items) ? (response as any).items : [];
+      this.courses.set(data);
       this.animateCardsStagger(); // ← move inside the callback
     },
     error: () => {
-      this.courses = [];
+      this.courses.set([]);
     },
   });
 }

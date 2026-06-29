@@ -4,41 +4,44 @@
     <div class="max-w-xl mx-auto">
       <h1 class="text-2xl font-bold text-navy font-display mb-6">إتمام الشراء</h1>
 
-      @if (success) {
-        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
-          <img
-            src="/images/success-approval-state.png"
-            alt="تم تأكيد الطلب بنجاح"
-            class="w-32 h-32 object-cover rounded-full mx-auto mb-4 ring-4 ring-sage/20"
-          />
-          <p class="text-xl font-bold text-navy">شكراً لكِ!</p>
-          <p class="text-terracotta-dark mt-2">تم استلام طلبكِ وسيتم معالجته قريباً.</p>
-          <a routerLink="/dashboard" class="inline-block mt-6 text-terracotta hover:underline">العودة للوحة التحكم</a>
-        </div>
-      } @else {
-        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8">
-          <p class="text-terracotta-dark mb-6">راجعي طلبكِ ثم أكّدي الشراء.</p>
+      <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8">
+        <p class="text-terracotta-dark mb-6">راجعي طلبكِ ثم أكّدي الشراء عبر بوابة الدفع الآمنة.</p>
 
-          @if (errorMessage) {
-            <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
-              {{ errorMessage }}
-            </div>
+        @if (errorMessage()) {
+          <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <!-- Stripe badge -->
+        <div class="flex items-center gap-2 mb-6 text-xs text-text-light">
+          <svg class="w-4 h-4 text-[#635BFF]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+          </svg>
+          الدفع الآمن بواسطة Stripe
+        </div>
+
+        <button
+          type="button"
+          (click)="placeOrder()"
+          [disabled]="isPlacing()"
+          class="w-full bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60 flex items-center justify-center gap-2"
+        >
+          @if (isPlacing()) {
+            <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
+            </svg>
+            جاري التحويل لبوابة الدفع...
+          } @else {
+            الدفع الآن
           }
+        </button>
 
-          <button
-            type="button"
-            (click)="placeOrder()"
-            [disabled]="isPlacing"
-            class="w-full bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
-          >
-            {{ isPlacing ? 'جاري التأكيد...' : 'تأكيد الطلب' }}
-          </button>
+        <a routerLink="/marketplace/cart" class="block text-center mt-4 text-sm text-terracotta hover:underline">
+          العودة للسلة
+        </a>
+      </div>
 
-          <a routerLink="/marketplace/cart" class="block text-center mt-4 text-sm text-terracotta hover:underline">
-            العودة للسلة
-          </a>
-        </div>
-      }
     </div>
   </main>
 </div>

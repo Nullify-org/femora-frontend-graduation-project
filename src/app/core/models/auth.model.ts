@@ -29,7 +29,7 @@ export interface SigninResponse {
   requiresProfileSelection: boolean;
   auth?: AuthPayload;
   accessToken?: string;
-  availableProfiles?: AvailableProfile[];  // unified — no separate AvailableProfileResponse
+  availableProfiles?: AvailableProfile[];
 }
 
 export interface GoogleAuthRequest {
@@ -40,4 +40,20 @@ export interface GoogleAuthRequest {
 export interface FacebookAuthRequest {
   accessToken?: string;
   token?: string;
+}
+
+// ── New models for new endpoints ──────────────────────────────────────────────
+
+export interface ExternalLoginRequest {
+  provider: 'Google' | 'Facebook';
+  idToken: string;
+}
+
+export interface VerifyEmailRequest {
+  userId: string;
+  token: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
 }

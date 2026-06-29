@@ -1,11 +1,6 @@
 <app-navbar [transparent]="true" />
 
-<!-- Switch Role Panel — shown only for authenticated users (buyer behavior) -->
-@if (auth.isAuthenticated()) {
-  <div class="fixed bottom-6 left-6 z-50 w-72 shadow-xl rounded-2xl overflow-hidden">
-    <app-switch-role />
-  </div>
-}
+
 
 <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
 <section role="region" aria-labelledby="hero-heading"
@@ -196,18 +191,17 @@
       <div class="flex items-center gap-2">
         <span class="section-badge">
           <span class="section-badge-dot"></span>
-          <span>{{ courses.length }} دورة</span>
+          <span>{{ courses().length }} دورة</span>
         </span>
-        <button type="button" class="courses-prev w-9 h-9 rounded-full border border-sand flex items-center justify-center hover:bg-cream hover:border-primary transition">←</button>
-        <button type="button" class="courses-next w-9 h-9 rounded-full border border-sand flex items-center justify-center hover:bg-cream hover:border-primary transition">→</button>
+
         <a routerLink="/courses" class="section-link">عرض الكل ←</a>
       </div>
     </div>
-    <div class="swiper" #coursesSwiper>
-      <div class="swiper-wrapper">
-        @for (course of courses; track courseTitle(course)) {
-          <div class="swiper-slide h-auto">
-            <div class="course-card card-item card-hover h-full flex flex-col">
+    <div class="relative">
+      <!-- Courses Grid -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 cards-stagger">
+        @for (course of pagedCourses(); track courseTitle(course)) {
+          <div class="course-card card-item card-hover flex flex-col">
               <!-- Thumbnail -->
               <div class="relative overflow-hidden rounded-t-[1.4rem]">
                 @if (('thumbnailUrl' in course) && course.thumbnailUrl) {
@@ -257,14 +251,46 @@
                 </a>
               </div>
             </div>
-          </div>
         } @empty {
           <p class="text-terracotta-dark col-span-3 text-center py-10">لا توجد دورات متاحة حالياً</p>
         }
       </div>
+
+      <!-- Pagination arrows -->
+      @if (totalPages() > 1) {
+        <div class="flex justify-center items-center gap-3 mt-10">
+          <button type="button" (click)="prevPage()"
+            [disabled]="coursePage() === 0"
+            class="w-10 h-10 rounded-full border flex items-center justify-center transition
+                   disabled:opacity-30 disabled:cursor-not-allowed
+                   border-sand hover:bg-cream hover:border-primary active:scale-95">
+            →
+          </button>
+          @for (p of pageNumbers(); track p) {
+            <button type="button" (click)="goToPage(p)"
+              class="w-8 h-8 rounded-full text-xs font-bold transition"
+              [class.bg-primary]="coursePage() === p"
+              [class.text-white]="coursePage() === p"
+              [class.border]="coursePage() !== p"
+              [class.border-sand]="coursePage() !== p"
+              [class.hover:bg-cream]="coursePage() !== p">
+              {{ p + 1 }}
+            </button>
+          }
+          <button type="button" (click)="nextPage()"
+            [disabled]="coursePage() === totalPages() - 1"
+            class="w-10 h-10 rounded-full border flex items-center justify-center transition
+                   disabled:opacity-30 disabled:cursor-not-allowed
+                   border-sand hover:bg-cream hover:border-primary active:scale-95">
+            ←
+          </button>
+        </div>
+      }
     </div>
   </div>
 </section>
+
+
 
 <!-- ══════════════════════ MARKETPLACE ════════════════════════════ -->
 <section class="landing-section section-reveal py-24 bg-cream px-6">
