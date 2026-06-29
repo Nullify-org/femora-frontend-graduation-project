@@ -147,10 +147,6 @@ export class ApiClient {
       }
     }
 
-    // ENROLLMENTS
-    if (cleanUrl.match(/\/api\/enrollments$/) || cleanUrl.match(/\/api\/enrollments\/my$/)) {
-      return seed.MOCK_ENROLLMENTS;
-    }
 
     const enrollmentDetailMatch = cleanUrl.match(/\/api\/enrollments\/([^/]+)$/);
     if (enrollmentDetailMatch) {

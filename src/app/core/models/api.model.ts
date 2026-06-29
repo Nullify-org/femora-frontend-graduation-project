@@ -28,14 +28,36 @@ export interface CourseLesson {
 }
 
 export interface Enrollment {
-  enrollmentId?: string;
-  id?: string;
+  enrollmentId: string;
   courseId: string;
-  courseTitle?: string | null;
-  title?: string | null;
-  progressPercent?: number;
-  progress?: number;
+  courseTitle: string;
   thumbnailUrl?: string | null;
+
+  pricePaid: number;
+
+  enrolledAt: string;
+
+  isCompleted: boolean;
+
+  totalLessons: number;
+  completedLessons: number;
+  progressPercent: number;
+}
+
+export interface EnrollmentStatus {
+  isEnrolled: boolean;
+  enrollmentId?: string;
+  isCompleted: boolean;
+}
+
+export interface EnrollmentResponse {
+  enrollmentId: string;
+  courseId: string;
+  courseTitle: string;
+  enrolledAt: string;
+  pricePaid: number;
+  firstModuleId?: string | null;
+  status: string;
 }
 
 export interface RecommendedProduct {
@@ -193,23 +215,31 @@ export interface EnrollmentDetailsResponse {
   thumbnailUrl?: string | null;
   progressPercent: number;
   isCompleted: boolean;
-  modules: EnrollmentModuleDetails[];
+  modules: EnrollmentModule[];
 }
 
-export interface EnrollmentModuleDetails {
+export interface EnrollmentModule {
   moduleId: string;
   title: string;
   orderIndex: number;
   isUnlocked: boolean;
   isCompleted: boolean;
   quizPassed: boolean;
-  lessons: EnrollmentLessonDetails[];
+  lessons: EnrollmentLesson[];
 }
 
-export interface EnrollmentLessonDetails {
+export interface EnrollmentLesson {
   lessonId: string;
   title: string;
   orderIndex: number;
   isCompleted: boolean;
   watchedSeconds: number;
+}
+
+export interface UnlockNextModuleResponse {
+  unlockedModuleId?: string;
+  unlockedModuleTitle?: string;
+  moduleOrderIndex?: number;
+  isLastModule: boolean;
+  alreadyUnlocked: boolean;
 }
