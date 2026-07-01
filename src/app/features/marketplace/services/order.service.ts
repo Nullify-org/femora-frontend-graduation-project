@@ -4,6 +4,19 @@ import { ApiClient } from '../../../core/services/api-client.service';
 import { Order } from '../../../core/models/api.model';
 import { unwrapList } from '../../../core/utils/api-response.util';
 
+// All Order fields are optional in the type (to also accept the mock seed-data shape),
+// so normalize both directions here: real backend orders get legacy aliases filled in,
+// and mock/seed orders get the backend-shape fields filled in.
+function normalizeOrder(o: Order): Order {
+  return {
+    ...o,
+    id: o.id ?? o.orderId,
+    orderId: o.orderId ?? o.id,
+    totalAmount: o.totalAmount ?? o.total,
+    total: o.total ?? o.totalAmount,
+  };
+}
+
 @Injectable({ providedIn: 'root' })
 export class OrderService {
   private readonly api  = inject(ApiClient);
@@ -14,11 +27,11 @@ export class OrderService {
     return this.api.post(this.base, { userId });
   }
 
-  myOrders(userId?: string): Observable<Order[]> {
-    const params = userId ? { UserId: userId } : undefined;
+  /** @deprecated the userId param is no longer used — backend derives the current user from the auth token */
+  myOrders(_userId?: string): Observable<Order[]> {
     return this.api
-      .get<unknown>(`${this.base}/my-orders`, { params })
-      .pipe(map((res) => unwrapList<Order>(res)));
+      .get<unknown>(`${this.base}/my-orders`)
+      .pipe(map((res) => unwrapList<Order>(res).map(normalizeOrder)));
   }
 
   // ── Stripe Checkout ──────────────────────────────────────────────────────

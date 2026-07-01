@@ -21,8 +21,9 @@ export class EnrollmentService {
   }
 
   getMyEnrollments(pageNumber = 1, pageSize = 10): Observable<PagedResponse<Enrollment>> {
+    // Backend GetMyEnrollmentsQuery binds "page" / "pageSize" (not "pageNumber")
     return this.api.get<PagedResponse<Enrollment>>(`${this.base}/my`, {
-      params: { pageNumber, pageSize },
+      params: { page: pageNumber, pageSize },
     });
   }
 

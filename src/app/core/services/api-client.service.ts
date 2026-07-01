@@ -233,7 +233,7 @@ export class ApiClient {
     if (cleanUrl.match(/\/api\/approvals\/sellers\/apply$/)) {
       return 'approval_sell_id';
     }
-    if (cleanUrl.match(/\/api\/approvals\/admin\/approvals\/pending$/)) {
+    if (cleanUrl.match(/\/api\/approvals\/admin\/approvals\/pending$/i)) {
       return seed.MOCK_APPROVALS;
     }
     const reviewMatch = cleanUrl.match(/\/api\/approvals\/admin\/approvals\/([^/]+)\/review$/);

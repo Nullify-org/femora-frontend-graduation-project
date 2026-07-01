@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -41,6 +41,22 @@ const ROLE_OPTIONS: RoleOption[] = [
     dashboardRoute: '/dashboard/seller',
     requiresApproval: true,
   },
+  {
+    type: 'Buyer',
+    label: 'مشترية',
+    description: 'تصفحي واشتري منتجات ودورات مميزة',
+    icon: '🛒',
+    dashboardRoute: '/dashboard/buyer',
+    requiresApproval: false,
+  },
+  {
+    type: 'Admin',
+    label: 'مديرة',
+    description: 'إدارة المنصة والمستخدمين والعمليات',
+    icon: '⚙️',
+    dashboardRoute: '/dashboard/admin',
+    requiresApproval: false,
+  },
 ];
 
 @Component({
@@ -58,9 +74,19 @@ export class SwitchRole {
   readonly activeProfile = this.auth.activeProfile;
   readonly availableProfiles = this.auth.availableProfiles;
 
+  readonly displayedRoles = computed<RoleOption[]>(() => {
+    const isAdmin = this.auth.user()?.role?.toLowerCase() === 'admin';
+    if (isAdmin) {
+      return this.roles.filter(r => r.type === 'Buyer' || r.type === 'Admin');
+    } else {
+      return this.roles.filter(r => r.type === 'Trainee' || r.type === 'Instructor' || r.type === 'Seller');
+    }
+  });
+
   isLoading      = signal<ProfileType | null>(null);
   pendingMessage = signal<string | null>(null);
   activeModal    = signal<'instructor' | 'seller' | null>(null);
+
 
   // Instructor form
   instructorBio          = '';
@@ -111,6 +137,21 @@ export class SwitchRole {
           this.router.navigate([navigateTo]);
         },
         error: () => this.isLoading.set(null),
+      });
+      return;
+    }
+
+    if (role.type === 'Buyer' || role.type === 'Admin') {
+      this.isLoading.set(role.type);
+      this.auth.selectProfile(role.type).subscribe({
+        next: () => {
+          this.isLoading.set(null);
+          this.router.navigate([role.dashboardRoute]);
+        },
+        error: () => {
+          this.isLoading.set(null);
+          this.router.navigate([role.dashboardRoute]);
+        }
       });
       return;
     }

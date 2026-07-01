@@ -9,7 +9,7 @@
   }
 
   <div class="space-y-2">
-    @for (role of roles; track role.type) {
+    @for (role of displayedRoles(); track role.type) {
       <button
         (click)="switchTo(role)"
         [disabled]="!!isLoading()"

@@ -203,8 +203,24 @@ export const MOCK_CONVERSATIONS: ConversationSummary[] = [
 ];
 
 export const MOCK_APPROVALS: PendingApproval[] = [
-  { id: 'app_1', type: 'Instructor', status: 'Pending', userId: '101', createdAt: new Date().toISOString() },
-  { id: 'app_2', type: 'Seller', status: 'Pending', userId: '102', createdAt: new Date().toISOString() }
+  {
+    id: 'app_1',
+    type: 'Instructor',
+    status: 'Pending',
+    userId: '101',
+    dateCreated: new Date().toISOString(),
+    fullName: 'سارة محمد',
+    user: { id: '101', firstName: 'سارة', lastName: 'محمد', email: 'sara@example.com' },
+  },
+  {
+    id: 'app_2',
+    type: 'Seller',
+    status: 'Pending',
+    userId: '102',
+    dateCreated: new Date().toISOString(),
+    fullName: 'نورة أحمد',
+    user: { id: '102', firstName: 'نورة', lastName: 'أحمد', email: 'nora@example.com' },
+  },
 ];
 
 export const MOCK_SUBSCRIPTION = {
