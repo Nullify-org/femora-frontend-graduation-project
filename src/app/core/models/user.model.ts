@@ -3,6 +3,7 @@ export type ProfileType =
   | 'Instructor'
   | 'Seller'
   | 'Admin'
+  | 'Buyer'
   | 'student'
   | 'instructor'
   | 'Buyer';
@@ -39,6 +40,7 @@ export const PROFILE_CONFIGS: ProfileConfig[] = [
   { type: 'Instructor', label: 'مدرب',   dashboardRoute: '/dashboard/instructor' },
   { type: 'Seller',     label: 'بائع',   dashboardRoute: '/dashboard/seller' },
   { type: 'Admin',      label: 'مدير',   dashboardRoute: '/dashboard/admin' },
+  { type: 'Buyer',      label: 'مشتري',  dashboardRoute: '/dashboard/buyer' },
   { type: 'student',    label: 'طالب',   dashboardRoute: '/dashboard/trainee' },
   { type: 'instructor', label: 'مدرب',   dashboardRoute: '/dashboard/instructor' },
   { type: 'Buyer',      label: 'مشتري',  dashboardRoute: '/dashboard/buyer' },

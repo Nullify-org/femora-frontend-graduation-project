@@ -13,6 +13,8 @@ import {
   FacebookAuthRequest,
   VerifyEmailRequest,
   ResendVerificationRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
 } from '../models/auth.model';
 import { AvailableProfile, ProfileType, User, PROFILE_CONFIGS } from '../models/user.model';
 import { StorageService } from '../services/storage.service';
@@ -137,6 +139,25 @@ export class AuthService {
         `${environment.apiUrl}/api/auth/send-otp`,
         { email },
         { withCredentials: true },
+      )
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
+  // ── Forgot / Reset Password ───────────────────────────────────────────────
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>(
+        `${environment.apiUrl}/api/auth/forgot-password`,
+        { email } as ForgotPasswordRequest,
+      )
+      .pipe(catchError((err) => throwError(() => err)));
+  }
+
+  resetPassword(payload: ResetPasswordRequest): Observable<{ message: string }> {
+    return this.http
+      .post<{ message: string }>(
+        `${environment.apiUrl}/api/auth/reset-password`,
+        payload,
       )
       .pipe(catchError((err) => throwError(() => err)));
   }
