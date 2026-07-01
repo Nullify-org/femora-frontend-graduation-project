@@ -37,7 +37,7 @@ export class QuizService {
     return this.api.post<unknown>(`${this.base}/${quizId}/submit`, payload).pipe(
       map((response) => this.mapSubmitResult(response as Record<string, unknown>)),
       tap((result) => {
-        const message = result.isPassed ? 'أحسنت! نجحت في الاختبار' : 'تم إرسال الإجابات بنجاح';
+        const message = result.isPassed ? 'أحسنت! نجحت فى الاختبار' : 'تم إرسال الإجابات بنجاح';
         this.notifications.success(message);
       }),
     );

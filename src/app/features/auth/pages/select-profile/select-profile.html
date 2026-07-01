@@ -22,9 +22,9 @@
       <p class="text-center text-xs text-[#A07060] mb-5">مرحباً {{ auth.displayName() }} 👋</p>
     }
 
-    <h2 class="text-xl font-bold text-[#3D2314] text-center mb-2">اختاري مساحة عملك</h2>
+    <h2 class="text-xl font-bold text-[#3D2314] text-center mb-2">اختارى مساحة عملك</h2>
     <p class="text-sm text-[#8B6355] text-center mb-7">
-      لديكِ {{ profiles().length > 1 ? 'أكثر من دور' : 'دور واحد' }} — اختاري للمتابعة
+      لديكِ {{ profiles().length > 1 ? 'أكثر من دور' : 'دور واحد' }} — اختارى للمتابعة
     </p>
 
     <!-- Profile Cards -->
@@ -76,14 +76,14 @@
         <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
         </svg>
-        جاري التحميل...
+        جارى التحميل...
       } @else {
         متابعة إلى لوحة التحكم
       }
     </button>
 
     @if (!selectedType()) {
-      <p class="text-center text-xs text-[#C4A898] mt-3">اختاري ملفاً شخصياً للمتابعة</p>
+      <p class="text-center text-xs text-[#C4A898] mt-3">اختارى ملفاً شخصياً للمتابعة</p>
     }
 
   </div>

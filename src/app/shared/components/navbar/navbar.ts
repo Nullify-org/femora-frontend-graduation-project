@@ -221,9 +221,9 @@ export class Navbar implements OnInit {
 
   // All non-admin switchable roles to show in dropdown
   readonly switchableRoles = [
-    { type: 'Trainee'    as ProfileType, label: 'متدربة',   color: 'bg-blue-400',   desc: 'تعلمي مهارات جديدة',      dashboardRoute: '/dashboard/trainee' },
+    { type: 'Trainee'    as ProfileType, label: 'متدربة',   color: 'bg-blue-400',   desc: 'تعلمى مهارات جديدة',      dashboardRoute: '/dashboard/trainee' },
     { type: 'Instructor' as ProfileType, label: 'مدربة',    color: 'bg-purple-400', desc: 'شاركي خبرتك وأنشئي دورات', dashboardRoute: '/dashboard/instructor' },
-    { type: 'Seller'     as ProfileType, label: 'بائعة',    color: 'bg-amber-400',  desc: 'بيعي منتجاتك واكسبي',      dashboardRoute: '/dashboard/seller' },
+    { type: 'Seller'     as ProfileType, label: 'بائعة',    color: 'bg-amber-400',  desc: 'اربحى منتجاتك واكسبي',      dashboardRoute: '/dashboard/seller' },
   ];
 
   hasProfile(type: ProfileType): boolean {

@@ -58,9 +58,9 @@ export class Login implements OnInit {
         this.isLoading.set(false);
         const status = err?.status;
         if (status === 401 || status === 400) {
-          this.apiError.set('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+          this.apiError.set('البريد الإلكترونى أو كلمة المرور غير صحيحة.');
         } else if (status === 0) {
-          this.apiError.set('تعذّر الاتصال بالسيرفر. تأكدي من تشغيل الـ backend.');
+          this.apiError.set('تعذّر الاتصال بالسيرفر. تأكدى من تشغيل الـ backend.');
         } else {
           this.apiError.set(
             err?.error?.detail ?? err?.error?.title ?? 'فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.'

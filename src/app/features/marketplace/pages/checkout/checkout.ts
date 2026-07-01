@@ -40,7 +40,7 @@ export class Checkout {
           window.location.href = res.sessionUrl;
         } else {
           this.isPlacing.set(false);
-          this.errorMessage.set('لم يتم إنشاء جلسة الدفع. حاولي مرة أخرى.');
+          this.errorMessage.set('لم يتم إنشاء جلسة الدفع. حاولى مرة أخرى.');
         }
       },
       error: (err) => {

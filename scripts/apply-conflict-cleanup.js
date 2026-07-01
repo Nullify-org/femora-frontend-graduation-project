@@ -170,7 +170,7 @@ export class CourseDetails {
       next: () => {
         this.isEnrolling.set(false);
         this.isEnrolled.set(true);
-        this.notifications.success('تم التسجيل في الدورة بنجاح');
+        this.notifications.success('تم التسجيل فى الدورة بنجاح');
         this.router.navigate(['/lms/player', course.id]);
       },
       error: (err) => {
