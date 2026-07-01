@@ -5,7 +5,7 @@ export const MOCK_COURSES: Course[] = [
   {
     id: '1',
     title: 'صناعة الكروشيه للمبتدئين',
-    description: 'تعلّمي أساسيات الكروشيه خطوة بخطوة، بدءاً من مسك الإبرة وحتى إنتاج أول شال شتوي لكِ.',
+    description: 'تعلّمى أساسيات الكروشيه خطوة بخطوة، بدءاً من مسك الإبرة وحتى إنتاج أول شال شتوي لكِ.',
     price: 150,
     category: 'crochet',
     level: 'Beginner',
@@ -52,7 +52,7 @@ export const MOCK_COURSES: Course[] = [
         title: 'المواد الخام والتجهيز',
         orderIndex: 1,
         lessons: [
-          { id: 'l4', title: 'أنواع الشموع الطبيعية والصناعية', orderIndex: 1, durationMinutes: 18 },
+          { id: 'l4', title: 'أنواع الشموع الطبيعىة والصناعية', orderIndex: 1, durationMinutes: 18 },
           { id: 'l5', title: 'درجات الحرارة ونسب العطور الآمنة', orderIndex: 2, durationMinutes: 22 }
         ]
       }
@@ -61,7 +61,7 @@ export const MOCK_COURSES: Course[] = [
   {
     id: '3',
     title: 'صناعة الإكسسوارات والمجوهرات المنزلية',
-    description: 'تعلّمي كيفية تنسيق الخرز، لف الأسلاك النحاسية وصناعة سلاسل وخواتم عصرية تناسب كل الأذواق.',
+    description: 'تعلّمى كيفية تنسيق الخرز، لف الأسلاك النحاسية وصناعة سلاسل وخواتم عصرية تناسب كل الأذواق.',
     price: 180,
     category: 'jewelry',
     level: 'Intermediate',
@@ -105,8 +105,8 @@ export const MOCK_PRODUCTS: RecommendedProduct[] = [
     id: 'p2',
     productId: 'p2',
     productVariantId: 'v2',
-    name: 'طقم شموع الصويا الطبيعية المعطرة',
-    title: 'طقم شموع الصويا الطبيعية المعطرة',
+    name: 'طقم شموع الصويا الطبيعىة المعطرة',
+    title: 'طقم شموع الصويا الطبيعىة المعطرة',
     price: 180,
     sellerName: 'شمع وورد',
     category: 'decor',

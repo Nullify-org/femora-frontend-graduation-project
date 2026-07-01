@@ -5,7 +5,7 @@
     <div class="max-w-4xl mx-auto">
 
       @if (isLoading()) {
-        <p class="text-terracotta-dark">جاري التحميل...</p>
+        <p class="text-terracotta-dark">جارى التحميل...</p>
       }
       @else if (errorMessage()) {
         <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">
@@ -55,7 +55,7 @@
                     [disabled]="isUnlocking() || !module.quizPassed"
                     class="text-sm rounded-lg bg-terracotta px-4 py-2 text-white font-medium hover:bg-terracotta-dark transition disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    {{ isUnlocking() ? 'جاري الفتح...' : 'فتح الوحدة التالية' }}
+                    {{ isUnlocking() ? 'جارى الفتح...' : 'فتح الوحدة التالية' }}
                   </button>
                 }
               </div>

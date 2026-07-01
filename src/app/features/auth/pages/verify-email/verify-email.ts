@@ -104,7 +104,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
         });
         
         // Extract error message from various possible response formats
-        let errorMessage = 'الكود غير صحيح. حاولي مرة أخرى.';
+        let errorMessage = 'الكود غير صحيح. حاولى مرة أخرى.';
         
         if (err?.error) {
           // Check for common error response structures
@@ -160,7 +160,7 @@ export class VerifyEmail implements OnInit, OnDestroy {
         this.isSending.set(false);
         
         // Extract error message from various possible response formats
-        let errorMessage = 'فشل إرسال الكود. حاولي مرة أخرى.';
+        let errorMessage = 'فشل إرسال الكود. حاولى مرة أخرى.';
         
         if (err?.error) {
           if (err.error.detail) {

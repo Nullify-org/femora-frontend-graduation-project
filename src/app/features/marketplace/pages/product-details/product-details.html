@@ -5,7 +5,7 @@
       <a routerLink="/marketplace/catalog" class="text-terracotta hover:underline text-sm mb-6 inline-block">← العودة للمنتجات</a>
 
       @if (isLoading) {
-        <p class="text-terracotta-dark">جاري التحميل...</p>
+        <p class="text-terracotta-dark">جارى التحميل...</p>
       } @else if (errorMessage && !product) {
         <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
       } @else if (product) {
@@ -35,7 +35,7 @@
               [disabled]="isAdding"
               class="mt-6 bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
             >
-              {{ isAdding ? 'جاري الإضافة...' : 'أضيفي إلى السلة' }}
+              {{ isAdding ? 'جارى الإضافة...' : 'أضيفى إلى السلة' }}
             </button>
           </div>
         </div>

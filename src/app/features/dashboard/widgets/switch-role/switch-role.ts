@@ -20,7 +20,7 @@ const ROLE_OPTIONS: RoleOption[] = [
   {
     type: 'Trainee',
     label: 'متدربة',
-    description: 'تعلمي مهارات جديدة وتابعي دوراتك',
+    description: 'تعلمى مهارات جديدة وتابعى دوراتك',
     icon: '🎓',
     dashboardRoute: '/dashboard/trainee',
     requiresApproval: false,
@@ -28,7 +28,7 @@ const ROLE_OPTIONS: RoleOption[] = [
   {
     type: 'Instructor',
     label: 'مدربة',
-    description: 'شاركي خبرتك وأنشئي دورات تعليمية',
+    description: 'شاركى خبرتك وأنشئى دورات تعليمية',
     icon: '👩‍🏫',
     dashboardRoute: '/dashboard/instructor',
     requiresApproval: true,
@@ -36,7 +36,7 @@ const ROLE_OPTIONS: RoleOption[] = [
   {
     type: 'Seller',
     label: 'بائعة',
-    description: 'بيعي منتجاتك واكسبي دخلاً ثابتاً',
+    description: 'اربحى منتجاتك واكسبى دخلاً ثابتاً',
     icon: '🛍️',
     dashboardRoute: '/dashboard/seller',
     requiresApproval: true,
@@ -44,7 +44,7 @@ const ROLE_OPTIONS: RoleOption[] = [
   {
     type: 'Buyer',
     label: 'مشترية',
-    description: 'تصفحي واشتري منتجات ودورات مميزة',
+    description: 'تصفحى واشترى منتجات ودورات مميزة',
     icon: '🛒',
     dashboardRoute: '/dashboard/buyer',
     requiresApproval: false,
@@ -185,7 +185,7 @@ export class SwitchRole {
       error: () => {
         this.isLoading.set(null);
         this.closeModal();
-        this.pendingMessage.set('حدث خطأ، حاولي مرة أخرى.');
+        this.pendingMessage.set('حدث خطأ، حاولى مرة أخرى.');
       },
     });
   }
@@ -206,7 +206,7 @@ export class SwitchRole {
       error: () => {
         this.isLoading.set(null);
         this.closeModal();
-        this.pendingMessage.set('حدث خطأ، حاولي مرة أخرى.');
+        this.pendingMessage.set('حدث خطأ، حاولى مرة أخرى.');
       },
     });
   }

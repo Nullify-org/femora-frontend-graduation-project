@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ProfileType } from '../../../core/models/user.model';
 import {
@@ -39,6 +39,12 @@ export class Sidebar {
   readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
+  readonly sidebarOpen = signal(true);
+
+  toggleSidebar(): void {
+    this.sidebarOpen.update((open) => !open);
+  }
+
   readonly links = computed<SidebarLink[]>(() => {
     const profile = this.auth.activeProfile();
     const role = this.auth.user()?.role;
@@ -65,7 +71,7 @@ export class Sidebar {
         { label: 'الاختبارات', path: '/dashboard/instructor/quizzes', icon: 'quizzes' },
         { label: 'الطلاب', path: '/dashboard/instructor/students', icon: 'users' },
         { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
-        { label: 'الملف الشخصي', path: '/profile/instructor', icon: 'user' },
+        { label: 'الملف الشخصى', path: '/profile/instructor', icon: 'user' },
         { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
       ];
     }
@@ -77,7 +83,7 @@ export class Sidebar {
         { label: 'طلباتي', path: '/dashboard/seller/orders', icon: 'orders' },
         { label: 'الفواتير', path: '/dashboard/seller/invoices', icon: 'reports' },
         { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
-        { label: 'الملف الشخصي', path: '/profile/seller', icon: 'user' },
+        { label: 'الملف الشخصى', path: '/profile/seller', icon: 'user' },
         { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
       ];
     }
@@ -88,7 +94,7 @@ export class Sidebar {
         { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
         { label: 'طلباتي', path: '/marketplace/orders', icon: 'orders' },
         { label: 'المفضلة', path: '/marketplace/wishlist', icon: 'wishlist' },
-        { label: 'الملف الشخصي', path: '/profile/buyer', icon: 'user' },
+        { label: 'الملف الشخصى', path: '/profile/buyer', icon: 'user' },
         { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
       ];
     }
@@ -100,7 +106,7 @@ export class Sidebar {
       { label: 'الاختبارات', path: '/lms/quiz/demo-quiz', icon: 'quizzes' },
       { label: 'المساعد الذكي', path: '/ai/chat', icon: 'chat' },
       { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
-      { label: 'الملف الشخصي', path: '/profile/trainee', icon: 'user' },
+      { label: 'الملف الشخصى', path: '/profile/trainee', icon: 'user' },
       { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
     ];
   });

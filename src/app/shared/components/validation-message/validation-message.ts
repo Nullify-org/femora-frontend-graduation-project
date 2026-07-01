@@ -16,7 +16,7 @@ import { AbstractControl } from '@angular/forms';
         }
         @if (control?.errors?.['email']) {
           <p class="text-xs text-red-600 flex items-center gap-1">
-            <span>⚠</span> البريد الإلكتروني غير صالح
+            <span>⚠</span> البريد الإلكترونى غير صالح
           </p>
         }
         @if (control?.errors?.['minlength']) {

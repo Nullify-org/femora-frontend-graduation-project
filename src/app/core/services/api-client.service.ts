@@ -86,7 +86,7 @@ export class ApiClient {
     }
 
     // Display error notification
-    const errorMsg = error.error?.message || error.message || 'حدث خطأ في الاتصال بالخادم';
+    const errorMsg = error.error?.message || error.message || 'حدث خطأ فى الاتصال بالخادم';
     this.notifications.error(errorMsg);
 
     return throwError(() => error);
@@ -218,7 +218,7 @@ export class ApiClient {
     if (cleanUrl.match(/\/api\/ai\/chat$/)) {
       return {
         conversationId: body?.conversationId || 'mock_conv_id',
-        reply: 'هذا رد تجريبي تلقائي من المساعد الذكي لـ Femora (وضع عدم الاتصال). يمكنك طرح أي سؤال!'
+        reply: 'هذا رد تجريبى تلقائى من المساعد الذكى لـ Femora (وضع عدم الاتصال). يمكنك طرح أى سؤال!'
       };
     }
 

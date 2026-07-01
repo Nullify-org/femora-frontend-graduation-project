@@ -7,15 +7,15 @@ import { Card } from '../../../../shared/components/card/card';
   standalone: true,
   imports: [RouterLink, Card],
   template: `
-    <app-card title="المساعد الذكي ✨" subtitle="اسألي عن أي شيء">
+    <app-card title="المساعد الذكى ✨" subtitle="اسألى عن أى شيء">
       <p class="text-sm text-terracotta-dark mb-4">
-        احصلي على توصيات للدورات والمنتجات، أو اسألي عن درس معيّن
+        احصلى على توصيات للدورات والمنتجات، أو اسألى عن درس معيّن
       </p>
       <a
         routerLink="/ai/chat"
         class="block w-full text-center bg-navy text-white py-3 rounded-xl text-sm font-semibold hover:bg-navy/90 transition"
       >
-        ابدئي محادثة
+        ابدئى محادثة
       </a>
     </app-card>
   `,
