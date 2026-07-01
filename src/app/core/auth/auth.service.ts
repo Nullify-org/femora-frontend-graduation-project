@@ -259,7 +259,8 @@ export class AuthService {
     const normalized = lookup.charAt(0).toUpperCase() + lookup.slice(1).toLowerCase();
 
     if (normalized === 'Admin' || role === 'admin' || role === 'Admin') return '/dashboard/admin';
-    if (!profile) return '/';
+    if (normalized === 'Buyer' || role === 'buyer' || role === 'Buyer') return '/dashboard/buyer';
+    if (!profile) return '/dashboard/buyer';
 
     const config = PROFILE_CONFIGS.find((c) => c.type === profile);
     return config?.dashboardRoute ?? '/dashboard/trainee';
@@ -278,16 +279,29 @@ export class AuthService {
   }
 
   // ── Private ────────────────────────────────────────────────────────────────
+  private normalizeType(rawType: any): ProfileType {
+    const lookup = String(rawType || '').trim().toLowerCase();
+    if (lookup === 'admin') return 'Admin';
+    if (lookup === 'instructor' || lookup === 'teacher') return 'Instructor';
+    if (lookup === 'seller') return 'Seller';
+    if (lookup === 'buyer' || lookup === 'customer') return 'Buyer';
+    return 'Trainee';
+  }
+
   private normalize(raw: any): SigninResponse {
     const availableProfiles: AvailableProfile[] = (raw.availableProfiles ?? []).map(
-      (p: any): AvailableProfile => ({
-        id: p.id,
-        type: (p.name ?? p.type ?? p.profile) as ProfileType,
-        label: p.displayName ?? p.label ?? p.name ?? p.type,
-        displayName: p.displayName ?? p.label ?? p.name,
-        description: p.description ?? '',
-        dashboardRoute: undefined,
-      }),
+      (p: any): AvailableProfile => {
+        const rawType = p.name ?? p.type ?? p.profile;
+        const normalizedType = this.normalizeType(rawType);
+        return {
+          id: p.id,
+          type: normalizedType,
+          label: p.displayName ?? p.label ?? p.name ?? p.type,
+          displayName: p.displayName ?? p.label ?? p.name,
+          description: p.description ?? '',
+          dashboardRoute: undefined,
+        };
+      },
     );
 
     const requiresProfileSelection: boolean =
@@ -298,7 +312,7 @@ export class AuthService {
       user: { ...src.user, id: String(src.user?.id ?? '') },
       accessToken: src.accessToken,
       refreshToken: src.refreshToken,
-      activeProfile: (src.activeProfile as ProfileType) ?? null,
+      activeProfile: src.activeProfile ? this.normalizeType(src.activeProfile) : null,
     } : undefined;
 
     return { requiresProfileSelection, availableProfiles, auth };

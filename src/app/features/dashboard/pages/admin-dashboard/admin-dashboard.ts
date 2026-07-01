@@ -6,11 +6,12 @@ import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { ApprovalService, PendingApproval } from '../../../../core/services/approval.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { runInBrowser } from '../../../../core/utils/platform.util';
+import { SwitchRole } from '../../widgets/switch-role/switch-role';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [Sidebar, FormsModule, DatePipe, RouterLink],
+  imports: [Sidebar, FormsModule, DatePipe, RouterLink, SwitchRole],
   templateUrl: './admin-dashboard.html',
 })
 export class AdminDashboard implements OnInit {
@@ -87,11 +88,21 @@ export class AdminDashboard implements OnInit {
 
   typeLabel(type: string): string {
     const labels: Record<string, string> = {
+      Instructor: 'تحقق مدربة',
+      Seller: 'تحقق بائعة',
       InstructorVerification: 'تحقق مدربة',
-      SellerVerification:     'تحقق بائعة',
-      CourseApproval:         'موافقة دورة',
-      ProductApproval:        'موافقة منتج',
+      SellerVerification: 'تحقق بائعة',
+      CourseApproval: 'موافقة دورة',
+      ProductApproval: 'موافقة منتج',
     };
     return labels[type] ?? type;
+  }
+
+  getUserName(item: PendingApproval): string {
+    return this.approvalsApi.getDisplayName(item);
+  }
+
+  getCreatedAt(item: PendingApproval): string | null {
+    return item.dateCreated ?? item.createdAt ?? null;
   }
 }

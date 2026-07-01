@@ -1,4 +1,4 @@
-﻿import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
@@ -8,11 +8,12 @@ import { CourseService } from '../../../lms/services/course.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { Course } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
+import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [Sidebar, FormsModule, RouterLink],
+  imports: [Sidebar, FormsModule, SwitchRole],
   templateUrl: './instructor-dashboard.html',
 })
 export class InstructorDashboard implements OnInit {

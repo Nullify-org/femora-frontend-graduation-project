@@ -1,7 +1,10 @@
 <aside class="w-64 shrink-0 bg-navy text-white min-h-screen p-6 hidden lg:flex lg:flex-col">
   <!-- Logo -->
   <div class="mb-8">
-    <a routerLink="/" class="text-xl font-bold text-terracotta font-display">✿ Femora</a>
+    <a routerLink="/" class="flex items-center gap-3 text-xl font-bold text-terracotta font-display">
+      <img src="/images/logo.jpg" alt="Femora Logo" class="w-10 h-10 rounded-full object-cover shadow-sm bg-white" />
+      <span>Femora</span>
+    </a>
   </div>
 
   <!-- Nav links -->
@@ -12,17 +15,27 @@
         routerLinkActive="bg-white/10 text-terracotta"
         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/80 hover:bg-white/5 hover:text-white transition"
       >
-        <span class="w-5 h-5 text-white/80">
-          @if (link.path === '/dashboard' || link.path.includes('dashboard')) {
+        <span class="w-5 h-5 text-white/80 flex items-center justify-center">
+          @if (link.icon === 'dashboard') {
             <svg lucideLayoutDashboard [size]="18"></svg>
-          } @else if (link.path === '/lms/catalog') {
+          } @else if (link.icon === 'courses') {
             <svg lucideBookOpen [size]="18"></svg>
-          } @else if (link.path === '/marketplace/catalog') {
+          } @else if (link.icon === 'products') {
             <svg lucidePackage [size]="18"></svg>
-          } @else if (link.path === '/ai/chat') {
+          } @else if (link.icon === 'chat') {
             <svg lucideCpu [size]="18"></svg>
-          } @else if (link.path === '/messaging') {
-            <svg lucideBell [size]="18"></svg>
+          } @else if (link.icon === 'users') {
+            <svg lucideUsers [size]="18"></svg>
+          } @else if (link.icon === 'orders' || link.icon === 'bag') {
+            <svg lucideShoppingCart [size]="18"></svg>
+          } @else if (link.icon === 'quizzes') {
+            <svg lucideClipboardList [size]="18"></svg>
+          } @else if (link.icon === 'wishlist') {
+            <svg lucideHeart [size]="18"></svg>
+          } @else if (link.icon === 'reports') {
+            <svg lucideFileText [size]="18"></svg>
+          } @else if (link.icon === 'settings') {
+            <svg lucideSettings [size]="18"></svg>
           } @else {
             <svg lucideUser [size]="18"></svg>
           }

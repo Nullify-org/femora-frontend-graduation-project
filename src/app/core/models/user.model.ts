@@ -4,7 +4,8 @@ export type ProfileType =
   | 'Seller'
   | 'Admin'
   | 'student'
-  | 'instructor';
+  | 'instructor'
+  | 'Buyer';
 
 export interface User {
   id: string;
@@ -40,4 +41,5 @@ export const PROFILE_CONFIGS: ProfileConfig[] = [
   { type: 'Admin',      label: 'مدير',   dashboardRoute: '/dashboard/admin' },
   { type: 'student',    label: 'طالب',   dashboardRoute: '/dashboard/trainee' },
   { type: 'instructor', label: 'مدرب',   dashboardRoute: '/dashboard/instructor' },
+  { type: 'Buyer',      label: 'مشتري',  dashboardRoute: '/dashboard/buyer' },
 ];

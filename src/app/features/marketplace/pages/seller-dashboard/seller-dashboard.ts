@@ -1,4 +1,4 @@
-﻿import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -6,11 +6,12 @@ import { ApprovalService } from '../../../../core/services/approval.service';
 import { OrderService } from '../../../marketplace/services/order.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { runInBrowser } from '../../../../core/utils/platform.util';
+import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 
 @Component({
   selector: 'app-seller-dashboard',
   standalone: true,
-  imports: [Sidebar, FormsModule],
+  imports: [Sidebar, FormsModule, SwitchRole],
   templateUrl: './seller-dashboard.html',
 })
 export class SellerDashboard implements OnInit {
