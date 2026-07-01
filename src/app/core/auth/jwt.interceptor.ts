@@ -43,7 +43,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
       // ── No connection (backend down) ─────────────────────────────────────
       if (err.status === 0) {
-        if (!isSilent) notify.error('تعذّر الاتصال بالسيرفر. تأكدي من تشغيل الـ backend.');
+        if (!isSilent) notify.error('تعذّر الاتصال بالسيرفر. تأكدى من تشغيل الـ backend.');
         return throwError(() => err);
       }
 

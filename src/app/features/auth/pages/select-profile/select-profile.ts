@@ -22,7 +22,7 @@ export class SelectProfile implements OnInit {
   readonly isLoading = signal(false);
 
   readonly profileMeta: Record<string, { emoji: string; description: string }> = {
-    Trainee:    { emoji: '🎓', description: 'تعلّمي الحرف اليدوية واحصلي على شهادات معتمدة' },
+    Trainee:    { emoji: '🎓', description: 'تعلّمى الحرف اليدوية واحصلي على شهادات معتمدة' },
     Instructor: { emoji: '👩‍🏫', description: 'شاركي خبرتك وأنشئي دورات تدريبية مميزة' },
     Seller:     { emoji: '🏪', description: 'اعرضي منتجاتك اليدوية وابدئي البيع' },
     Admin:      { emoji: '⚙️', description: 'إدارة المنصة والمحتوى' },
@@ -65,7 +65,7 @@ export class SelectProfile implements OnInit {
       error: (err) => {
         this.isLoading.set(false);
         this.selectedType.set(null);
-        const msg = err?.error?.title ?? err?.error?.message ?? 'تعذّر اختيار الملف الشخصي';
+        const msg = err?.error?.title ?? err?.error?.message ?? 'تعذّر اختيار الملف الشخصى';
         this.notifications.error(msg);
       },
     });

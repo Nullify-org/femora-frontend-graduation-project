@@ -1,49 +1,195 @@
 <div class="flex min-h-screen bg-cream-light">
   <app-sidebar />
 
-  <main class="flex-1 p-6 lg:p-10">
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <h1 class="text-2xl font-bold text-text-dark font-display">مركز البائعة</h1>
-        <p class="text-text-light text-sm mt-1">إدارة منتجاتك وطلباتك</p>
-      </div>
-      <button type="button" (click)="showApply.set(true)" class="text-sm bg-primary text-white px-4 py-2 rounded-xl hover:bg-primary-dark">
-        طلب التحقق كبائعة
-      </button>
-    </div>
+  <main class="flex-1 p-6 lg:p-10 flex flex-col lg:flex-row gap-8 overflow-x-hidden">
+    <!-- Left / Center Section (Main Dashboard Data) -->
+    <div class="flex-1 space-y-8 order-2 lg:order-1">
+      
+      <!-- Metrics Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">إجمالي المبيعات</p>
+            <p class="text-2xl font-bold text-navy mt-1">24</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z" />
+            </svg>
+          </div>
+        </div>
 
-    <div class="grid lg:grid-cols-2 gap-6">
-      <div class="bg-warm-white rounded-2xl p-6 femora-shadow">
-        <h2 class="font-bold text-text-dark mb-4">منتجاتي</h2>
-        <div class="text-center py-8">
-          <p class="text-text-medium mb-4">لا توجد منتجات بعد</p>
-          <button type="button" class="bg-primary text-white px-6 py-2 rounded-xl text-sm">أضيفي منتجك الأول</button>
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">إجمالي الطلبات</p>
+            <p class="text-2xl font-bold text-navy mt-1">7</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">إجمالي الأرباح</p>
+            <p class="text-2xl font-bold text-navy mt-1">1,250 <span class="text-xs">SAR</span></p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">إعلانات ممولة</p>
+            <p class="text-2xl font-bold text-navy mt-1">5</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-violet-50 flex items-center justify-center text-violet-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            </svg>
+          </div>
         </div>
       </div>
 
-      <div class="bg-warm-white rounded-2xl p-6 femora-shadow">
-        <h2 class="font-bold text-text-dark mb-4">طلباتي</h2>
-        @if (orders().length === 0) {
-          <p class="text-text-medium text-sm">لا توجد طلبات</p>
-        } @else {
-          <ul class="space-y-2 text-sm text-text-medium">
-            @for (order of orders(); track $index) {
-              <li class="border-b border-sand/30 pb-2">طلب #{{ $index + 1 }}</li>
-            }
-          </ul>
-        }
+      <!-- Recent Orders Table -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-6 shadow-sm overflow-hidden">
+        <h2 class="text-base font-bold text-navy mb-4 flex items-center gap-2">
+          <span>📦</span> أحدث الطلبات
+        </h2>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-right">
+            <thead>
+              <tr class="text-text-light border-b border-blush/30 pb-2">
+                <th class="py-2 font-semibold">رقم الطلب</th>
+                <th class="py-2 font-semibold">اسم المنتج</th>
+                <th class="py-2 font-semibold">القيمة</th>
+                <th class="py-2 font-semibold">حالة الطلب</th>
+                <th class="py-2 font-semibold">التاريخ</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-medium">
+              <tr class="border-b border-blush/20">
+                <td class="py-3 font-semibold text-navy">#1004</td>
+                <td class="py-3">حقيبة كروشيه يدوية</td>
+                <td class="py-3">245 SAR</td>
+                <td class="py-3"><span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">قيد التجهيز</span></td>
+                <td class="py-3">2024-05-20</td>
+              </tr>
+              <tr class="border-b border-blush/20">
+                <td class="py-3 font-semibold text-navy">#1003</td>
+                <td class="py-3">شمعة معطرة</td>
+                <td class="py-3">89 SAR</td>
+                <td class="py-3"><span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">قيد التجهيز</span></td>
+                <td class="py-3">2024-05-19</td>
+              </tr>
+              <tr class="border-b border-blush/20">
+                <td class="py-3 font-semibold text-navy">#1002</td>
+                <td class="py-3">لوحة فنية</td>
+                <td class="py-3">199 SAR</td>
+                <td class="py-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">مكتمل</span></td>
+                <td class="py-3">2024-05-18</td>
+              </tr>
+              <tr class="border-b border-blush/20">
+                <td class="py-3 font-semibold text-navy">#1001</td>
+                <td class="py-3">طقم أدوات رسم</td>
+                <td class="py-3">129 SAR</td>
+                <td class="py-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">مكتمل</span></td>
+                <td class="py-3">2024-05-17</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <!-- Best Selling Products -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-6 shadow-sm">
+        <h2 class="text-base font-bold text-navy mb-5">أفضل المنتجات مبيعاً</h2>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center">
+            <span class="text-3xl">👜</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">حقيبة كروشيه</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">60 مبيع</p>
+          </div>
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center">
+            <span class="text-3xl">🎨</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">لوحة فنية</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">75 مبيع</p>
+          </div>
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center">
+            <span class="text-3xl">🕯️</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">شمعة معطرة</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">90 مبيع</p>
+          </div>
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center">
+            <span class="text-3xl">🖌️</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">طقم أدوات رسم</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">50 مبيع</p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
+    <!-- Right Sidebar Section (Secondary Widgets) -->
+    <div class="w-full lg:w-80 space-y-6 order-1 lg:order-2">
+      
+      <!-- Welcome Panel -->
+      <div class="bg-gradient-to-br from-[#2c1a0e] to-[#472d1a] text-white rounded-3xl p-6 relative overflow-hidden shadow-md">
+        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/5 rounded-full blur-2xl"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-2.5">
+            <span class="text-lg">🏪</span>
+            <span class="bg-white/10 text-white/90 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
+              بائع
+            </span>
+          </div>
+          <h2 class="text-xl font-bold mt-3">مرحباً، سعيد بعودتك!</h2>
+          <p class="text-white/70 text-xs mt-2 leading-relaxed">
+            إدارة متجرك ومنتجاتك وسحوباتك بكل سهولة.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-5 shadow-sm">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-text-light mb-4">إجراءات سريعة</h3>
+        <div class="space-y-2">
+          <button (click)="showApply.set(true)" class="w-full flex items-center justify-between p-3 bg-cream/30 border border-blush/20 rounded-xl hover:border-terracotta transition text-sm font-semibold text-text-dark text-right">
+            <span>إضافة منتج جديد</span>
+            <span class="text-terracotta">+</span>
+          </button>
+          <a routerLink="/marketplace/catalog" class="w-full flex items-center justify-between p-3 bg-cream/30 border border-blush/20 rounded-xl hover:border-terracotta transition text-sm font-semibold text-text-dark text-right">
+            <span>إدارة المخزون</span>
+            <span class="text-terracotta">📦</span>
+          </a>
+          <a routerLink="/marketplace/catalog" class="w-full flex items-center justify-between p-3 bg-cream/30 border border-blush/20 rounded-xl hover:border-terracotta transition text-sm font-semibold text-text-dark text-right">
+            <span>عرض السوق</span>
+            <span class="text-terracotta">🏪</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Switch Role component -->
+      <app-switch-role />
+    </div>
+
+    <!-- Apply modal (kept intact from original HTML) -->
     @if (showApply()) {
-      <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-        <div class="bg-warm-white rounded-2xl p-6 w-full max-w-lg femora-shadow">
-          <h3 class="font-bold text-text-dark mb-4">طلب التحقق كبائعة</h3>
-          <input [(ngModel)]="applyShopName" maxlength="100" class="w-full border border-sand rounded-xl p-3 text-sm mb-3" placeholder="اسم المتجر" />
-          <textarea [(ngModel)]="applyDescription" rows="3" maxlength="500" class="w-full border border-sand rounded-xl p-3 text-sm mb-4" placeholder="وصف المتجر (اختياري)"></textarea>
+      <div class="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl text-right">
+          <h3 class="font-bold text-navy mb-4">إضافة منتج جديد</h3>
+          <input [(ngModel)]="applyShopName" maxlength="100" class="w-full border border-blush bg-white rounded-xl px-4 py-3 text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-terracotta" placeholder="اسم المنتج" />
+          <textarea [(ngModel)]="applyDescription" rows="3" maxlength="500" class="w-full border border-blush bg-white rounded-xl px-4 py-3 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-terracotta" placeholder="وصف المنتج وتفاصيله (اختياري)"></textarea>
           <div class="flex gap-2 justify-end">
-            <button type="button" (click)="showApply.set(false)" class="px-4 py-2 text-sm">إلغاء</button>
-            <button type="button" (click)="applySeller()" class="px-4 py-2 text-sm bg-primary text-white rounded-xl">إرسال</button>
+            <button type="button" (click)="showApply.set(false)" class="px-4 py-2 text-sm text-text-medium hover:bg-cream rounded-xl transition">إلغاء</button>
+            <button type="button" (click)="applySeller()" class="px-4 py-2 text-sm bg-terracotta text-white rounded-xl hover:opacity-90 transition">إضافة منتج</button>
           </div>
         </div>
       </div>

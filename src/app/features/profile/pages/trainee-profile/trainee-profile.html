@@ -19,8 +19,8 @@
       <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6 mb-6">
         <h2 class="font-bold text-navy mb-4">دوراتي</h2>
         @if (enrollments.length === 0) {
-          <p class="text-sm text-terracotta-dark">لم تسجّلي في دورات بعد.</p>
-          <a routerLink="/lms/catalog" class="text-sm text-terracotta hover:underline mt-2 inline-block">استكشفي الدورات</a>
+          <p class="text-sm text-terracotta-dark">لم تسجّلى فى دورات بعد.</p>
+          <a routerLink="/lms/catalog" class="text-sm text-terracotta hover:underline mt-2 inline-block">استكشفى الدورات</a>
         } @else {
           <div class="space-y-3">
             @for (e of enrollments; track e.enrollmentId ?? e.courseId) {
@@ -35,7 +35,7 @@
       <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
         <h2 class="font-bold text-navy mb-4">طلباتي</h2>
         @if (isLoading) {
-          <p class="text-sm text-terracotta-dark">جاري التحميل...</p>
+          <p class="text-sm text-terracotta-dark">جارى التحميل...</p>
         } @else if (orders.length === 0) {
           <p class="text-sm text-terracotta-dark">لا توجد طلبات بعد.</p>
         } @else {

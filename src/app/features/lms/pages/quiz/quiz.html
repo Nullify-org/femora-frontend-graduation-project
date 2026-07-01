@@ -5,7 +5,7 @@
       @if (isLoading) {
         <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-10 text-center">
           <div class="mx-auto h-12 w-12 rounded-full bg-terracotta/10 animate-pulse"></div>
-          <p class="mt-4 text-terracotta-dark">جاري التحميل...</p>
+          <p class="mt-4 text-terracotta-dark">جارى التحميل...</p>
         </div>
       } @else if (errorMessage && !quiz) {
         <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
@@ -16,7 +16,7 @@
               <p class="text-sm font-semibold text-terracotta">اختبار تفاعلي</p>
               <h1 class="text-2xl font-bold text-navy font-display mt-1">{{ quiz.title ?? 'الاختبار' }}</h1>
               <p class="text-sm text-terracotta-dark mt-2">
-                قيّمي فهمك بسرعة وابدئي بحل الأسئلة خطوة بخطوة.
+                قيّمى فهمك بسرعة وابدئى بحل الأسئلة خطوة بخطوة.
               </p>
             </div>
             <div class="rounded-xl bg-cream px-4 py-3 text-right">
@@ -32,7 +32,7 @@
             <p class="text-4xl mb-4">{{ result.isPassed ? '🎉' : '📝' }}</p>
             <p class="text-xl font-bold text-navy">{{ result.score }} / {{ result.maxScore }}</p>
             <p class="text-terracotta-dark mt-2">
-              {{ result.isPassed ? 'نجحتِ في الاختبار!' : 'لم تنجحي هذه المرة — حاولي مجدداً' }}
+              {{ result.isPassed ? 'نجحتِ فى الاختبار!' : 'لم تنجحى هذه المرة — حاولى مجدداً' }}
             </p>
             <div class="mt-6 flex flex-wrap justify-center gap-3">
               @if (quiz.courseId) {
@@ -85,7 +85,7 @@
               [disabled]="isSubmitting"
               class="rounded-xl bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-terracotta-dark disabled:opacity-60"
             >
-              {{ isSubmitting ? 'جاري الإرسال...' : 'إرسال الإجابات' }}
+              {{ isSubmitting ? 'جارى الإرسال...' : 'إرسال الإجابات' }}
             </button>
           </div>
         }
@@ -94,7 +94,7 @@
           <div class="text-5xl mb-4">🧠</div>
           <h1 class="text-2xl font-bold text-navy font-display">اختبار سريع لمتابعة التعلم</h1>
           <p class="text-terracotta-dark mt-3 max-w-xl mx-auto">
-            اختبري معرفتك في دقائق قليلة، ثم راجعي النتيجة مباشرة.
+            اختبرى معرفتك فى دقائق قليلة، ثم راجعى النتيجة مباشرة.
           </p>
           <button
             type="button"
@@ -102,7 +102,7 @@
             [disabled]="isGenerating"
             class="mt-6 rounded-xl bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-terracotta-dark disabled:opacity-60"
           >
-            {{ isGenerating ? 'جاري إنشاء الاختبار...' : 'إنشاء اختبار جديد' }}
+            {{ isGenerating ? 'جارى إنشاء الاختبار...' : 'إنشاء اختبار جديد' }}
           </button>
         </div>
       }

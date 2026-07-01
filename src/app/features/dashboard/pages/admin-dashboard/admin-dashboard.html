@@ -1,246 +1,330 @@
 <div class="flex min-h-screen bg-cream-light">
   <app-sidebar />
 
-  <main class="flex-1 p-6 lg:p-10">
-    <div class="flex items-start justify-between mb-8">
-      <div>
-        <h1 class="text-2xl font-bold text-text-dark font-display mb-1">لوحة الإدارة</h1>
-        <p class="text-text-light text-sm">إدارة طلبات الموافقة والتحقق</p>
+  <main class="flex-1 p-6 lg:p-10 flex flex-col lg:flex-row gap-8 overflow-x-hidden">
+
+    <!-- ══ Main Column ══ -->
+    <div class="flex-1 space-y-8 order-2 lg:order-1">
+
+      <!-- Metrics Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        @if (statsLoading()) {
+          @for (_ of [1,2,3,4,5]; track $index) {
+            <div class="bg-white border border-blush/60 rounded-2xl p-4 shadow-sm animate-pulse">
+              <div class="h-2.5 bg-cream rounded w-3/4 mb-3"></div>
+              <div class="h-5 bg-cream rounded w-1/2"></div>
+            </div>
+          }
+        } @else {
+          <div class="bg-white border border-blush/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] text-text-light font-medium">إجمالي المستخدمين</p>
+            <span class="text-xl font-bold text-navy">{{ stats()?.totalUsers ?? 0 | number }}</span>
+            <p class="text-[9px] text-text-light mt-0.5">
+              {{ stats()?.totalTrainees ?? 0 }} متدربة · {{ stats()?.totalInstructors ?? 0 }} مدربة · {{ stats()?.totalSellers ?? 0 }} بائعة
+            </p>
+          </div>
+
+          <div class="bg-white border border-blush/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] text-text-light font-medium">إجمالي الدورات</p>
+            <span class="text-xl font-bold text-navy">{{ stats()?.totalCourses ?? 0 | number }}</span>
+            <p class="text-[9px] text-text-light mt-0.5">{{ stats()?.publishedCourses ?? 0 }} منشورة</p>
+          </div>
+
+          <div class="bg-white border border-blush/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] text-text-light font-medium">إجمالي المنتجات</p>
+            <span class="text-xl font-bold text-navy">{{ stats()?.totalProducts ?? 0 | number }}</span>
+            <p class="text-[9px] text-text-light mt-0.5">{{ stats()?.publishedProducts ?? 0 }} منشور</p>
+          </div>
+
+          <div class="bg-white border border-blush/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] text-text-light font-medium">إجمالي الطلبات</p>
+            <span class="text-xl font-bold text-navy">{{ stats()?.totalOrders ?? 0 | number }}</span>
+            <p class="text-[9px] text-amber-600 mt-0.5">{{ stats()?.pendingApprovals ?? 0 }} معلق</p>
+          </div>
+
+          <div class="bg-white border border-blush/60 rounded-2xl p-4 shadow-sm">
+            <p class="text-[10px] text-text-light font-medium">إجمالي الإيرادات</p>
+            <span class="text-lg font-bold text-navy">
+              {{ stats()?.totalRevenue ?? 0 | number:'1.0-0' }}
+              <span class="text-[9px]">SAR</span>
+            </span>
+            <p class="text-[9px] text-text-light mt-0.5">من {{ stats()?.totalEnrollments ?? 0 }} تسجيل</p>
+          </div>
+        }
       </div>
-      <button (click)="loadPending()" class="text-xs text-[#C8956C] border border-[#F0E6DE] px-3 py-1.5 rounded-lg hover:bg-[#FFF8F4] transition">
-        🔄 تحديث
-      </button>
+
+      <!-- Charts Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Sales Chart (static SVG mockup) -->
+        <div class="bg-white border border-blush/60 rounded-3xl p-5 shadow-sm md:col-span-2">
+          <h3 class="text-xs font-bold text-navy mb-4">المبيعات (آخر 7 أيام)</h3>
+          <div class="h-44 w-full flex flex-col justify-between">
+            <svg class="w-full h-32" viewBox="0 0 400 120">
+              <defs>
+                <linearGradient id="salesGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#C8956C" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#C8956C" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="20" x2="400" y2="20" stroke="#f0e6de" stroke-width="0.5" stroke-dasharray="4"/>
+              <line x1="0" y1="60" x2="400" y2="60" stroke="#f0e6de" stroke-width="0.5" stroke-dasharray="4"/>
+              <line x1="0" y1="100" x2="400" y2="100" stroke="#f0e6de" stroke-width="0.5" stroke-dasharray="4"/>
+              <path d="M0,120 L0,90 L60,80 L120,105 L180,75 L240,65 L300,45 L360,35 L400,30 L400,120 Z" fill="url(#salesGrad)"/>
+              <path d="M0,90 L60,80 L120,105 L180,75 L240,65 L300,45 L360,35 L400,30" fill="none" stroke="#C8956C" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="60" cy="80" r="3.5" fill="white" stroke="#C8956C" stroke-width="2"/>
+              <circle cx="120" cy="105" r="3.5" fill="white" stroke="#C8956C" stroke-width="2"/>
+              <circle cx="240" cy="65" r="3.5" fill="white" stroke="#C8956C" stroke-width="2"/>
+              <circle cx="300" cy="45" r="3.5" fill="white" stroke="#C8956C" stroke-width="2"/>
+              <circle cx="360" cy="35" r="3.5" fill="white" stroke="#C8956C" stroke-width="2"/>
+            </svg>
+            <div class="flex justify-between text-[10px] text-text-light px-2">
+              <span>20 مايو</span><span>22 مايو</span><span>24 مايو</span>
+              <span>26 مايو</span><span>28 مايو</span><span>30 مايو</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donut — real user distribution -->
+        <div class="bg-white border border-blush/60 rounded-3xl p-5 shadow-sm">
+          <h3 class="text-xs font-bold text-navy mb-4">توزيع المستخدمين</h3>
+          <div class="flex flex-col items-center justify-center h-44 space-y-4">
+            <div class="relative w-28 h-28 flex items-center justify-center">
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="14.5" fill="none" stroke="#F5EFE6" stroke-width="3"/>
+                <circle cx="18" cy="18" r="14.5" fill="none" stroke="#C8956C" stroke-width="3.2"
+                  [attr.stroke-dasharray]="dashArray(traineePercent())" stroke-dashoffset="0"/>
+                <circle cx="18" cy="18" r="14.5" fill="none" stroke="#5A8A6A" stroke-width="3.2"
+                  [attr.stroke-dasharray]="dashArray(instructorPercent())"
+                  [attr.stroke-dashoffset]="dashOffset(traineePercent())"/>
+                <circle cx="18" cy="18" r="14.5" fill="none" stroke="#F4A261" stroke-width="3.2"
+                  [attr.stroke-dasharray]="dashArray(sellerPercent())"
+                  [attr.stroke-dashoffset]="dashOffset(traineePercent() + instructorPercent())"/>
+              </svg>
+              <div class="absolute flex flex-col items-center text-center">
+                <span class="text-xs font-bold text-navy">{{ stats()?.totalUsers ?? 0 | number }}</span>
+                <span class="text-[8px] text-text-light">المجموع</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 w-full text-[9px] text-text-medium text-center">
+              <div class="flex flex-col items-center">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#C8956C]"></span>
+                <span class="mt-1">{{ traineePercent() }}% متدربة</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#5A8A6A]"></span>
+                <span class="mt-1">{{ instructorPercent() }}% مدربة</span>
+              </div>
+              <div class="flex flex-col items-center">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#F4A261]"></span>
+                <span class="mt-1">{{ sellerPercent() }}% بائعة</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pending Approvals Table -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-base font-bold text-navy">🛡️ طلبات الموافقة المعلقة</h2>
+          <button (click)="loadPending()"
+            class="text-[10px] text-terracotta border border-blush/60 px-3 py-1.5 rounded-lg hover:bg-cream/40 transition">
+            🔄 تحديث
+          </button>
+        </div>
+
+        @if (loading()) {
+          <p class="text-text-medium text-sm py-4 text-center">جاري التحميل...</p>
+        } @else if (errorMessage()) {
+          <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+            <p class="text-red-600 text-sm mb-3">{{ errorMessage() }}</p>
+            <button (click)="loadPending()" class="text-xs bg-red-100 text-red-700 px-4 py-2 rounded-lg">
+              إعادة المحاولة
+            </button>
+          </div>
+        } @else if (pending().length === 0) {
+          <div class="bg-cream/20 rounded-2xl p-8 text-center border border-blush/30">
+            <p class="text-3xl mb-2">✅</p>
+            <p class="text-xs text-text-medium">لا توجد طلبات معلّقة حالياً</p>
+          </div>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-right">
+              <thead>
+                <tr class="text-text-light border-b border-blush/30">
+                  <th class="py-2 font-semibold">مقدّم الطلب</th>
+                  <th class="py-2 font-semibold">النوع</th>
+                  <th class="py-2 font-semibold">التاريخ</th>
+                  <th class="py-2 font-semibold">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody class="text-text-medium">
+                @for (item of pending(); track item.id) {
+                  <tr class="border-b border-blush/20 hover:bg-cream/30">
+                    <td class="py-3 text-xs text-navy font-medium">
+                      {{ item.requesterName || item.userId }}
+                    </td>
+                    <td class="py-3">
+                      <span class="bg-terracotta/10 text-terracotta text-[10px] px-2 py-0.5 rounded-full font-semibold">
+                        {{ typeLabel(item.type) }}
+                      </span>
+                    </td>
+                    <td class="py-3 text-xs">{{ item.createdAt | date:'short' }}</td>
+                    <td class="py-3">
+                      <div class="flex gap-2 flex-wrap">
+                        <button type="button" (click)="openProfile(item)"
+                          class="bg-slate-100 text-slate-800 px-3 py-1.5 rounded-lg text-xs hover:bg-slate-200 transition">
+                          👁️ عرض الطلب
+                        </button>
+                        <button type="button" (click)="approve(item.id)"
+                          class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90 transition">
+                          ✅ موافقة
+                        </button>
+                        <button type="button" (click)="openReject(item.id)"
+                          class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90 transition">
+                          ❌ رفض
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+
     </div>
 
-    @if (loading()) {
-      <div class="flex items-center gap-3 text-text-medium">
-        <svg class="w-5 h-5 animate-spin text-[#C8956C]" fill="none" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
-        </svg>
-        جاري التحميل...
-      </div>
+    <!-- ══ Right Sidebar ══ -->
+    <div class="w-full lg:w-80 space-y-6 order-1 lg:order-2">
 
-    } @else if (errorMessage()) {
-      <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-        <p class="text-red-600 text-sm mb-3">{{ errorMessage() }}</p>
-        <button (click)="loadPending()" class="text-xs bg-red-100 text-red-700 px-4 py-2 rounded-lg hover:bg-red-200 transition">
-          إعادة المحاولة
-        </button>
-      </div>
-
-    } @else if (pending().length === 0) {
-      <div class="bg-warm-white rounded-2xl p-10 text-center femora-shadow">
-        <p class="text-4xl mb-3">✅</p>
-        <p class="text-text-medium">لا توجد طلبات معلّقة حالياً</p>
-      </div>
-
-    } @else {
-      <div class="bg-warm-white rounded-2xl femora-shadow overflow-hidden">
-        <table class="w-full text-sm">
-          <thead class="bg-cream border-b border-sand/50">
-            <tr>
-              <th class="text-start p-4 font-semibold text-text-dark">المستخدم</th>
-              <th class="text-start p-4 font-semibold text-text-dark">النوع</th>
-              <th class="text-start p-4 font-semibold text-text-dark">التاريخ</th>
-              <th class="text-start p-4 font-semibold text-text-dark">إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of pending(); track item.id) {
-              <tr class="border-b border-sand/30 hover:bg-cream/50">
-                <td class="p-4 font-medium text-text-dark">{{ approvalsApi.getDisplayName(item) }}</td>
-                <td class="p-4">
-                  <span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
-                    {{ typeLabel(item.type) }}
-                  </span>
-                </td>
-                <td class="p-4 text-text-light">{{ item.createdAt | date: 'short' }}</td>
-                <td class="p-4">
-                  <div class="flex gap-2 flex-wrap">
-                    <button type="button" (click)="openProfile(item)"
-                      class="bg-[#F0E6DE] text-[#8B5E3C] px-3 py-1.5 rounded-lg text-xs hover:bg-[#E8D5C4] transition font-medium">
-                      👁 عرض الطلب
-                    </button>
-                    <button type="button" (click)="approve(item.id)"
-                      class="bg-success text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90 transition">
-                      ✅ موافقة
-                    </button>
-                    <button type="button" (click)="openReject(item.id)"
-                      class="bg-error text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90 transition">
-                      ❌ رفض
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    }
-
-    <!-- ══ Reject Modal ══ -->
-    @if (rejectTargetId()) {
-      <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-        <div class="bg-warm-white rounded-2xl p-6 w-full max-w-md femora-shadow">
-          <h3 class="font-bold text-text-dark mb-3">سبب الرفض (اختياري)</h3>
-          <textarea [(ngModel)]="rejectNote" rows="3"
-            class="w-full border border-sand rounded-xl p-3 text-sm mb-4 resize-none"
-            placeholder="اكتبي سبب الرفض..."></textarea>
-          <div class="flex gap-2 justify-end">
-            <button type="button" (click)="rejectTargetId.set(null)"
-              class="px-4 py-2 text-sm text-text-medium hover:bg-cream rounded-lg transition">إلغاء</button>
-            <button type="button" (click)="confirmReject()"
-              class="px-4 py-2 text-sm bg-error text-white rounded-xl hover:opacity-90 transition">تأكيد الرفض</button>
+      <!-- Welcome Panel -->
+      <div class="bg-gradient-to-br from-[#2c1a0e] to-[#472d1a] text-white rounded-3xl p-6 relative overflow-hidden shadow-md">
+        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/5 rounded-full blur-2xl"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-2.5">
+            <span class="text-lg">🛡️</span>
+            <span class="bg-white/10 text-white/90 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
+              المدير
+            </span>
           </div>
+          <h2 class="text-xl font-bold mt-3">مرحباً، مدير النظام</h2>
+          <p class="text-white/70 text-xs mt-2 leading-relaxed">إدارة شاملة للمنصة ومراقبة الأداء ونشاطات الأعضاء.</p>
         </div>
       </div>
-    }
 
-    <!-- ══ Profile / Request Details Modal ══ -->
-    @if (profileTarget()) {
-      <div class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
-           (click)="profileTarget.set(null)">
-        <div class="bg-warm-white rounded-2xl w-full max-w-md femora-shadow overflow-hidden"
-             (click)="$event.stopPropagation()">
-
-          <!-- Modal Header -->
-          <div class="flex items-center justify-between px-6 py-4 border-b border-sand/40">
-            <div class="flex items-center gap-2">
-              <span class="text-lg">📋</span>
-              <h3 class="font-bold text-text-dark">تفاصيل الطلب</h3>
-            </div>
-            <button type="button" (click)="profileTarget.set(null)"
-              class="text-text-light hover:text-text-dark transition text-xl leading-none">✕</button>
-          </div>
-
-          <div class="p-6 space-y-5">
-
-            <!-- User Info -->
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-full bg-primary/15 flex items-center justify-center text-xl flex-shrink-0">👤</div>
-              <div>
-                <p class="font-semibold text-text-dark">{{ approvalsApi.getDisplayName(profileTarget()!) }}</p>
-                @if (profileTarget()!.userEmail) {
-                  <p class="text-text-light text-xs mt-0.5">{{ profileTarget()!.userEmail }}</p>
-                }
-              </div>
-              <span class="mr-auto bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
-                {{ typeLabel(profileTarget()!.type) }}
-              </span>
-            </div>
-
-            <hr class="border-sand/40"/>
-
-            <!-- Request Data — Instructor -->
-            @if (isInstructor(profileTarget()!.type)) {
-              <div class="space-y-3">
-                <p class="text-xs font-semibold text-text-light uppercase tracking-wide">بيانات طلب المدربة</p>
-
-                <div class="bg-cream rounded-xl p-4 space-y-3 text-sm">
-                  <div>
-                    <p class="text-text-light text-xs mb-1">نبذة شخصية (Bio)</p>
-                    <p class="text-text-dark leading-relaxed">
-                      {{ profileTarget()!.bio || '—' }}
-                    </p>
-                  </div>
-                  @if (profileTarget()!.portfolioUrl) {
-                    <div>
-                      <p class="text-text-light text-xs mb-1">رابط الأعمال (Portfolio)</p>
-                      <a [href]="profileTarget()!.portfolioUrl" target="_blank"
-                        class="text-primary underline break-all text-xs">
-                        {{ profileTarget()!.portfolioUrl }}
-                      </a>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- Request Data — Seller -->
-            @if (isSeller(profileTarget()!.type)) {
-              <div class="space-y-3">
-                <p class="text-xs font-semibold text-text-light uppercase tracking-wide">بيانات طلب البائعة</p>
-
-                <div class="bg-cream rounded-xl p-4 space-y-3 text-sm">
-                  <div>
-                    <p class="text-text-light text-xs mb-1">اسم المتجر</p>
-                    <p class="text-text-dark font-medium">{{ profileTarget()!.shopName || '—' }}</p>
-                  </div>
-                  @if (profileTarget()!.description) {
-                    <div>
-                      <p class="text-text-light text-xs mb-1">وصف المتجر</p>
-                      <p class="text-text-dark leading-relaxed">{{ profileTarget()!.description }}</p>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- Request Data — Course -->
-            @if (isCourse(profileTarget()!.type)) {
-              <div class="space-y-3">
-                <p class="text-xs font-semibold text-text-light uppercase tracking-wide">بيانات طلب الدورة</p>
-
-                <div class="bg-cream rounded-xl p-4 space-y-3 text-sm">
-                  <div>
-                    <p class="text-text-light text-xs mb-1">عنوان الدورة</p>
-                    <p class="text-text-dark font-medium">{{ profileTarget()!.title || '—' }}</p>
-                  </div>
-                  @if (profileTarget()!.description) {
-                    <div>
-                      <p class="text-text-light text-xs mb-1">وصف الدورة</p>
-                      <p class="text-text-dark leading-relaxed">{{ profileTarget()!.description }}</p>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- Request Data — Product -->
-            @if (isProduct(profileTarget()!.type)) {
-              <div class="space-y-3">
-                <p class="text-xs font-semibold text-text-light uppercase tracking-wide">بيانات طلب المنتج</p>
-
-                <div class="bg-cream rounded-xl p-4 space-y-3 text-sm">
-                  <div>
-                    <p class="text-text-light text-xs mb-1">اسم المنتج</p>
-                    <p class="text-text-dark font-medium">{{ profileTarget()!.title || '—' }}</p>
-                  </div>
-                  @if (profileTarget()!.description) {
-                    <div>
-                      <p class="text-text-light text-xs mb-1">وصف المنتج</p>
-                      <p class="text-text-dark leading-relaxed">{{ profileTarget()!.description }}</p>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-            <!-- Meta -->
-            <div class="bg-cream/60 rounded-xl p-3 text-xs text-text-light flex justify-between">
-              <span>تاريخ الطلب: {{ profileTarget()!.createdAt | date: 'medium' }}</span>
-            </div>
-
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex gap-3 px-6 pb-5">
-            <button type="button" (click)="approveFromProfile()"
-              class="flex-1 bg-success text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition">
-              ✅ موافقة
+      <!-- Quick Actions -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-5 shadow-sm">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-text-light mb-4">إدارة سريعة</h3>
+        <div class="grid grid-cols-2 gap-2 text-center text-xs font-semibold text-text-dark">
+          @for (btn of quickActions; track btn.label) {
+            <button class="p-3 bg-cream/30 hover:border-terracotta border border-blush/20 rounded-xl transition flex flex-col items-center justify-center">
+              <span class="text-xl mb-1">{{ btn.icon }}</span>
+              <span>{{ btn.label }}</span>
             </button>
-            <button type="button" (click)="rejectFromProfile()"
-              class="flex-1 bg-error text-white py-2.5 rounded-xl text-sm font-medium hover:opacity-90 transition">
-              ❌ رفض
-            </button>
-          </div>
-
+          }
         </div>
       </div>
-    }
+
+      <app-switch-role />
+    </div>
 
   </main>
 </div>
+
+<!-- Reject Modal -->
+@if (rejectTargetId()) {
+  <div class="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl text-right">
+      <h3 class="font-bold text-navy mb-3">سبب الرفض (اختياري)</h3>
+      <textarea [(ngModel)]="rejectNote" rows="3"
+        class="w-full border border-blush rounded-xl p-3 text-sm mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-terracotta"
+        placeholder="اكتبي سبب الرفض..."></textarea>
+      <div class="flex gap-2 justify-end">
+        <button type="button" (click)="rejectTargetId.set(null)"
+          class="px-4 py-2 text-sm text-text-medium hover:bg-cream rounded-lg transition">إلغاء</button>
+        <button type="button" (click)="confirmReject()"
+          class="px-4 py-2 text-sm bg-red-600 text-white rounded-xl hover:opacity-90 transition">تأكيد الرفض</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Request Details Modal -->
+@if (profileTarget()) {
+  <div class="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-xl shadow-xl text-right">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <h3 class="text-xl font-bold text-navy mb-1">تفاصيل الطلب</h3>
+          <p class="text-xs text-text-medium">{{ typeLabel(profileTarget()?.type || '') }}</p>
+        </div>
+        <button type="button" (click)="profileTarget.set(null)"
+          class="text-sm text-text-medium hover:text-navy transition">✕ إغلاق</button>
+      </div>
+
+      <div class="grid gap-4">
+        <div class="bg-cream/60 rounded-2xl p-4">
+          <p class="text-[11px] text-text-light mb-1">مقدّم الطلب</p>
+          <p class="font-semibold text-navy">{{ profileTarget()?.requesterName || profileTarget()?.userFullName || profileTarget()?.userId }}</p>
+          <p class="text-[11px] text-text-medium mt-1">{{ profileTarget()?.userEmail || 'بدون بريد إلكتروني' }}</p>
+        </div>
+
+        <div class="grid gap-3">
+          <div class="bg-cream/50 rounded-2xl p-4">
+            <p class="text-[11px] text-text-light mb-1">نبذة</p>
+            <p class="text-sm text-text-dark">{{ profileTarget()?.bio || profileTarget()?.description || 'لا توجد معلومات إضافية' }}</p>
+          </div>
+
+          <div class="grid gap-3 md:grid-cols-2">
+            @if (profileTarget()?.portfolioUrl) {
+              <div class="bg-cream/50 rounded-2xl p-4">
+                <p class="text-[11px] text-text-light mb-1">رابط الملف الشخصى</p>
+                <a href="{{ profileTarget()?.portfolioUrl }}" target="_blank" rel="noreferrer"
+                  class="text-sm text-emerald-700 hover:underline break-all">{{ profileTarget()?.portfolioUrl }}</a>
+              </div>
+            }
+            @if (profileTarget()?.shopName) {
+              <div class="bg-cream/50 rounded-2xl p-4">
+                <p class="text-[11px] text-text-light mb-1">اسم المتجر</p>
+                <p class="text-sm text-text-dark">{{ profileTarget()?.shopName }}</p>
+              </div>
+            }
+            @if (profileTarget()?.title) {
+              <div class="bg-cream/50 rounded-2xl p-4 col-span-full">
+                <p class="text-[11px] text-text-light mb-1">العنوان</p>
+                <p class="text-sm text-text-dark">{{ profileTarget()?.title }}</p>
+              </div>
+            }
+            @if (profileTarget()?.entityId) {
+              <div class="bg-cream/50 rounded-2xl p-4 col-span-full">
+                <p class="text-[11px] text-text-light mb-1">رقم الكيان</p>
+                <p class="text-sm text-text-dark">{{ profileTarget()?.entityId }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="bg-cream/60 rounded-2xl p-4 text-xs text-text-light">
+          <p>تاريخ الطلب: {{ profileTarget()?.createdAt | date:'short' }}</p>
+          <p>الحالة: {{ profileTarget()?.status }}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 mt-6 sm:flex-row sm:justify-end">
+        <button type="button" (click)="rejectFromProfile()"
+          class="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-xl hover:opacity-90 transition">رفض</button>
+        <button type="button" (click)="approveFromProfile()"
+          class="w-full sm:w-auto bg-emerald-600 text-white px-4 py-2 rounded-xl hover:opacity-90 transition">موافقة</button>
+        <button type="button" (click)="profileTarget.set(null)"
+          class="w-full sm:w-auto px-4 py-2 rounded-xl border border-blush text-text-medium hover:bg-cream transition">إغلاق</button>
+      </div>
+    </div>
+  </div>
+}
 
 <!-- Chat FAB -->
 <a routerLink="/ai/chat"

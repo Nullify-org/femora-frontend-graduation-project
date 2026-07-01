@@ -33,10 +33,10 @@
         <div class="flex-1 bg-white rounded-2xl femora-shadow border border-blush/30 flex flex-col min-h-0">
           <div class="flex-1 overflow-y-auto p-6 space-y-4">
             @if (isLoading) {
-              <p class="text-terracotta-dark text-sm">جاري التحميل...</p>
+              <p class="text-terracotta-dark text-sm">جارى التحميل...</p>
             } @else if (messages.length === 0) {
               <p class="text-terracotta-dark text-sm text-center mt-12">
-                مرحباً! اسأليني عن الدورات، المنتجات، أو أي شيء يخص مشروعكِ المنزلي.
+                مرحباً! اسألينى عن الدورات، المنتجات، أو أى شيء يخص مشروعكِ المنزلي.
               </p>
             } @else {
               @for (msg of messages; track $index) {
@@ -53,7 +53,7 @@
               }
             }
             @if (isSending) {
-              <p class="text-xs text-terracotta-dark">جاري الكتابة...</p>
+              <p class="text-xs text-terracotta-dark">جارى الكتابة...</p>
             }
           </div>
 
@@ -68,7 +68,7 @@
               type="text"
               [(ngModel)]="draft"
               name="draft"
-              placeholder="اكتبي رسالتكِ..."
+              placeholder="اكتبى رسالتكِ..."
               class="flex-1 border border-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
             />
             <button

@@ -137,8 +137,8 @@ export const routes: Routes = [
       {
         path: 'buyer',
         loadComponent: () =>
-          import('./features/dashboard/pages/dashboard/dashboard').then(
-            (m) => m.Dashboard,
+          import('./features/dashboard/pages/buyer-dashboard/buyer-dashboard').then(
+            (m) => m.BuyerDashboard,
           ),
       },
     ],
@@ -225,6 +225,8 @@ export const routes: Routes = [
   },
   { path: 'profile',       redirectTo: 'profile/trainee',      pathMatch: 'full' },
   { path: 'profile/edit',  redirectTo: 'profile/preferences',  pathMatch: 'full' },
+  { path: 'profile/settings',  redirectTo: 'profile/preferences', pathMatch: 'full' },
+  { path: 'dashboard/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
   { path: 'profile/settings',  redirectTo: 'profile/preferences', pathMatch: 'full' },
   { path: 'dashboard/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
   {

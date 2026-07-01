@@ -103,12 +103,28 @@ export interface Cart {
   total?: number;
 }
 
+// Matches Femora.Domain.Entities.Marketplace.Order as serialized by the API
+// (camelCase + JsonStringEnumConverter — see Program.cs)
+export interface OrderItemDto {
+  id: string;
+  orderId: string;
+  productVariantId: string;
+  quantity: number;
+  unitPrice: number;
+  productVariant?: unknown | null;
+}
+
 export interface Order {
-  orderId?: string;
   id?: string;
-  status?: string | null;
-  total?: number;
+  userId?: string;
+  status?: string;          // "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled"
+  totalAmount?: number;
+  orderItems?: OrderItemDto[] | null;
   createdAt?: string;
+
+  // Legacy aliases kept for any older code (and mock seed data) still reading these
+  orderId?: string;
+  total?: number;
   items?: CartItem[] | null;
 }
 

@@ -9,11 +9,11 @@
       }
 
       @if (isLoading) {
-        <p class="text-terracotta-dark">جاري التحميل...</p>
+        <p class="text-terracotta-dark">جارى التحميل...</p>
       } @else if (items.length === 0) {
         <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
           <p class="text-terracotta-dark mb-4">سلتكِ فارغة</p>
-          <a routerLink="/marketplace/catalog" class="text-terracotta hover:underline">تصفّحي المنتجات</a>
+          <a routerLink="/marketplace/catalog" class="text-terracotta hover:underline">تصفّحى المنتجات</a>
         </div>
       } @else {
         <div class="space-y-4">

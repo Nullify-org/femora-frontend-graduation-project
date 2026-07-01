@@ -85,7 +85,7 @@ export class CourseDetails {
         this.isEnrolling.set(false);
         this.isEnrolled.set(true);
         this.enrollmentId.set(response.enrollmentId);
-        this.notifications.success('تم التسجيل في الدورة بنجاح');
+        this.notifications.success('تم التسجيل فى الدورة بنجاح');
         this.router.navigate(['/lms/player', response.enrollmentId]);
       },
     });

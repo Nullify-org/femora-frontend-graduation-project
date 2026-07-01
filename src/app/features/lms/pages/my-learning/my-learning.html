@@ -27,7 +27,7 @@
         <div
           class="text-center py-20 text-stone-500"
         >
-          جاري التحميل...
+          جارى التحميل...
         </div>
 
       }
@@ -118,7 +118,10 @@
                   {{ enrollment.progressPercent }}%
                 </div>
 
-                <a [routerLink]="['/lms/player', enrollment.enrollmentId]">
+                <a
+                  [routerLink]="['/lms/player', enrollment.enrollmentId]"
+                  class="mt-4 block w-full text-center bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2.5 rounded-xl transition"
+                >
                   متابعة التعلم
                 </a>
 

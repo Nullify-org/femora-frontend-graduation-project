@@ -7,8 +7,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
  * Google OAuth Callback Page
  * Route: /signin-google
  *
- * Google يعمل redirect هنا بعد login مع الـ id_token في الـ URL fragment (#).
- * الصفحة دي بتاخد الـ token وتبعته للـ backend.
+ * Google يعمل redirect هنا بعد login مع الـ id_token فى الـ URL fragment (#).
+ * الصفحة دى بتاخد الـ token وتبعته للـ backend.
  */
 @Component({
   selector: 'app-signin-google',
@@ -27,7 +27,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"
                     stroke-dasharray="32" stroke-dashoffset="12"/>
           </svg>
-          <p class="text-[#8B6355] text-sm">جاري تسجيل الدخول بـ Google...</p>
+          <p class="text-[#8B6355] text-sm">جارى تسجيل الدخول بـ Google...</p>
         }
       </div>
     </div>
@@ -40,7 +40,7 @@ export class SigninGoogle implements OnInit {
   error = '';
 
   ngOnInit(): void {
-    // الـ token بييجي في الـ URL fragment: #id_token=...&access_token=...
+    // الـ token بييجى فى الـ URL fragment: #id_token=...&access_token=...
     const fragment = window.location.hash.substring(1);
     const params   = new URLSearchParams(fragment);
     const idToken  = params.get('id_token');
