@@ -15,7 +15,7 @@
 
     <div class="relative z-10 max-w-sm text-center">
       <div class="flex items-center justify-center gap-4 mb-8">
-        <div class="flex items-center justify-center w-16 h-16 rounded-full bg-[#C8956C] text-white text-3xl shadow-inner">✿</div>
+        <img src="/images/logo.jpg" alt="Femora Logo" class="w-16 h-16 rounded-full object-cover shadow-inner bg-white" />
         <div class="text-left">
           <h1 class="text-4xl font-bold text-[#7A4B2A] tracking-wide">Femora</h1>
           <p class="text-sm text-[#A07060] mt-2 tracking-widest uppercase">تعلم · إبداع · كسب</p>
@@ -53,7 +53,7 @@
       <!-- Mobile logo -->
       <div class="lg:hidden text-center mb-8">
         <div class="inline-flex items-center justify-center gap-3">
-          <div class="flex items-center justify-center w-12 h-12 rounded-full bg-[#C8956C] text-white text-2xl">✿</div>
+          <img src="/images/logo.jpg" alt="Femora Logo" class="w-12 h-12 rounded-full object-cover bg-white" />
           <div>
             <h1 class="text-3xl font-bold text-[#C8956C]">Femora</h1>
             <p class="text-xs text-[#A07060] mt-1 tracking-widest uppercase">تعلم · إبداع · كسب</p>
@@ -148,7 +148,7 @@
 
           <!-- ✅ نسيت كلمة المرور — moved below the input -->
           <div class="text-start mt-1.5">
-            <a href="#" class="text-xs text-[#C8956C] hover:text-[#B07855] hover:underline transition">
+            <a routerLink="/forgot-password" class="text-xs text-[#C8956C] hover:text-[#B07855] hover:underline transition">
               نسيتِ كلمة المرور؟
             </a>
           </div>
@@ -176,14 +176,14 @@
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
             </svg>
           }
-          {{ isLoading() ? 'جاري الدخول...' : 'تسجيل الدخول' }}
+          {{ isLoading() ? 'جارى الدخول...' : 'تسجيل الدخول' }}
         </button>
 
       </form>
 
       <div class="flex items-center gap-3 my-6">
         <div class="flex-1 h-px bg-[#F0E6DE]"></div>
-        <span class="text-xs text-[#A07060] px-1">أو سجّلي بـ</span>
+        <span class="text-xs text-[#A07060] px-1">أو سجّلى بـ</span>
         <div class="flex-1 h-px bg-[#F0E6DE]"></div>
       </div>
 
@@ -219,7 +219,7 @@
       <p class="text-center text-sm text-[#8B6355] mt-6">
         ليس لديكِ حساب؟
         <a routerLink="/register" class="font-semibold text-[#C8956C] hover:text-[#B07855] hover:underline transition mr-1">
-          أنشئي حسابك مجاناً
+          أنشئى حسابك مجاناً
         </a>
       </p>
 

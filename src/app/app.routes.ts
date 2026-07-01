@@ -30,6 +30,19 @@ export const routes: Routes = [
       import('./features/auth/pages/register/register').then((m) => m.Register),
   },
 
+  {
+    path: 'forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+  },
+  {
+    path: 'reset-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/reset-password/reset-password').then((m) => m.ResetPassword),
+  },
+
   // ✅ Google OAuth Callback — لازم يكون بدون guard
   {
     path: 'signin-google',
@@ -121,6 +134,13 @@ export const routes: Routes = [
             (m) => m.AdminDashboard,
           ),
       },
+      {
+        path: 'buyer',
+        loadComponent: () =>
+          import('./features/dashboard/pages/dashboard/dashboard').then(
+            (m) => m.Dashboard,
+          ),
+      },
     ],
   },
   {
@@ -149,6 +169,12 @@ export const routes: Routes = [
       ).then(
         (m) => m.MyLearning
       ),
+  },
+  {
+    path: 'lms/quiz/:id',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
   },
 //   { path: 'lms/instructor',       redirectTo: 'dashboard/instructor', pathMatch: 'full' },
 
@@ -199,6 +225,8 @@ export const routes: Routes = [
   },
   { path: 'profile',       redirectTo: 'profile/trainee',      pathMatch: 'full' },
   { path: 'profile/edit',  redirectTo: 'profile/preferences',  pathMatch: 'full' },
+  { path: 'profile/settings',  redirectTo: 'profile/preferences', pathMatch: 'full' },
+  { path: 'dashboard/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
   {
     path: 'profile/trainee',
     canActivate: [authGuard],
