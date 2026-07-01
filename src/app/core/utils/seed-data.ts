@@ -205,23 +205,32 @@ export const MOCK_CONVERSATIONS: ConversationSummary[] = [
 export const MOCK_APPROVALS: PendingApproval[] = [
   {
     id: 'app_1',
-    type: 'Instructor',
+    type: 'InstructorVerification',
     status: 'Pending',
     userId: '101',
-    dateCreated: new Date().toISOString(),
-    fullName: 'سارة محمد',
-    user: { id: '101', firstName: 'سارة', lastName: 'محمد', email: 'sara@example.com' },
+    userFullName: 'سارة محمد',
+    userEmail: 'sara@example.com',
+    createdAt: new Date().toISOString(),
+    bio: 'مدربة كروشيه محترفة بخبرة 5 سنوات في تعليم الحرف اليدوية',
+    portfolioUrl: 'https://portfolio.example.com/sara',
   },
   {
     id: 'app_2',
-    type: 'Seller',
+    type: 'SellerVerification',
     status: 'Pending',
     userId: '102',
-    dateCreated: new Date().toISOString(),
-    fullName: 'نورة أحمد',
-    user: { id: '102', firstName: 'نورة', lastName: 'أحمد', email: 'nora@example.com' },
+    userFullName: 'نورة أحمد',
+    userEmail: 'nora@example.com',
+    createdAt: new Date().toISOString(),
+    shopName: 'متجر نورة للحرف اليدوية',
+    description: 'متجر متخصص في بيع مستلزمات الكروشيه والتطريز',
   },
 ];
+
+export const MOCK_USERS: Record<string, { id: string; firstName: string; lastName: string; email: string }> = {
+  '101': { id: '101', firstName: 'سارة',  lastName: 'محمد', email: 'sara@example.com' },
+  '102': { id: '102', firstName: 'نورة',  lastName: 'أحمد', email: 'nora@example.com' },
+};
 
 export const MOCK_SUBSCRIPTION = {
   planName: 'متقدّم',
