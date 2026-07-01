@@ -226,6 +226,14 @@ export class ApiClient {
       return { success: true };
     }
 
+    // USERS — match /api/users/{id} OR /api/auth/users/{id} OR /api/admin/users/{id}
+    const userDetailMatch = cleanUrl.match(/\/api\/(?:auth\/|admin\/)?users\/([^/]+)$/);
+    if (userDetailMatch && method === 'GET') {
+      const uid = userDetailMatch[1];
+      const found = seed.MOCK_USERS[uid];
+      return found ?? null;
+    }
+
     // APPROVALS
     if (cleanUrl.match(/\/api\/approvals\/instructors\/apply$/)) {
       return 'approval_inst_id';
@@ -233,7 +241,7 @@ export class ApiClient {
     if (cleanUrl.match(/\/api\/approvals\/sellers\/apply$/)) {
       return 'approval_sell_id';
     }
-    if (cleanUrl.match(/\/api\/approvals\/admin\/approvals\/pending$/)) {
+    if (cleanUrl.match(/\/api\/approvals\/admin\/approvals\/pending$/i)) {
       return seed.MOCK_APPROVALS;
     }
     const reviewMatch = cleanUrl.match(/\/api\/approvals\/admin\/approvals\/([^/]+)\/review$/);
