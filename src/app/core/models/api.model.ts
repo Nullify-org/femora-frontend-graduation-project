@@ -60,6 +60,31 @@ export interface EnrollmentResponse {
   status: string;
 }
 
+export interface PagedResult<T> {
+  items: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+}
+
+/** Matches Femora.Application.Features.MarketPlace.Products.DTOs.ProductVariantDto */
+export interface ProductVariantDto {
+  id: string;
+  name?: string | null;
+  price: number;
+  stockQuantity: number;
+}
+
+/** Matches Femora.Application.Features.MarketPlace.Products.DTOs.ProductDetailsDto (GET /api/products/{id}) */
+export interface ProductDetailsDto {
+  id: string;
+  name: string;
+  description?: string | null;
+  categoryId?: string | null;
+  images: string[];
+  variants: ProductVariantDto[];
+}
+
 export interface RecommendedProduct {
   productId?: string;
   id?: string;
@@ -71,6 +96,17 @@ export interface RecommendedProduct {
   category?: string | null;
   imageUrl?: string | null;
   score?: number;
+  /**
+   * Variant attributes, e.g. { "Color": "Red", "Size": "M" }.
+   * Optional — not all backends expose this yet. When present, the product
+   * details page groups all rows sharing the same `productId` into pickable
+   * attribute options (color swatches, size pills, etc).
+   */
+  attributes?: Record<string, string> | null;
+  /** Fallback display label for a variant when structured `attributes` aren't available (e.g. "Large / Blue"). */
+  variantLabel?: string | null;
+  /** Units in stock for this specific variant, if the backend tracks inventory. */
+  stock?: number;
 }
 
 export interface RecommendedCourse {
@@ -94,6 +130,7 @@ export interface CartItem {
   unitPrice?: number;
   price?: number;
   lineTotal?: number;
+  imageUrl?: string | null;
 }
 
 export interface Cart {

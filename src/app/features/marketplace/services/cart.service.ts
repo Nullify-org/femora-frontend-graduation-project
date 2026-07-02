@@ -31,4 +31,14 @@ export class CartService {
       params: { CartItemId: cartItemId },
     });
   }
+
+  /**
+   * Updates the quantity of an existing cart line item.
+   * NOTE: requires a backend endpoint — PUT /api/cart/update { cartItemId, quantity }.
+   * If the backend doesn't have this route yet, this call will 404 and (in dev)
+   * silently fall back to mock data via ApiClient — see backend TODO.
+   */
+  updateQuantity(cartItemId: string, quantity: number): Observable<unknown> {
+    return this.api.put(`${this.base}/update`, { cartItemId, quantity });
+  }
 }
