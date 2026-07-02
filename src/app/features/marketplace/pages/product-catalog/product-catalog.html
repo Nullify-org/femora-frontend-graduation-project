@@ -2,27 +2,44 @@
   <app-sidebar />
   <main class="flex-1 p-8">
     <div class="max-w-6xl mx-auto">
-      <h1 class="text-2xl font-bold text-navy font-display">منتجات Femora</h1>
-      <p class="text-terracotta-dark mt-2 mb-8">منتجات مقترحة من سيدات مصريات</p>
+      <div class="flex items-baseline justify-between mb-8">
+        <div>
+          <h1 class="text-2xl font-bold text-navy font-display">منتجات Femora</h1>
+          <p class="text-terracotta-dark mt-2">منتجات مقترحة من سيدات مصريات</p>
+        </div>
+        @if (totalCount() > 0) {
+          <p class="text-sm text-terracotta-dark">{{ totalCount() }} منتج</p>
+        }
+      </div>
 
-      @if (errorMessage) {
-        <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">{{ errorMessage }}</div>
+      @if (errorMessage()) {
+        <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">{{ errorMessage() }}</div>
       }
 
-      @if (isLoading) {
+      @if (isLoading()) {
         <p class="text-terracotta-dark text-center py-12">جارى التحميل...</p>
-      } @else if (products.length === 0) {
+      } @else if (products().length === 0) {
         <p class="text-terracotta-dark text-center py-12">لا توجد منتجات متاحة حالياً</p>
       } @else {
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          @for (product of products; track product.id) {
+          @for (product of products(); track product.id) {
             <a
               [routerLink]="['/marketplace/product', product.id]"
               class="bg-white rounded-2xl overflow-hidden femora-shadow border border-blush/30 hover:-translate-y-1 transition-transform block"
             >
-              <div class="h-36 bg-gradient-to-br from-terracotta/20 to-blush flex items-center justify-center text-5xl">
-                {{ productEmoji(product.category) }}
-              </div>
+              @if (product.imageUrl && !imageFailed(product.id)) {
+                <img
+                  [src]="product.imageUrl"
+                  [alt]="product.name ?? 'صورة المنتج'"
+                  (error)="onImageError(product.id)"
+                  class="h-36 w-full object-cover"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="h-36 bg-gradient-to-br from-terracotta/20 to-blush flex items-center justify-center text-5xl">
+                  {{ productEmoji(product.category) }}
+                </div>
+              }
               <div class="p-5">
                 <h3 class="font-bold text-navy font-display">{{ product.name }}</h3>
                 @if (product.sellerName) {
@@ -33,6 +50,59 @@
             </a>
           }
         </div>
+
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+          <div class="flex items-center justify-center gap-2 mt-10">
+            <button
+              type="button"
+              (click)="previousPage()"
+              [disabled]="currentPage() === 1"
+              class="px-3 py-2 rounded-lg border border-blush/50 text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              السابق
+            </button>
+
+            @if (pageWindow()[0] > 1) {
+              <button type="button" (click)="goToPage(1)" class="w-9 h-9 rounded-lg text-sm text-terracotta-dark hover:bg-blush/20">1</button>
+              @if (pageWindow()[0] > 2) {
+                <span class="text-terracotta-dark px-1">…</span>
+              }
+            }
+
+            @for (page of pageWindow(); track page) {
+              <button
+                type="button"
+                (click)="goToPage(page)"
+                class="w-9 h-9 rounded-lg text-sm transition"
+                [class.bg-terracotta]="page === currentPage()"
+                [class.text-white]="page === currentPage()"
+                [class.text-terracotta-dark]="page !== currentPage()"
+                [class.hover:bg-blush/20]="page !== currentPage()"
+              >
+                {{ page }}
+              </button>
+            }
+
+            @if (pageWindow()[pageWindow().length - 1] < totalPages()) {
+              @if (pageWindow()[pageWindow().length - 1] < totalPages() - 1) {
+                <span class="text-terracotta-dark px-1">…</span>
+              }
+              <button type="button" (click)="goToPage(totalPages())" class="w-9 h-9 rounded-lg text-sm text-terracotta-dark hover:bg-blush/20">
+                {{ totalPages() }}
+              </button>
+            }
+
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="currentPage() === totalPages()"
+              class="px-3 py-2 rounded-lg border border-blush/50 text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              التالي
+            </button>
+          </div>
+        }
       }
     </div>
   </main>

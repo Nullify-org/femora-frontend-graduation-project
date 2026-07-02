@@ -1,41 +1,187 @@
 <div class="flex min-h-screen bg-cream-light">
   <app-sidebar />
-  <main class="flex-1 p-8">
-    <div class="max-w-3xl mx-auto">
-      <a routerLink="/marketplace/catalog" class="text-terracotta hover:underline text-sm mb-6 inline-block">← العودة للمنتجات</a>
+  <main class="flex-1 p-6 md:p-10">
+    <div class="max-w-5xl mx-auto">
+      <a
+        routerLink="/marketplace/catalog"
+        class="inline-flex items-center gap-1.5 text-sm font-medium text-terracotta-dark hover:text-terracotta transition mb-6"
+      >
+        <svg lucideArrowRight [size]="16"></svg>
+        العودة للمنتجات
+      </a>
 
-      @if (isLoading) {
-        <p class="text-terracotta-dark">جارى التحميل...</p>
-      } @else if (errorMessage && !product) {
-        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
-      } @else if (product) {
-        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 overflow-hidden">
-          <div class="h-48 bg-gradient-to-br from-terracotta/20 to-blush flex items-center justify-center text-7xl">
-            {{ productEmoji(product.category) }}
+      @if (isLoading()) {
+        <div class="grid md:grid-cols-2 gap-8 animate-pulse">
+          <div class="h-80 md:h-[26rem] bg-blush/40 rounded-3xl"></div>
+          <div class="space-y-4 py-2">
+            <div class="h-4 w-24 bg-blush/40 rounded-full"></div>
+            <div class="h-8 w-3/4 bg-blush/40 rounded-lg"></div>
+            <div class="h-6 w-32 bg-blush/40 rounded-lg"></div>
+            <div class="h-24 bg-blush/40 rounded-2xl mt-6"></div>
           </div>
-          <div class="p-8">
-            <h1 class="text-3xl font-bold text-navy font-display">{{ product.name }}</h1>
-            @if (product.sellerName) {
-              <p class="text-sm text-terracotta-dark mt-2">بواسطة {{ product.sellerName }}</p>
-            }
-            @if (product.category) {
-              <p class="text-xs text-terracotta-dark mt-1">{{ product.category }}</p>
-            }
-            <p class="text-2xl font-bold text-terracotta mt-6">{{ formatPrice(product.price) }}</p>
-
-            @if (errorMessage) {
-              <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mt-4">
-                {{ errorMessage }}
+        </div>
+      } @else if (errorMessage() && !product()) {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-10 text-center">
+          <div class="w-14 h-14 rounded-full bg-red-50 text-red-500 flex items-center justify-center mx-auto mb-4">
+            <svg lucideTag [size]="22"></svg>
+          </div>
+          <p class="text-red-700 font-medium">{{ errorMessage() }}</p>
+          <a routerLink="/marketplace/catalog" class="inline-block mt-4 text-terracotta font-semibold hover:underline">
+            تصفّحى منتجات أخرى
+          </a>
+        </div>
+      } @else if (displayProduct(); as product) {
+        <div class="grid md:grid-cols-2 gap-8 md:gap-10 items-start">
+          <!-- Image -->
+          <div class="bg-white rounded-3xl femora-shadow border border-blush/30 overflow-hidden md:sticky md:top-8">
+            @if (product.imageUrl && !imageFailed()) {
+              <img
+                [src]="product.imageUrl"
+                [alt]="product.name ?? 'صورة المنتج'"
+                (error)="onImageError()"
+                class="h-80 md:h-[26rem] w-full object-cover"
+              />
+            } @else {
+              <div class="h-80 md:h-[26rem] w-full bg-gradient-to-br from-terracotta/15 via-blush/40 to-sand/50 flex items-center justify-center text-8xl">
+                {{ productEmoji(product.category) }}
               </div>
             }
+          </div>
+
+          <!-- Info -->
+          <div class="bg-white rounded-3xl femora-shadow border border-blush/30 p-6 md:p-8">
+            <div class="flex flex-wrap items-center gap-2 mb-3">
+              @if (categoryLabel()) {
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-terracotta-dark bg-blush/30 px-3 py-1 rounded-full">
+                  <svg lucideTag [size]="12"></svg>
+                  {{ categoryLabel() }}
+                </span>
+              }
+              @if (stockLabel()) {
+                <span
+                  class="inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full"
+                  [class.bg-sage/15]="!isOutOfStock()"
+                  [class.text-sage]="!isOutOfStock()"
+                  [class.bg-red-50]="isOutOfStock()"
+                  [class.text-red-600]="isOutOfStock()"
+                >
+                  <svg lucideCircleCheck [size]="12"></svg>
+                  {{ stockLabel() }}
+                </span>
+              }
+            </div>
+
+            <h1 class="text-2xl md:text-3xl font-bold text-navy font-display leading-snug">{{ product.name }}</h1>
+
+            @if (product.sellerName) {
+              <p class="inline-flex items-center gap-1.5 text-sm text-terracotta-dark mt-2">
+                <svg lucideBadgeCheck [size]="15"></svg>
+                بواسطة {{ product.sellerName }}
+              </p>
+            }
+
+            <p class="text-3xl font-bold text-terracotta mt-5">{{ formatPrice(product.price) }}</p>
+
+            @if (errorMessage()) {
+              <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mt-4">
+                {{ errorMessage() }}
+              </div>
+            }
+
+            <hr class="border-blush/30 my-6" />
+
+            <!-- Variant picker: only shown when the product actually has more than one variant -->
+            @if (variants().length > 1) {
+              @if (hasStructuredAttributes()) {
+                @for (key of attributeKeys(); track key) {
+                  <div class="mb-6">
+                    <p class="text-sm font-semibold text-navy mb-2.5">{{ key }}</p>
+                    <div class="flex flex-wrap gap-2">
+                      @for (value of attributeOptions()[key]; track value) {
+                        <button
+                          type="button"
+                          (click)="selectAttribute(key, value)"
+                          [disabled]="!isAttributeValueAvailable(key, value)"
+                          class="px-4 py-2 rounded-full text-sm border font-medium transition"
+                          [class.bg-terracotta]="isAttributeValueSelected(key, value)"
+                          [class.text-white]="isAttributeValueSelected(key, value)"
+                          [class.border-terracotta]="isAttributeValueSelected(key, value)"
+                          [class.border-blush]="!isAttributeValueSelected(key, value)"
+                          [class.text-terracotta-dark]="!isAttributeValueSelected(key, value)"
+                          [class.hover:border-terracotta/60]="!isAttributeValueSelected(key, value) && isAttributeValueAvailable(key, value)"
+                          [class.opacity-40]="!isAttributeValueAvailable(key, value)"
+                          [class.cursor-not-allowed]="!isAttributeValueAvailable(key, value)"
+                        >
+                          {{ value }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @if (!selectedVariant()) {
+                  <p class="text-xs text-terracotta-dark -mt-3 mb-6">يرجى اختيار جميع الخصائص لعرض السعر والتوفر</p>
+                }
+              } @else {
+                <!-- No structured color/size data from the backend yet — fall back to a flat variant list -->
+                <div class="mb-6">
+                  <p class="text-sm font-semibold text-navy mb-2.5">اختارى النوع</p>
+                  <div class="flex flex-wrap gap-2">
+                    @for (variant of variants(); track variant.productVariantId ?? variant.id) {
+                      <button
+                        type="button"
+                        (click)="selectVariant(variant.productVariantId ?? variant.id)"
+                        class="px-4 py-2 rounded-full text-sm border font-medium transition"
+                        [class.bg-terracotta]="(variant.productVariantId ?? variant.id) === selectedVariant()?.id || (variant.productVariantId ?? variant.id) === selectedVariant()?.productVariantId"
+                        [class.text-white]="(variant.productVariantId ?? variant.id) === selectedVariant()?.id || (variant.productVariantId ?? variant.id) === selectedVariant()?.productVariantId"
+                        [class.border-terracotta]="(variant.productVariantId ?? variant.id) === selectedVariant()?.id || (variant.productVariantId ?? variant.id) === selectedVariant()?.productVariantId"
+                        [class.border-blush]="(variant.productVariantId ?? variant.id) !== selectedVariant()?.id && (variant.productVariantId ?? variant.id) !== selectedVariant()?.productVariantId"
+                        [class.text-terracotta-dark]="(variant.productVariantId ?? variant.id) !== selectedVariant()?.id && (variant.productVariantId ?? variant.id) !== selectedVariant()?.productVariantId"
+                      >
+                        {{ variantLabel(variant) }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            }
+
+            <!-- Quantity stepper -->
+            <div class="flex items-center justify-between mb-6">
+              <span class="text-sm font-semibold text-navy">الكمية</span>
+              <div class="flex items-center gap-1 border border-blush/50 rounded-full p-1">
+                <button
+                  type="button"
+                  (click)="decreaseQuantity()"
+                  [disabled]="quantity() <= 1"
+                  class="w-9 h-9 rounded-full text-terracotta-dark hover:bg-blush/30 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition"
+                  aria-label="إنقاص الكمية"
+                ><svg lucideMinus [size]="15"></svg></button>
+
+                <span class="text-navy font-semibold min-w-[2.25rem] text-center">{{ quantity() }}</span>
+
+                <button
+                  type="button"
+                  (click)="increaseQuantity()"
+                  class="w-9 h-9 rounded-full text-terracotta-dark hover:bg-blush/30 flex items-center justify-center transition"
+                  aria-label="زيادة الكمية"
+                ><svg lucidePlus [size]="15"></svg></button>
+              </div>
+            </div>
 
             <button
               type="button"
               (click)="addToCart()"
-              [disabled]="isAdding"
-              class="mt-6 bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+              [disabled]="isAdding() || !selectedVariant() || isOutOfStock()"
+              class="w-full bg-terracotta text-white px-6 py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              {{ isAdding ? 'جارى الإضافة...' : 'أضيفى إلى السلة' }}
+              @if (isAdding()) {
+                <svg lucideLoader2 [size]="17" class="animate-spin"></svg>
+                جارى الإضافة...
+              } @else {
+                <svg lucideShoppingBag [size]="17"></svg>
+                أضيفى إلى السلة
+              }
             </button>
           </div>
         </div>

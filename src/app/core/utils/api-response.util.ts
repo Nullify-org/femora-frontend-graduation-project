@@ -35,6 +35,23 @@ export function formatPrice(price: number | undefined | null, freeLabel = 'مج�
   return `${price.toLocaleString('ar-EG')} ج.م`;
 }
 
+/**
+ * True when the given string is a raw database identifier (GUID/UUID) rather
+ * than a human-readable label. Used to make sure internal IDs (e.g. a
+ * categoryId returned before the backend resolves it to a name) never leak
+ * into the UI as visible text.
+ */
+export function isGuidLike(value?: string | null): boolean {
+  if (!value) return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim());
+}
+
+/** Safe display label — returns null instead of leaking a raw GUID to the user. */
+export function displayLabel(value?: string | null): string | null {
+  if (!value) return null;
+  return isGuidLike(value) ? null : value;
+}
+
 export function courseEmoji(category?: string | null): string {
   const map: Record<string, string> = {
     crochet: '🧶',
