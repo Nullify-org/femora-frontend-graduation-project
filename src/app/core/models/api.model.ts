@@ -241,6 +241,16 @@ export interface SendMessageResult {
   reply?: string | null;
 }
 
+export interface ChatWithLessonResult {
+  conversationId: string;
+  answer: string;
+}
+
+export interface SummarizeLessonResult {
+  lessonId: string;
+  summary: string;
+}
+
 
 export interface LearningCourse {
     courseId:string;
