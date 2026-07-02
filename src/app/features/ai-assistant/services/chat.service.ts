@@ -2,10 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
 import {
+  ChatWithLessonResult,
   ConversationDetail,
   ConversationSummary,
   RecommendedCourse,
   SendMessageResult,
+  SummarizeLessonResult,
 } from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
@@ -39,5 +41,32 @@ export class ChatService {
     return this.api.get<RecommendedCourse[]>(`${this.base}/recommendations/courses`, {
       params: { top: String(top) },
     });
+  }
+
+  // ============================================================
+  // Lesson RAG (chat-with-lesson + summarize)
+  // ============================================================
+
+  /** RAG chat scoped to a specific lesson's indexed content ("Ask a question"). */
+  chatWithLesson(
+    lessonId: string,
+    question: string,
+    conversationId?: string,
+  ): Observable<ChatWithLessonResult> {
+    return this.api.post<ChatWithLessonResult>(
+      `${this.base}/lessons/${lessonId}/chat`,
+      { question, conversationId },
+    );
+  }
+
+  /** Summarizes a lesson's indexed content ("Summarize this lecture"). */
+  summarizeLesson(
+    lessonId: string,
+    length: 'short' | 'medium' | 'detailed' = 'medium',
+  ): Observable<SummarizeLessonResult> {
+    return this.api.post<SummarizeLessonResult>(
+      `${this.base}/lessons/${lessonId}/summarize?length=${length}`,
+      {},
+    );
   }
 }
