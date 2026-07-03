@@ -308,3 +308,11 @@ export interface UnlockNextModuleResponse {
   isLastModule: boolean;
   alreadyUnlocked: boolean;
 }
+
+export enum CourseSortBy {
+  Newest = 1,
+  Oldest = 2,
+  PriceLowToHigh = 3,
+  PriceHighToLow = 4,
+  MostPopular = 5,
+}
