@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Card } from '../../../../shared/components/card/card';
 import { EnrollmentService } from '../../../lms/services/enrollment.service';
@@ -15,8 +15,8 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 export class ContinueLearning {
   private readonly enrollmentsApi = inject(EnrollmentService);
 
-  enrollments: Enrollment[] = [];
-  isLoading = true;
+  readonly enrollments = signal<Enrollment[]>([]);
+  readonly isLoading = signal(true);
 
   readonly courseEmoji = courseEmoji;
 
@@ -24,11 +24,11 @@ export class ContinueLearning {
     runInBrowser(() => {
       this.enrollmentsApi.getMyEnrollments(1, 3).subscribe({
         next: (response) => {
-          this.enrollments = response.data;
-          this.isLoading = false;
+          this.enrollments.set(response.data);
+          this.isLoading.set(false);
         },
         error: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
       });
     });

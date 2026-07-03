@@ -54,6 +54,41 @@ h6 {
   box-shadow: 0 8px 32px rgba(196, 113, 74, 0.22);
 }
 
+/* ── AI Chat animations ──────────────────────────────────────── */
+@keyframes femora-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.femora-fade-in {
+  animation: femora-fade-in-up 0.25s ease-out;
+}
+
+@keyframes femora-dot-bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.femora-dot {
+  animation: femora-dot-bounce 1.2s infinite ease-in-out;
+}
+.femora-dot-delay-1 {
+  animation-delay: 0.15s;
+}
+.femora-dot-delay-2 {
+  animation-delay: 0.3s;
+}
+
 /* ── Navbar ──────────────────────────────────────────────────── */
 nav {
   background-color: transparent;

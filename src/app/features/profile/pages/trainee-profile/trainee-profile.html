@@ -6,24 +6,32 @@
 
       @if (auth.user(); as user) {
         <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 mb-6">
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-full bg-blush flex items-center justify-center text-2xl">👤</div>
-            <div>
-              <p class="text-xl font-bold text-navy">{{ user.firstName }} {{ user.lastName }}</p>
-              <p class="text-sm text-terracotta-dark">{{ user.email }}</p>
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-blush flex items-center justify-center text-2xl">👤</div>
+              <div>
+                <p class="text-xl font-bold text-navy">{{ user.firstName }} {{ user.lastName }}</p>
+                <p class="text-sm text-terracotta-dark">{{ user.email }}</p>
+              </div>
             </div>
+            <a
+              routerLink="/profile/edit"
+              class="text-sm font-medium text-terracotta border border-terracotta/40 px-4 py-2 rounded-xl hover:bg-terracotta hover:text-white transition shrink-0"
+            >
+              تعديل الملف
+            </a>
           </div>
         </div>
       }
 
       <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6 mb-6">
         <h2 class="font-bold text-navy mb-4">دوراتي</h2>
-        @if (enrollments.length === 0) {
+        @if (enrollments().length === 0) {
           <p class="text-sm text-terracotta-dark">لم تسجّلى فى دورات بعد.</p>
           <a routerLink="/lms/catalog" class="text-sm text-terracotta hover:underline mt-2 inline-block">استكشفى الدورات</a>
         } @else {
           <div class="space-y-3">
-            @for (e of enrollments; track e.enrollmentId ?? e.courseId) {
+            @for (e of enrollments(); track e.enrollmentId ?? e.courseId) {
               <a [routerLink]="['/lms/player', e.courseId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
                 <p class="text-sm font-semibold text-navy">{{ e.courseTitle }}</p>
               </a>
@@ -34,13 +42,13 @@
 
       <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
         <h2 class="font-bold text-navy mb-4">طلباتي</h2>
-        @if (isLoading) {
+        @if (isLoading()) {
           <p class="text-sm text-terracotta-dark">جارى التحميل...</p>
-        } @else if (orders.length === 0) {
+        } @else if (orders().length === 0) {
           <p class="text-sm text-terracotta-dark">لا توجد طلبات بعد.</p>
         } @else {
           <div class="space-y-3">
-            @for (order of orders; track order.orderId ?? order.id) {
+            @for (order of orders(); track order.orderId ?? order.id) {
               <div class="p-3 bg-cream rounded-xl flex justify-between items-center">
                 <span class="text-sm text-navy">طلب #{{ (order.orderId ?? order.id)?.slice(0, 8) }}</span>
                 <span class="text-sm text-terracotta font-semibold">{{ formatPrice(order.total) }}</span>

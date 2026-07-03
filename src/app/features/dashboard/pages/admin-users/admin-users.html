@@ -1,0 +1,135 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-6 lg:p-10">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-baseline justify-between mb-6">
+        <h1 class="text-2xl font-bold text-navy font-display">إدارة المستخدمين</h1>
+        @if (totalCount() > 0) {
+          <p class="text-sm text-terracotta-dark">{{ totalCount() }} مستخدم</p>
+        }
+      </div>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap gap-3 mb-6">
+        <input
+          type="text"
+          [(ngModel)]="search"
+          (keyup.enter)="onSearch()"
+          placeholder="ابحث بالاسم أو البريد الإلكتروني..."
+          class="flex-1 min-w-[240px] px-4 py-2.5 rounded-xl border border-blush/50 bg-white text-sm text-navy placeholder:text-terracotta-dark/50 focus:outline-none focus:ring-2 focus:ring-terracotta/40"
+        />
+        <select
+          [(ngModel)]="roleFilter"
+          (change)="onSearch()"
+          class="px-4 py-2.5 rounded-xl border border-blush/50 bg-white text-sm text-navy focus:outline-none focus:ring-2 focus:ring-terracotta/40"
+        >
+          <option value="">كل الأدوار</option>
+          <option value="Admin">مدير</option>
+          <option value="Instructor">مدربة</option>
+          <option value="Seller">بائعة</option>
+          <option value="Trainee">متدربة</option>
+        </select>
+        <button
+          type="button"
+          (click)="onSearch()"
+          class="px-5 py-2.5 rounded-xl bg-terracotta text-white text-sm font-semibold hover:bg-terracotta-dark transition"
+        >
+          بحث
+        </button>
+      </div>
+
+      @if (errorMessage()) {
+        <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">{{ errorMessage() }}</div>
+      }
+
+      @if (isLoading()) {
+        <p class="text-terracotta-dark text-center py-12">جارى التحميل...</p>
+      } @else if (users().length === 0) {
+        <p class="text-terracotta-dark text-center py-12">لا يوجد مستخدمون مطابقون</p>
+      } @else {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-blush/30 text-terracotta-dark text-xs">
+                <th class="text-right px-5 py-3 font-medium">الاسم</th>
+                <th class="text-right px-5 py-3 font-medium">البريد الإلكتروني</th>
+                <th class="text-right px-5 py-3 font-medium">الأدوار</th>
+                <th class="text-right px-5 py-3 font-medium">تاريخ الانضمام</th>
+                <th class="text-right px-5 py-3 font-medium">الحالة</th>
+                <th class="text-right px-5 py-3 font-medium"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users(); track user.id) {
+                <tr class="border-b border-blush/15 last:border-0">
+                  <td class="px-5 py-3.5 text-navy font-medium">{{ user.fullName || '—' }}</td>
+                  <td class="px-5 py-3.5 text-terracotta-dark">{{ user.email }}</td>
+                  <td class="px-5 py-3.5">
+                    <div class="flex flex-wrap gap-1">
+                      @for (role of user.roles; track role) {
+                        <span class="text-xs bg-blush/30 text-terracotta-dark px-2 py-0.5 rounded-full">{{ roleLabel(role) }}</span>
+                      }
+                      @if (user.roles.length === 0) {
+                        <span class="text-xs text-terracotta-dark/50">بلا دور</span>
+                      }
+                    </div>
+                  </td>
+                  <td class="px-5 py-3.5 text-terracotta-dark">{{ user.createdAt | date: 'd MMM y' }}</td>
+                  <td class="px-5 py-3.5">
+                    <span
+                      class="text-xs px-2.5 py-1 rounded-full font-medium"
+                      [class.bg-green-100]="user.isActive"
+                      [class.text-green-700]="user.isActive"
+                      [class.bg-red-100]="!user.isActive"
+                      [class.text-red-700]="!user.isActive"
+                    >
+                      {{ user.isActive ? 'نشط' : 'موقوف' }}
+                    </span>
+                  </td>
+                  <td class="px-5 py-3.5">
+                    <button
+                      type="button"
+                      (click)="toggleActive(user)"
+                      [disabled]="updatingUserId() === user.id || user.id === myUserId()"
+                      class="text-xs font-semibold px-3 py-1.5 rounded-lg border transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      [class.border-red-300]="user.isActive"
+                      [class.text-red-600]="user.isActive"
+                      [class.hover:bg-red-50]="user.isActive"
+                      [class.border-green-300]="!user.isActive"
+                      [class.text-green-700]="!user.isActive"
+                      [class.hover:bg-green-50]="!user.isActive"
+                    >
+                      {{ user.isActive ? 'إيقاف' : 'تفعيل' }}
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (totalPages() > 1) {
+          <div class="flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              (click)="previousPage()"
+              [disabled]="currentPage() === 1"
+              class="px-3 py-2 rounded-lg border border-blush/50 text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              السابق
+            </button>
+            <span class="text-sm text-terracotta-dark">صفحة {{ currentPage() }} من {{ totalPages() }}</span>
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="currentPage() === totalPages()"
+              class="px-3 py-2 rounded-lg border border-blush/50 text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              التالي
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </main>
+</div>

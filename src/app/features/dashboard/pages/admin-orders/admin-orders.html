@@ -1,0 +1,107 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-6 lg:p-10">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-baseline justify-between mb-6">
+        <h1 class="text-2xl font-bold text-navy font-display">إدارة الطلبات</h1>
+        @if (totalCount() > 0) {
+          <p class="text-sm text-terracotta-dark">{{ totalCount() }} طلب</p>
+        }
+      </div>
+
+      <!-- Filter -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <button
+          type="button"
+          (click)="statusFilter = ''; onFilterChange()"
+          class="px-4 py-2 rounded-full text-sm border transition"
+          [class.bg-terracotta]="statusFilter === ''"
+          [class.text-white]="statusFilter === ''"
+          [class.border-terracotta]="statusFilter === ''"
+          [class.border-blush]="statusFilter !== ''"
+          [class.text-terracotta-dark]="statusFilter !== ''"
+        >
+          الكل
+        </button>
+        @for (status of statuses; track status) {
+          <button
+            type="button"
+            (click)="statusFilter = status; onFilterChange()"
+            class="px-4 py-2 rounded-full text-sm border transition"
+            [class.bg-terracotta]="statusFilter === status"
+            [class.text-white]="statusFilter === status"
+            [class.border-terracotta]="statusFilter === status"
+            [class.border-blush]="statusFilter !== status"
+            [class.text-terracotta-dark]="statusFilter !== status"
+          >
+            {{ statusLabel(status) }}
+          </button>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">{{ errorMessage() }}</div>
+      }
+
+      @if (isLoading()) {
+        <p class="text-terracotta-dark text-center py-12">جارى التحميل...</p>
+      } @else if (orders().length === 0) {
+        <p class="text-terracotta-dark text-center py-12">لا توجد طلبات مطابقة</p>
+      } @else {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-blush/30 text-terracotta-dark text-xs">
+                <th class="text-right px-5 py-3 font-medium">المشترية</th>
+                <th class="text-right px-5 py-3 font-medium">عدد المنتجات</th>
+                <th class="text-right px-5 py-3 font-medium">الإجمالي</th>
+                <th class="text-right px-5 py-3 font-medium">التاريخ</th>
+                <th class="text-right px-5 py-3 font-medium">الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of orders(); track order.id) {
+                <tr class="border-b border-blush/15 last:border-0">
+                  <td class="px-5 py-3.5">
+                    <p class="text-navy font-medium">{{ order.buyerName || '—' }}</p>
+                    <p class="text-xs text-terracotta-dark">{{ order.buyerEmail }}</p>
+                  </td>
+                  <td class="px-5 py-3.5 text-terracotta-dark">{{ order.itemCount }}</td>
+                  <td class="px-5 py-3.5 text-terracotta font-bold">{{ formatPrice(order.totalAmount) }}</td>
+                  <td class="px-5 py-3.5 text-terracotta-dark">{{ order.createdAt | date: 'd MMM y' }}</td>
+                  <td class="px-5 py-3.5">
+                    <span class="inline-flex rounded-full bg-cream/70 px-3 py-1 text-[11px] font-semibold text-terracotta-dark">
+                      {{ statusLabel(order.status) }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (totalPages() > 1) {
+          <div class="flex items-center justify-center gap-3 mt-6">
+            <button
+              type="button"
+              (click)="previousPage()"
+              [disabled]="currentPage() === 1"
+              class="px-3 py-2 rounded-lg border border-blush/50 text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              السابق
+            </button>
+            <span class="text-sm text-terracotta-dark">صفحة {{ currentPage() }} من {{ totalPages() }}</span>
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="currentPage() === totalPages()"
+              class="px-3 py-2 rounded-lg border border-blush/50 text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              التالي
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </main>
+</div>

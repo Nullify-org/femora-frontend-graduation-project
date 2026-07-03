@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, profileSelectionGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { adminGuard } from './core/auth/admin.guard';
+import { notAdminGuard } from './core/auth/not-admin.guard';
 
 export const routes: Routes = [
   {
@@ -127,6 +128,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'seller/orders',
+        redirectTo: 'seller',
+        pathMatch: 'full',
+      },
+      {
         path: 'admin',
         canActivate: [adminGuard],
         loadComponent: () =>
@@ -141,6 +147,23 @@ export const routes: Routes = [
             (m) => m.BuyerDashboard,
           ),
       },
+      {
+        path: 'users',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/dashboard/pages/admin-users/admin-users').then((m) => m.AdminUsers),
+      },
+      {
+        path: 'orders',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/dashboard/pages/admin-orders/admin-orders').then((m) => m.AdminOrders),
+      },
+      // TODO: Products/Courses/Reports admin pages aren't built yet — point them at the
+      // admin dashboard for now instead of letting the wildcard route bounce to landing.
+      { path: 'products', redirectTo: '/dashboard/admin' },
+      { path: 'courses', redirectTo: '/dashboard/admin' },
+      { path: 'reports', redirectTo: '/dashboard/admin' },
     ],
   },
   {
@@ -211,7 +234,7 @@ export const routes: Routes = [
   { path: 'marketplace/seller', redirectTo: 'dashboard/seller', pathMatch: 'full' },
   {
     path: 'ai/chat',
-    canActivate: [authGuard],
+    canActivate: [authGuard, notAdminGuard],
     loadComponent: () =>
       import('./features/ai-assistant/pages/chat/chat').then((m) => m.Chat),
   },
@@ -224,10 +247,13 @@ export const routes: Routes = [
       ),
   },
   { path: 'profile',       redirectTo: 'profile/trainee',      pathMatch: 'full' },
-  { path: 'profile/edit',  redirectTo: 'profile/preferences',  pathMatch: 'full' },
-  { path: 'profile/settings',  redirectTo: 'profile/preferences', pathMatch: 'full' },
-  { path: 'dashboard/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
-  { path: 'profile/settings',  redirectTo: 'profile/preferences', pathMatch: 'full' },
+  {
+    path: 'profile/edit',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profile/pages/edit-profile/edit-profile').then((m) => m.EditProfile),
+  },
+  { path: 'profile/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
   { path: 'dashboard/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
   {
     path: 'profile/trainee',

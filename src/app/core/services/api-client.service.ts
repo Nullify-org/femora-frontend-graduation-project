@@ -54,6 +54,15 @@ export class ApiClient {
     );
   }
 
+  patch<T>(url: string, body: any, options?: any): Observable<T> {
+    const fullUrl = this.getBaseUrl(url);
+    const opts = this.getRequestOptions(options);
+
+    return (this.http.patch(fullUrl, body, opts) as Observable<T>).pipe(
+      catchError((error: HttpErrorResponse) => this.handleErrorOrFallback<T>('PATCH', url, error, body, opts))
+    );
+  }
+
   delete<T>(url: string, options?: any): Observable<T> {
     const fullUrl = this.getBaseUrl(url);
     const opts = this.getRequestOptions(options);
@@ -222,6 +231,22 @@ export class ApiClient {
       };
     }
 
+    const lessonChatMatch = cleanUrl.match(/\/api\/ai\/lessons\/([^/]+)\/chat$/);
+    if (lessonChatMatch) {
+      return {
+        conversationId: body?.conversationId || 'mock_lesson_conv_id',
+        answer: 'هذا رد تجريبى (وضع عدم الاتصال) على سؤالك بخصوص هذا الدرس. وصّل بالسيرفر عشان تاخد إجابة حقيقية مبنية على محتوى الدرس.'
+      };
+    }
+
+    const lessonSummarizeMatch = cleanUrl.match(/\/api\/ai\/lessons\/([^/]+)\/summarize$/);
+    if (lessonSummarizeMatch) {
+      return {
+        lessonId: lessonSummarizeMatch[1],
+        summary: 'هذا ملخّص تجريبى (وضع عدم الاتصال) لمحتوى الدرس. وصّل بالسيرفر عشان تاخد ملخص حقيقى.'
+      };
+    }
+
     if (cleanUrl.match(/\/api\/ai\/interests$/)) {
       return { success: true };
     }
@@ -271,6 +296,14 @@ export class ApiClient {
       if (method === 'POST') {
         return seed.MOCK_ORDERS[0];
       }
+    }
+
+    // ── Stripe Checkout Session (for both cart and orders) ──
+    if (cleanUrl.match(/\/api\/payments\/checkout$/)) {
+      return {
+        sessionId: 'cs_test_' + Math.random().toString(36).substring(7),
+        sessionUrl: `https://checkout.stripe.com/pay/cs_test_${Math.random().toString(36).substring(7)}#fidkdWxOYHwnPDMkYfKHf2R0SHZxUGZAVENkVE42a3d2eFc3Um81NWZGfDAxQHZgYHxxfHx3d3hGfHhxcHhwcHd3YHJ3cHB3d@end`
+      };
     }
 
     return undefined;

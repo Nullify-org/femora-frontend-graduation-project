@@ -227,7 +227,9 @@ export interface ChatMessage {
 export interface ConversationSummary {
   conversationId: string;
   title?: string | null;
+  createdAt?: string;
   updatedAt?: string;
+  lastMessagePreview?: string | null;
 }
 
 export interface ConversationDetail {
@@ -239,6 +241,16 @@ export interface ConversationDetail {
 export interface SendMessageResult {
   conversationId: string;
   reply?: string | null;
+}
+
+export interface ChatWithLessonResult {
+  conversationId: string;
+  answer: string;
+}
+
+export interface SummarizeLessonResult {
+  lessonId: string;
+  summary: string;
 }
 
 

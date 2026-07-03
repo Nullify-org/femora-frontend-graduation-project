@@ -61,50 +61,50 @@
         <h2 class="text-base font-bold text-navy mb-4 flex items-center gap-2">
           <span>📦</span> أحدث الطلبات
         </h2>
-        
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm text-right">
-            <thead>
-              <tr class="text-text-light border-b border-blush/30 pb-2">
-                <th class="py-2 font-semibold">رقم الطلب</th>
-                <th class="py-2 font-semibold">اسم المنتج</th>
-                <th class="py-2 font-semibold">القيمة</th>
-                <th class="py-2 font-semibold">حالة الطلب</th>
-                <th class="py-2 font-semibold">التاريخ</th>
-              </tr>
-            </thead>
-            <tbody class="text-text-medium">
-              <tr class="border-b border-blush/20">
-                <td class="py-3 font-semibold text-navy">#1004</td>
-                <td class="py-3">حقيبة كروشيه يدوية</td>
-                <td class="py-3">245 SAR</td>
-                <td class="py-3"><span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">قيد التجهيز</span></td>
-                <td class="py-3">2024-05-20</td>
-              </tr>
-              <tr class="border-b border-blush/20">
-                <td class="py-3 font-semibold text-navy">#1003</td>
-                <td class="py-3">شمعة معطرة</td>
-                <td class="py-3">89 SAR</td>
-                <td class="py-3"><span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">قيد التجهيز</span></td>
-                <td class="py-3">2024-05-19</td>
-              </tr>
-              <tr class="border-b border-blush/20">
-                <td class="py-3 font-semibold text-navy">#1002</td>
-                <td class="py-3">لوحة فنية</td>
-                <td class="py-3">199 SAR</td>
-                <td class="py-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">مكتمل</span></td>
-                <td class="py-3">2024-05-18</td>
-              </tr>
-              <tr class="border-b border-blush/20">
-                <td class="py-3 font-semibold text-navy">#1001</td>
-                <td class="py-3">طقم أدوات رسم</td>
-                <td class="py-3">129 SAR</td>
-                <td class="py-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">مكتمل</span></td>
-                <td class="py-3">2024-05-17</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+
+        @if (orders().length === 0) {
+          <p class="text-sm text-terracotta-dark">لا توجد طلبات بعد.</p>
+        } @else {
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-right">
+              <thead>
+                <tr class="text-text-light border-b border-blush/30 pb-2">
+                  <th class="py-2 font-semibold">رقم الطلب</th>
+                  <th class="py-2 font-semibold">القيمة</th>
+                  <th class="py-2 font-semibold">حالة الطلب</th>
+                  <th class="py-2 font-semibold">التاريخ</th>
+                </tr>
+              </thead>
+              <tbody class="text-text-medium">
+                @for (order of orders(); track order.orderId ?? order.id) {
+                  <tr class="border-b border-blush/20 hover:bg-cream/30 transition">
+                    <td class="py-3 font-semibold text-navy">
+                      #{{ (order.orderId ?? order.id) ?? '—' }}
+                    </td>
+                    <td class="py-3 text-terracotta font-semibold">
+                      {{ formatPrice(order.total) }}
+                    </td>
+                    <td class="py-3">
+                      <select
+                        [ngModel]="order.status"
+                        (ngModelChange)="changeOrderStatus(order, $event)"
+                        [disabled]="updatingOrderId() === (order.orderId ?? order.id)"
+                        class="text-xs px-2.5 py-1.5 rounded-lg border border-blush/50 bg-white text-terracotta-dark disabled:opacity-50"
+                      >
+                        @for (status of orderStatuses; track status) {
+                          <option [value]="status">{{ status }}</option>
+                        }
+                      </select>
+                    </td>
+                    <td class="py-3 text-terracotta-dark">
+                      {{ order.createdAt | date:'d MMM y' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
       </div>
 
       <!-- Best Selling Products -->

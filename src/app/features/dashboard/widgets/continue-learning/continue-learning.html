@@ -1,11 +1,11 @@
 <app-card title="تابعى التعلّم" subtitle="دوراتك الجارية">
   <div class="space-y-4">
-    @if (isLoading) {
+    @if (isLoading()) {
       <p class="text-xs text-terracotta-dark text-center">جارى التحميل...</p>
-    } @else if (enrollments.length === 0) {
+    } @else if (enrollments().length === 0) {
       <p class="text-xs text-terracotta-dark text-center">لم تسجّلى فى أى دورة بعد</p>
     } @else {
-      @for (enrollment of enrollments; track enrollment.enrollmentId ?? enrollment.courseId) {
+      @for (enrollment of enrollments(); track enrollment.enrollmentId ?? enrollment.courseId) {
         <div class="flex items-center gap-4 p-3 bg-cream rounded-xl">
           <span class="text-3xl">{{ courseEmoji() }}</span>
           <div class="flex-1">
