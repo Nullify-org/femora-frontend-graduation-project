@@ -16,7 +16,7 @@ type PanelTab = 'summarize' | 'ask' | 'quiz' | null;
   selector: 'app-lesson-ai-panel',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './lesson-ai-panel.html',
+  templateUrl: './lesson-ai-panel.component.html',
 })
 export class LessonAiPanel {
   private readonly chat = inject(ChatService);

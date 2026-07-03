@@ -316,3 +316,17 @@ export enum CourseSortBy {
   PriceHighToLow = 4,
   MostPopular = 5,
 }
+
+export type LessonType = 'Video' | 'Article' | 'Quiz' | 'Assignment';
+
+export interface LessonDetails {
+  id: string;
+  moduleId: string;
+  title: string;
+  type: LessonType;
+  articleContent?: string | null;
+  contentUrl?: string | null;
+  durationSeconds: number;
+  orderIndex: number;
+  isPreview: boolean;
+}
