@@ -281,7 +281,7 @@ export class AuthService {
 
     if (normalized === 'Admin' || role === 'admin' || role === 'Admin') return '/dashboard/admin';
     if (normalized === 'Buyer' || role === 'buyer' || role === 'Buyer') return '/dashboard/buyer';
-    if (!profile) return '/dashboard/buyer';
+    if (!profile) return '';
 
     const config = PROFILE_CONFIGS.find((c) => c.type === profile);
     return config?.dashboardRoute ?? '/dashboard/trainee';
