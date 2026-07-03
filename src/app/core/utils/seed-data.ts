@@ -240,20 +240,20 @@ export const MOCK_SUBSCRIPTION = {
 
 export const MOCK_ORDERS: Order[] = [
   {
-    orderId: 'o1',
-    id: 'o1',
-    status: 'Delivered',
+    id: 'order_mock_001',
+    orderId: 'order_mock_001',
+    status: 'Pending',
+    totalAmount: 350,
     total: 350,
+    userId: '101',
     createdAt: new Date().toISOString(),
-    items: [
+    orderItems: [
       {
-        cartItemId: 'ci1',
-        productId: 'p1',
-        productName: 'شال صوف كروشيه يدوي دافئ',
-        name: 'شال صوف كروشيه يدوي دافئ',
+        id: 'order_item_1',
+        orderId: 'order_mock_001',
+        productVariantId: 'v1',
         quantity: 1,
         unitPrice: 350,
-        price: 350
       }
     ]
   }
