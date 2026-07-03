@@ -12,6 +12,7 @@ import { CourseCard } from '../../components/course-card/course-card';
   selector: 'app-course-catalog',
   standalone: true,
   imports: [CommonModule, FormsModule, Sidebar, CourseCard],
+  styleUrl: './course-catalog.css',
   templateUrl: './course-catalog.html',
 })
 export class CourseCatalog {
@@ -27,9 +28,19 @@ export class CourseCatalog {
   pageNumber = signal(1);
   pageSize = 12;
 
-  constructor() {
-    runInBrowser(() => this.loadCourses());
-  }
+  categories = signal<string[]>([]);
+  levels = signal<string[]>([]);
+
+  selectedCategory = signal('');
+  selectedLevel = signal('');
+  selectedSort = signal(1);
+
+constructor() {
+  runInBrowser(() => {
+    this.loadFilterOptions();
+    this.loadCourses();
+  });
+}
 
   loadCourses(): void {
     this.isLoading.set(true);
@@ -37,6 +48,9 @@ export class CourseCatalog {
 
     const request: GetCoursesRequest = {
       search: this.search.trim(),
+      category: this.selectedCategory() || undefined,
+      level: this.selectedLevel() || undefined,
+      sortBy: this.selectedSort(),
       pageNumber: this.pageNumber(),
       pageSize: this.pageSize,
     };
@@ -55,6 +69,14 @@ export class CourseCatalog {
     });
   }
 
+  loadFilterOptions(): void {
+  this.coursesApi.getFilterOptions().subscribe({
+    next: (response) => {
+      this.categories.set(response.categories);
+      this.levels.set(response.levels);
+    }
+  });
+  }
   onSearch(): void {
     this.pageNumber.set(1);
     this.loadCourses();
