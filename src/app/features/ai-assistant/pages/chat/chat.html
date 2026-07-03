@@ -1,69 +1,217 @@
 <div class="flex min-h-screen bg-cream-light">
   <app-sidebar />
-  <main class="flex-1 p-8">
-    <div class="max-w-5xl mx-auto h-[calc(100vh-4rem)] flex flex-col">
+  <main class="flex-1 p-4 md:p-8">
+    <div class="max-w-6xl mx-auto h-[calc(100vh-2rem)] md:h-[calc(100vh-4rem)] flex flex-col">
       <div class="flex items-center justify-between mb-4">
-        <h1 class="text-2xl font-bold text-navy font-display">المساعد الذكي</h1>
-        <button type="button" (click)="startNewChat()" class="text-sm text-terracotta hover:underline">
+        <div class="flex items-center gap-2">
+          <div class="w-9 h-9 rounded-full bg-navy flex items-center justify-center text-white shrink-0">
+            <svg lucideBot [size]="18"></svg>
+          </div>
+          <h1 class="text-xl md:text-2xl font-bold text-navy font-display">المساعد الذكي</h1>
+        </div>
+        <button
+          type="button"
+          (click)="startNewChat()"
+          class="flex items-center gap-1.5 text-sm bg-white border border-blush/50 text-terracotta-dark px-3 py-2 rounded-xl hover:bg-cream transition femora-shadow"
+        >
+          <svg lucidePlus [size]="16"></svg>
           محادثة جديدة
         </button>
       </div>
 
       <div class="flex flex-1 gap-4 min-h-0">
-        <aside class="w-56 shrink-0 bg-white rounded-2xl femora-shadow border border-blush/30 p-4 overflow-y-auto hidden md:block">
-          <p class="text-xs font-semibold text-terracotta-dark mb-3">المحادثات</p>
-          @if (conversations.length === 0) {
-            <p class="text-xs text-terracotta-dark">لا توجد محادثات بعد</p>
+        <!-- ============================================================ -->
+        <!-- Conversations sidebar -->
+        <!-- ============================================================ -->
+        <aside class="w-64 shrink-0 bg-white rounded-2xl femora-shadow border border-blush/30 p-3 overflow-y-auto hidden md:flex md:flex-col">
+          <p class="text-xs font-semibold text-terracotta-dark px-2 mb-3 mt-1">المحادثات</p>
+
+          @if (isLoadingConversations()) {
+            <div class="space-y-2 px-1">
+              @for (i of [1,2,3]; track i) {
+                <div class="h-14 rounded-xl bg-cream animate-pulse"></div>
+              }
+            </div>
+          } @else if (conversations().length === 0) {
+            <div class="flex flex-col items-center justify-center text-center px-4 py-10 gap-2">
+              <svg lucideMessageSquareText [size]="28" class="text-blush"></svg>
+              <p class="text-xs text-terracotta-dark">لا توجد محادثات بعد</p>
+              <p class="text-[11px] text-terracotta-dark/60">ابدئى محادثة جديدة مع المساعد الذكي</p>
+            </div>
           } @else {
             <div class="space-y-1">
-              @for (c of conversations; track c.conversationId) {
-                <button
-                  type="button"
+              @for (c of conversations(); track c.conversationId) {
+                <div
                   (click)="openConversation(c.conversationId)"
-                  class="w-full text-right text-sm px-3 py-2 rounded-lg hover:bg-cream transition truncate"
-                  [class.bg-cream]="activeConversationId === c.conversationId"
+                  class="group relative w-full text-right px-3 py-2.5 rounded-xl cursor-pointer transition"
+                  [class.bg-terracotta]="activeConversationId() === c.conversationId"
+                  [class.hover:bg-cream]="activeConversationId() !== c.conversationId"
                 >
-                  {{ c.title ?? 'محادثة' }}
-                </button>
+                  @if (renamingId() === c.conversationId) {
+                    <div class="flex items-center gap-1" (click)="$event.stopPropagation()">
+                      <input
+                        type="text"
+                        [(ngModel)]="renameDraft"
+                        name="renameDraft"
+                        autofocus
+                        class="flex-1 min-w-0 text-sm px-2 py-1 rounded-lg border border-terracotta/40 focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+                        (keyup.enter)="confirmRename(c, $event)"
+                        (keyup.escape)="cancelRename($event)"
+                      />
+                      <button type="button" (click)="confirmRename(c, $event)" class="text-green-600 hover:text-green-700 p-1 shrink-0">
+                        <svg lucideCheck [size]="15"></svg>
+                      </button>
+                      <button type="button" (click)="cancelRename($event)" class="text-terracotta-dark/60 hover:text-terracotta-dark p-1 shrink-0">
+                        <svg lucideX [size]="15"></svg>
+                      </button>
+                    </div>
+                  } @else {
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="min-w-0 flex-1">
+                        <p
+                          class="text-sm font-medium truncate"
+                          [class.text-white]="activeConversationId() === c.conversationId"
+                          [class.text-navy]="activeConversationId() !== c.conversationId"
+                        >
+                          {{ c.title || 'محادثة جديدة' }}
+                        </p>
+                        @if (c.lastMessagePreview) {
+                          <p
+                            class="text-xs truncate mt-0.5"
+                            [class.text-white/70]="activeConversationId() === c.conversationId"
+                            [class.text-terracotta-dark/70]="activeConversationId() !== c.conversationId"
+                          >
+                            {{ c.lastMessagePreview }}
+                          </p>
+                        }
+                        @if (c.createdAt) {
+                          <p
+                            class="text-[10px] mt-1"
+                            [class.text-white/50]="activeConversationId() === c.conversationId"
+                            [class.text-terracotta-dark/40]="activeConversationId() !== c.conversationId"
+                          >
+                            {{ c.createdAt | date: 'd MMM, h:mm a' }}
+                          </p>
+                        }
+                      </div>
+
+                      <!-- Hover actions -->
+                      <div class="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition shrink-0">
+                        <button
+                          type="button"
+                          (click)="startRename(c, $event)"
+                          class="p-1.5 rounded-lg transition"
+                          [class.hover:bg-white/20]="activeConversationId() === c.conversationId"
+                          [class.hover:bg-white]="activeConversationId() !== c.conversationId"
+                          [class.text-white]="activeConversationId() === c.conversationId"
+                          [class.text-terracotta-dark]="activeConversationId() !== c.conversationId"
+                          title="إعادة تسمية"
+                        >
+                          <svg lucidePencil [size]="13"></svg>
+                        </button>
+                        <button
+                          type="button"
+                          (click)="requestDelete(c.conversationId, $event)"
+                          class="p-1.5 rounded-lg transition"
+                          [class.hover:bg-white/20]="activeConversationId() === c.conversationId"
+                          [class.hover:bg-red-50]="activeConversationId() !== c.conversationId"
+                          [class.text-white]="activeConversationId() === c.conversationId"
+                          [class.text-red-500]="activeConversationId() !== c.conversationId"
+                          title="حذف"
+                        >
+                          <svg lucideTrash2 [size]="13"></svg>
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
               }
             </div>
           }
         </aside>
 
+        <!-- ============================================================ -->
+        <!-- Chat window -->
+        <!-- ============================================================ -->
         <div class="flex-1 bg-white rounded-2xl femora-shadow border border-blush/30 flex flex-col min-h-0">
-          <div class="flex-1 overflow-y-auto p-6 space-y-4">
-            @if (isLoading) {
-              <p class="text-terracotta-dark text-sm">جارى التحميل...</p>
-            } @else if (messages.length === 0) {
-              <p class="text-terracotta-dark text-sm text-center mt-12">
-                مرحباً! اسألينى عن الدورات، المنتجات، أو أى شيء يخص مشروعكِ المنزلي.
-              </p>
+          <div class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+            @if (isLoading()) {
+              <div class="space-y-4">
+                @for (i of [1,2,3]; track i) {
+                  <div class="max-w-[70%] h-16 rounded-2xl bg-cream animate-pulse" [class.ml-auto]="i % 2 === 0"></div>
+                }
+              </div>
+            } @else if (messages().length === 0) {
+              <div class="h-full flex flex-col items-center justify-center text-center gap-3 py-12">
+                <div class="w-14 h-14 rounded-full bg-navy flex items-center justify-center text-white">
+                  <svg lucideBot [size]="26"></svg>
+                </div>
+                <p class="text-navy font-semibold">مرحباً! أنا المساعد الذكي لـ Femora</p>
+                <p class="text-terracotta-dark text-sm max-w-xs">
+                  اسألينى عن الدورات، المنتجات، أو أى شيء يخص مشروعكِ المنزلي.
+                </p>
+              </div>
             } @else {
-              @for (msg of messages; track $index) {
-                <div
-                  class="max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed"
-                  [class.ml-auto]="msg.role === 'user'"
-                  [class.bg-terracotta]="msg.role === 'user'"
-                  [class.text-white]="msg.role === 'user'"
-                  [class.bg-cream]="msg.role !== 'user'"
-                  [class.text-navy]="msg.role !== 'user'"
-                >
-                  {{ msg.content }}
+              @for (msg of messages(); track $index) {
+                <div class="flex items-end gap-2 femora-fade-in" [class.flex-row-reverse]="msg.role === 'user'">
+                  <div
+                    class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
+                    [class.bg-terracotta]="msg.role === 'user'"
+                    [class.text-white]="msg.role === 'user'"
+                    [class.bg-navy]="msg.role !== 'user'"
+                  >
+                    @if (msg.role === 'user') {
+                      أنتِ
+                    } @else {
+                      <svg lucideBot [size]="14" class="text-white"></svg>
+                    }
+                  </div>
+
+                  <div class="flex flex-col max-w-[75%]" [class.items-end]="msg.role === 'user'">
+                    <div
+                      class="px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words"
+                      [class.bg-terracotta]="msg.role === 'user'"
+                      [class.text-white]="msg.role === 'user'"
+                      [class.rounded-tl-md]="msg.role !== 'user'"
+                      [class.bg-cream]="msg.role !== 'user'"
+                      [class.text-navy]="msg.role !== 'user'"
+                      [class.rounded-tr-md]="msg.role === 'user'"
+                    >
+                      {{ msg.content }}
+                    </div>
+                    @if (msg.sentAt) {
+                      <span class="text-[10px] text-terracotta-dark/40 mt-1 px-1">
+                        {{ msg.sentAt | date: 'h:mm a' }}
+                      </span>
+                    }
+                  </div>
                 </div>
               }
             }
-            @if (isSending) {
-              <p class="text-xs text-terracotta-dark">جارى الكتابة...</p>
+
+            @if (isSending()) {
+              <div class="flex items-end gap-2">
+                <div class="w-7 h-7 rounded-full bg-navy flex items-center justify-center shrink-0">
+                  <svg lucideBot [size]="14" class="text-white"></svg>
+                </div>
+                <div class="bg-cream px-4 py-3 rounded-2xl rounded-tl-md flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-terracotta-dark/50 femora-dot"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-terracotta-dark/50 femora-dot femora-dot-delay-1"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-terracotta-dark/50 femora-dot femora-dot-delay-2"></span>
+                </div>
+              </div>
             }
+
+            <div #scrollAnchor></div>
           </div>
 
-          @if (errorMessage) {
+          @if (errorMessage()) {
             <div class="px-6 pb-2">
-              <p class="text-red-600 text-xs">{{ errorMessage }}</p>
+              <p class="text-red-600 text-xs">{{ errorMessage() }}</p>
             </div>
           }
 
-          <form class="p-4 border-t border-blush/30 flex gap-3" (ngSubmit)="send()">
+          <form class="p-3 md:p-4 border-t border-blush/30 flex gap-2 md:gap-3" (ngSubmit)="send()">
             <input
               type="text"
               [(ngModel)]="draft"
@@ -73,10 +221,11 @@
             />
             <button
               type="submit"
-              [disabled]="isSending || !draft.trim()"
-              class="bg-terracotta text-white px-5 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+              [disabled]="isSending() || !draft.trim()"
+              class="bg-terracotta text-white w-12 h-12 md:w-auto md:px-5 md:py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60 flex items-center justify-center gap-2 shrink-0"
             >
-              إرسال
+              <svg lucideSend [size]="18"></svg>
+              <span class="hidden md:inline">إرسال</span>
             </button>
           </form>
         </div>
@@ -84,3 +233,27 @@
     </div>
   </main>
 </div>
+
+<!-- Delete confirmation dialog -->
+<app-modal [open]="!!pendingDeleteId()" title="حذف المحادثة" (closed)="cancelDelete()">
+  <p class="text-sm text-terracotta-dark mb-6">
+    هل أنتِ متأكدة من حذف هذه المحادثة؟ لا يمكن التراجع عن هذا الإجراء.
+  </p>
+  <div class="flex justify-end gap-2">
+    <button
+      type="button"
+      (click)="cancelDelete()"
+      class="px-4 py-2 rounded-xl text-sm font-medium text-terracotta-dark hover:bg-cream transition"
+    >
+      إلغاء
+    </button>
+    <button
+      type="button"
+      (click)="confirmDelete()"
+      [disabled]="isDeleting()"
+      class="px-4 py-2 rounded-xl text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition disabled:opacity-60"
+    >
+      {{ isDeleting() ? 'جارِ الحذف...' : 'حذف' }}
+    </button>
+  </div>
+</app-modal>

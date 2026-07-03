@@ -30,6 +30,14 @@ export class ChatService {
     return this.api.get<ConversationDetail>(`${this.base}/conversations/${id}`);
   }
 
+  deleteConversation(id: string): Observable<unknown> {
+    return this.api.delete(`${this.base}/conversations/${id}`);
+  }
+
+  renameConversation(id: string, title: string): Observable<unknown> {
+    return this.api.patch<unknown>(`${this.base}/conversations/${id}`, { title });
+  }
+
   setInterests(courseCategoryIds: string[], productCategoryIds: string[]): Observable<unknown> {
     return this.api.post(
       `${this.base}/interests`,

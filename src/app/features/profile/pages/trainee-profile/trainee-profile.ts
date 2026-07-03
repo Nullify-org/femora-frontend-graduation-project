@@ -1,4 +1,4 @@
-﻿import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
@@ -20,9 +20,9 @@ export class TraineeProfile {
   private readonly enrollmentsApi = inject(EnrollmentService);
   private readonly ordersApi = inject(OrderService);
 
-  enrollments: Enrollment[] = [];
-  orders: Order[] = [];
-  isLoading = true;
+  readonly enrollments = signal<Enrollment[]>([]);
+  readonly orders = signal<Order[]>([]);
+  readonly isLoading = signal(true);
 
   readonly formatPrice = formatPrice;
 
@@ -31,16 +31,16 @@ export class TraineeProfile {
       const userId = this.auth.user()?.id;
 
       this.enrollmentsApi.getMyEnrollments().subscribe({
-        next: (response) => (this.enrollments = response.data),
+        next: (response) => this.enrollments.set(response.data),
       });
 
       this.ordersApi.myOrders(userId).subscribe({
         next: (items) => {
-          this.orders = items;
-          this.isLoading = false;
+          this.orders.set(items);
+          this.isLoading.set(false);
         },
         error: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
       });
     });

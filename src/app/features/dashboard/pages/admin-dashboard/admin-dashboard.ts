@@ -32,15 +32,20 @@ export class AdminDashboard implements OnInit {
   readonly profileTarget  = signal<PendingApproval | null>(null);
 
   readonly quickActions = [
-    { icon: '👥', label: 'إدارة المستخدمين' },
-    { icon: '📚', label: 'إدارة الدورات' },
-    { icon: '🛍️', label: 'إدارة المنتجات' },
-    { icon: '📦', label: 'إدارة الطلبات' },
-    { icon: '📊', label: 'التقارير' },
-    { icon: '⚙️', label: 'إعدادات المنصة' },
-    { icon: '📝', label: 'إدارة المحتوى' },
-    { icon: '🛠️', label: 'الدعم الفني' },
+    { icon: '👥', label: 'إدارة المستخدمين', path: '/dashboard/users' },
+    { icon: '📚', label: 'إدارة الدورات', path: '/dashboard/courses' },
+    { icon: '🛍️', label: 'إدارة المنتجات', path: '/dashboard/products' },
+    { icon: '📦', label: 'إدارة الطلبات', path: '/dashboard/orders' },
+    { icon: '🛒', label: 'تصفح السوق', path: '/marketplace/catalog' },
+    { icon: '📊', label: 'التقارير', path: '/dashboard/reports' },
+    { icon: '⚙️', label: 'الإعدادات', path: '/profile/preferences' },
+    { icon: '📝', label: 'إدارة المحتوى', path: '/dashboard/admin' },
+    { icon: '🛠️', label: 'الدعم الفني', path: '/dashboard/admin' },
   ];
+
+  actionLabel(item: PendingApproval): string {
+    return this.isCourse(item.type) || this.isProduct(item.type) ? 'نشر' : 'موافقة';
+  }
 
   ngOnInit(): void {
     runInBrowser(() => {
@@ -124,7 +129,7 @@ export class AdminDashboard implements OnInit {
     const labels: Record<string, string> = {
       Instructor: 'تحقق مدربة', Seller: 'تحقق بائعة',
       InstructorVerification: 'تحقق مدربة', SellerVerification: 'تحقق بائعة',
-      CourseApproval: 'موافقة دورة', ProductApproval: 'موافقة منتج',
+      CourseApproval: 'نشر دورة', ProductApproval: 'نشر منتج',
     };
     return labels[type] ?? type;
   }

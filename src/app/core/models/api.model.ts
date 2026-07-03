@@ -227,7 +227,9 @@ export interface ChatMessage {
 export interface ConversationSummary {
   conversationId: string;
   title?: string | null;
+  createdAt?: string;
   updatedAt?: string;
+  lastMessagePreview?: string | null;
 }
 
 export interface ConversationDetail {

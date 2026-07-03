@@ -201,6 +201,7 @@ export class Landing implements AfterViewInit, OnDestroy {
             if (s.billingCycle === 'Annual' || s.billingCycle === 'Yearly') {
               this.billingCycle = 'Annual';
             }
+            this.cdr.detectChanges();
           },
           error: () => {},
         });
@@ -212,10 +213,12 @@ export class Landing implements AfterViewInit, OnDestroy {
         next: (products) => {
           this.products = products.slice(0, 3);
           this.animateCardsStagger();
+          this.cdr.detectChanges();
         },
         error: () => {
           this.products = MOCK_PRODUCTS.slice(0, 3);
           this.animateCardsStagger();
+          this.cdr.detectChanges();
         },
       });
     });
@@ -279,10 +282,12 @@ export class Landing implements AfterViewInit, OnDestroy {
         this.upgradingPlanKey = null;
         this.currentPlanName = plan.planKey;
         this.notifications.success('تم ترقية الاشتراك بنجاح');
+        this.cdr.detectChanges();
       },
       error: () => {
         this.upgradingPlanKey = null;
         this.notifications.error('تعذّر ترقية الاشتراك. حاولي مرة أخرى.');
+        this.cdr.detectChanges();
       },
     });
   }

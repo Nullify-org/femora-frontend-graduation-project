@@ -54,6 +54,15 @@ export class ApiClient {
     );
   }
 
+  patch<T>(url: string, body: any, options?: any): Observable<T> {
+    const fullUrl = this.getBaseUrl(url);
+    const opts = this.getRequestOptions(options);
+
+    return (this.http.patch(fullUrl, body, opts) as Observable<T>).pipe(
+      catchError((error: HttpErrorResponse) => this.handleErrorOrFallback<T>('PATCH', url, error, body, opts))
+    );
+  }
+
   delete<T>(url: string, options?: any): Observable<T> {
     const fullUrl = this.getBaseUrl(url);
     const opts = this.getRequestOptions(options);

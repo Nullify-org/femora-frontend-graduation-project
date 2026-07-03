@@ -164,7 +164,10 @@
                 @for (item of pending(); track item.id) {
                   <tr class="border-b border-blush/20 hover:bg-cream/30">
                     <td class="py-3 text-xs text-navy font-medium">
-                      {{ item.requesterName || item.userId }}
+                      <div>{{ item.requesterName || item.userId }}</div>
+                      @if (item.title) {
+                        <div class="text-[11px] text-text-light mt-1">{{ item.title }}</div>
+                      }
                     </td>
                     <td class="py-3">
                       <span class="bg-terracotta/10 text-terracotta text-[10px] px-2 py-0.5 rounded-full font-semibold">
@@ -180,7 +183,7 @@
                         </button>
                         <button type="button" (click)="approve(item.id)"
                           class="bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90 transition">
-                          ✅ موافقة
+                          ✅ {{ actionLabel(item) }}
                         </button>
                         <button type="button" (click)="openReject(item.id)"
                           class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs hover:opacity-90 transition">
@@ -221,10 +224,17 @@
         <h3 class="text-xs font-bold uppercase tracking-wider text-text-light mb-4">إدارة سريعة</h3>
         <div class="grid grid-cols-2 gap-2 text-center text-xs font-semibold text-text-dark">
           @for (btn of quickActions; track btn.label) {
-            <button class="p-3 bg-cream/30 hover:border-terracotta border border-blush/20 rounded-xl transition flex flex-col items-center justify-center">
-              <span class="text-xl mb-1">{{ btn.icon }}</span>
-              <span>{{ btn.label }}</span>
-            </button>
+            @if (btn.path) {
+              <a [routerLink]="btn.path" class="p-3 bg-cream/30 hover:border-terracotta border border-blush/20 rounded-xl transition flex flex-col items-center justify-center">
+                <span class="text-xl mb-1">{{ btn.icon }}</span>
+                <span>{{ btn.label }}</span>
+              </a>
+            } @else {
+              <button class="p-3 bg-cream/30 hover:border-terracotta border border-blush/20 rounded-xl transition flex flex-col items-center justify-center">
+                <span class="text-xl mb-1">{{ btn.icon }}</span>
+                <span>{{ btn.label }}</span>
+              </button>
+            }
           }
         </div>
       </div>
@@ -299,10 +309,24 @@
                 <p class="text-sm text-text-dark">{{ profileTarget()?.title }}</p>
               </div>
             }
-            @if (profileTarget()?.entityId) {
-              <div class="bg-cream/50 rounded-2xl p-4 col-span-full">
-                <p class="text-[11px] text-text-light mb-1">رقم الكيان</p>
-                <p class="text-sm text-text-dark">{{ profileTarget()?.entityId }}</p>
+            @if (isCourse(profileTarget()!.type) && profileTarget()?.entityId) {
+              <div class="bg-cream/50 rounded-2xl p-4 col-span-full flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-[11px] text-text-light mb-1">صفحة الدورة</p>
+                  <p class="text-sm text-text-dark">افتح صفحة الدورة لمراجعة المحتوى كامل قبل اتخاذ القرار</p>
+                </div>
+                <a [routerLink]="['/lms/course', profileTarget()!.entityId]" target="_blank"
+                  class="shrink-0 text-xs font-semibold text-emerald-700 border border-emerald-600 rounded-lg px-3 py-2 hover:bg-emerald-50 transition">فتح الصفحة</a>
+              </div>
+            }
+            @if (isProduct(profileTarget()!.type) && profileTarget()?.entityId) {
+              <div class="bg-cream/50 rounded-2xl p-4 col-span-full flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-[11px] text-text-light mb-1">صفحة المنتج</p>
+                  <p class="text-sm text-text-dark">افتح صفحة المنتج لمراجعة الصور والتفاصيل كاملة قبل اتخاذ القرار</p>
+                </div>
+                <a [routerLink]="['/marketplace/product', profileTarget()!.entityId]" target="_blank"
+                  class="shrink-0 text-xs font-semibold text-emerald-700 border border-emerald-600 rounded-lg px-3 py-2 hover:bg-emerald-50 transition">فتح الصفحة</a>
               </div>
             }
           </div>

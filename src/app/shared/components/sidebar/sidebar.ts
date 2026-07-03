@@ -58,6 +58,7 @@ export class Sidebar {
         { label: 'الدورات', path: '/dashboard/courses', icon: 'courses' },
         { label: 'المنتجات', path: '/dashboard/products', icon: 'products' },
         { label: 'الطلبات', path: '/dashboard/orders', icon: 'orders' },
+        { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
         { label: 'التقارير', path: '/dashboard/reports', icon: 'reports' },
         { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
       ];

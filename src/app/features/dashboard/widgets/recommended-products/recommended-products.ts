@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Card } from '../../../../shared/components/card/card';
 import { ProductService } from '../../../marketplace/services/product.service';
@@ -15,8 +15,8 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 export class RecommendedProducts {
   private readonly productsApi = inject(ProductService);
 
-  products: RecommendedProduct[] = [];
-  isLoading = true;
+  readonly products = signal<RecommendedProduct[]>([]);
+  readonly isLoading = signal(true);
 
   readonly formatPrice = formatPrice;
   readonly productEmoji = productEmoji;
@@ -25,11 +25,11 @@ export class RecommendedProducts {
     runInBrowser(() => {
       this.productsApi.list(4).subscribe({
         next: (products) => {
-          this.products = products;
-          this.isLoading = false;
+          this.products.set(products);
+          this.isLoading.set(false);
         },
         error: () => {
-          this.isLoading = false;
+          this.isLoading.set(false);
         },
       });
     });

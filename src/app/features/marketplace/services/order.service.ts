@@ -121,6 +121,10 @@ export class OrderService {
       .pipe(map((res) => unwrapList<Order>(res).map(normalizeOrder)));
   }
 
+  updateOrderStatus(orderId: string, status: string): Observable<unknown> {
+    return this.api.patch(`${this.base}/${orderId}/status`, { status });
+  }
+
   // ── Stripe Checkout ──────────────────────────────────────────────────────
 
   /**
