@@ -34,6 +34,12 @@ export class LessonAiPanel {
   readonly summary = signal<string | null>(null);
   readonly summaryLength = signal<'short' | 'medium' | 'detailed'>('medium');
 
+  readonly summaryLengthOptions: { key: 'short' | 'medium' | 'detailed'; label: string }[] = [
+    { key: 'short', label: 'مختصر' },
+    { key: 'medium', label: 'متوسط' },
+    { key: 'detailed', label: 'تفصيلى' },
+  ];
+
   // --- Ask state ---
   readonly conversationId = signal<string | undefined>(undefined);
   readonly turns = signal<QaTurn[]>([]);
