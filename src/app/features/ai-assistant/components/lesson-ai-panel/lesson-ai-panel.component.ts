@@ -16,7 +16,7 @@ type PanelTab = 'summarize' | 'ask' | 'quiz' | null;
   selector: 'app-lesson-ai-panel',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './lesson-ai-panel.html',
+  templateUrl: './lesson-ai-panel.component.html',
 })
 export class LessonAiPanel {
   private readonly chat = inject(ChatService);
@@ -33,6 +33,12 @@ export class LessonAiPanel {
   // --- Summarize state ---
   readonly summary = signal<string | null>(null);
   readonly summaryLength = signal<'short' | 'medium' | 'detailed'>('medium');
+
+  readonly summaryLengthOptions: { key: 'short' | 'medium' | 'detailed'; label: string }[] = [
+    { key: 'short', label: 'مختصر' },
+    { key: 'medium', label: 'متوسط' },
+    { key: 'detailed', label: 'تفصيلى' },
+  ];
 
   // --- Ask state ---
   readonly conversationId = signal<string | undefined>(undefined);
