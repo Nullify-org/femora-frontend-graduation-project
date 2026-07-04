@@ -15,4 +15,62 @@ import { AiWidget } from '../../widgets/ai-widget/ai-widget';
 })
 export class Dashboard {
   readonly auth = inject(AuthService);
+<<<<<<< Updated upstream
+=======
+
+  private readonly enrollmentService  = inject(EnrollmentService);
+  private readonly orderService       = inject(OrderService);
+  private readonly subscriptionService = inject(SubscriptionService);
+
+  // raw data signals
+  readonly enrollments = signal<Enrollment[]>([]);
+  readonly orders      = signal<Order[]>([]);
+  readonly subscription = signal<SubscriptionStatus | null>(null);
+
+  // ui state
+  readonly isLoading = signal(true);
+  readonly loadError = signal<string | null>(null);
+
+  // derived stats for the metrics grid
+  readonly continuingCount = computed(() =>
+    this.enrollments().filter((e) => !e.isCompleted).length,
+  );
+  readonly completedCount = computed(() =>
+    this.enrollments().filter((e) => e.isCompleted).length,
+  );
+  readonly ordersCount = computed(() => this.orders().length);
+
+  // top 3 in-progress courses, for the "continue learning" widget
+  readonly continuingEnrollments = computed(() =>
+    this.enrollments()
+      .filter((e) => !e.isCompleted)
+      .slice(0, 3),
+  );
+
+  constructor() {
+    this.loadDashboardData();
+  }
+
+  private loadDashboardData(): void {
+    this.isLoading.set(true);
+    this.loadError.set(null);
+
+    forkJoin({
+      enrollments: this.enrollmentService.getMyEnrollments(1, 50),
+      orders: this.orderService.myOrders(),
+      subscription: this.subscriptionService.getStatusOrNull(),
+    }).subscribe({
+      next: ({ enrollments, orders, subscription }) => {
+        this.enrollments.set(enrollments.items ?? []);
+        this.orders.set(orders ?? []);
+        this.subscription.set(subscription);
+        this.isLoading.set(false);
+      },
+      error: () => {
+        this.loadError.set('تعذر تحميل بيانات لوحة التحكم');
+        this.isLoading.set(false);
+      },
+    });
+  }
+>>>>>>> Stashed changes
 }

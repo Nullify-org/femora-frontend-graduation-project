@@ -15,7 +15,7 @@
             </div>
             <p class="text-xs text-terracotta-dark mt-1">{{ progress(enrollment) }}% مكتمل</p>
           </div>
-          <a [routerLink]="['/lms/player', enrollment.courseId]" class="text-xs bg-terracotta text-white px-3 py-1.5 rounded-lg shrink-0">متابعة</a>
+          <a [routerLink]="['/lms/player', enrollment.enrollmentId]" class="text-xs bg-terracotta text-white px-3 py-1.5 rounded-lg shrink-0">متابعة</a>
         </div>
       }
     }

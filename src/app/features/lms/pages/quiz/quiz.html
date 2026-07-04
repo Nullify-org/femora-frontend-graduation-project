@@ -16,11 +16,37 @@
             <p class="text-terracotta-dark mt-2">
               {{ result.isPassed ? 'نجحتِ في الاختبار!' : 'لم تنجحي هذه المرة — حاولي مجدداً' }}
             </p>
+<<<<<<< Updated upstream
             @if (quiz.courseId) {
               <a [routerLink]="['/lms/player', quiz.courseId]" class="inline-block mt-6 text-terracotta hover:underline">
                 العودة للدورة
               </a>
             }
+=======
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+              <a
+                *ngIf="returnLink()"
+                [routerLink]="returnLink()"
+                class="inline-flex items-center rounded-xl border border-blush/40 px-4 py-2 text-sm text-terracotta hover:bg-cream"
+              >
+                العودة للدورة
+              </a>
+              <a
+                *ngIf="!returnLink() && quiz.courseId"
+                [routerLink]="['/lms/course', quiz.courseId]"
+                class="inline-flex items-center rounded-xl border border-blush/40 px-4 py-2 text-sm text-terracotta hover:bg-cream"
+              >
+                العودة للدورة
+              </a>
+              <button
+                type="button"
+                (click)="startQuiz('module_1')"
+                class="rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white transition hover:bg-terracotta-dark"
+              >
+                إعادة الاختبار
+              </button>
+            </div>
+>>>>>>> Stashed changes
           </div>
         } @else {
           @if (errorMessage) {

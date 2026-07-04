@@ -22,10 +22,17 @@ export class ContinueLearning {
 
   constructor() {
     runInBrowser(() => {
+<<<<<<< Updated upstream
       this.enrollmentsApi.myEnrollments(1, 3).subscribe({
         next: (items) => {
           this.enrollments = items;
           this.isLoading = false;
+=======
+      this.enrollmentsApi.getMyEnrollments(1, 3).subscribe({
+        next: (response) => {
+          this.enrollments.set(response.items ?? []);
+          this.isLoading.set(false);
+>>>>>>> Stashed changes
         },
         error: () => {
           this.isLoading = false;
