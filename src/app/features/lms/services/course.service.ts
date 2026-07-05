@@ -1,4 +1,4 @@
-﻿import { Injectable, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
 import { Course } from '../models/course.model';
@@ -26,6 +26,43 @@ export class CourseService {
       map((response) => this.normalizePagedResponse(response as PagedResponse<Course> | Course[])),
     );
   }
+
+getMyCourses(
+  pageNumber = 1,
+  pageSize = 12,
+  search = '',
+  filter: 'all' | 'published' | 'draft' = 'all',
+): Observable<PagedResponse<Course>> {
+
+  const params: Record<string, any> = {
+    pageNumber,
+    pageSize,
+  };
+
+  if (search.trim()) {
+    params['search'] = search.trim();
+  }
+
+  if (filter === 'published') {
+    params['isPublished'] = true;
+  } else if (filter === 'draft') {
+    params['isPublished'] = false;
+  }
+
+  return this.api
+    .get<PagedResponse<Course>>(
+      `${this.base}/my`,
+      { params },
+    )
+    .pipe(
+      map((response) => ({
+        ...response,
+        data: response.data.map((course) =>
+          this.normalizeCourse(course),
+        ),
+      })),
+    );
+}
 
   getCourseById(id: string): Observable<CourseDetails> {
     return this.api.get<CourseDetails | Course>(`${this.base}/${id}`).pipe(
@@ -150,17 +187,59 @@ export class CourseService {
     };
   }
 
-  private normalizeCourseDetails(course: CourseDetails | Course): CourseDetails {
-    const baseCourse = this.normalizeCourse(course as Course);
-    const details = course as CourseDetails;
+private normalizeCourseDetails(
+  course: CourseDetails | Course,
+): CourseDetails {
 
-    return {
-      ...baseCourse,
-      totalLessons: details.totalLessons ?? 0,
-      modules: (details.modules ?? []).map((module) => ({
-        ...module,
-        id: String(module.id),
-      })),
-    };
-  }
+  const baseCourse = this.normalizeCourse(
+    course as Course,
+  );
+
+  const details = course as CourseDetails;
+
+  return {
+    ...baseCourse,
+
+  instructorProfileId:
+    String(details.instructorProfileId),
+
+  isPublished:
+    details.isPublished ?? false,
+
+  createdAt:
+    details.createdAt,
+
+  updatedAt:
+    details.updatedAt,
+
+  totalLessons:
+    details.totalLessons ?? 0,
+
+    modules:
+      (details.modules ?? []).map(
+        (module) => ({
+          ...module,
+
+          id: String(module.id),
+
+          courseId: String(
+            module.courseId,
+          ),
+
+          lessons:
+            (module.lessons ?? []).map(
+              (lesson) => ({
+                ...lesson,
+
+                id: String(lesson.id),
+
+                moduleId: String(
+                  lesson.moduleId,
+                ),
+              }),
+            ),
+        }),
+      ),
+  };
+}
 }
