@@ -28,6 +28,8 @@ export class ProductCatalog {
 
   readonly categories = signal<ProductCategory[]>([]);
   readonly selectedCategoryId = signal<string>('');
+  readonly searchTerm = signal<string>('');
+  private searchDebounceHandle: ReturnType<typeof setTimeout> | undefined;
 
   readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
@@ -63,13 +65,21 @@ export class ProductCatalog {
     this.loadPage(1);
   }
 
+  onSearchInput(term: string): void {
+    this.searchTerm.set(term);
+    if (this.searchDebounceHandle) clearTimeout(this.searchDebounceHandle);
+    this.searchDebounceHandle = setTimeout(() => this.loadPage(1), 350);
+  }
+
   loadPage(page: number): void {
     if (page < 1) return;
 
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.productsApi.browse(page, this.pageSize, undefined, this.selectedCategoryId() || undefined).subscribe({
+    this.productsApi
+      .browse(page, this.pageSize, this.searchTerm().trim() || undefined, this.selectedCategoryId() || undefined)
+      .subscribe({
       next: (result) => {
         this.products.set(result.items);
         this.totalCount.set(result.totalCount);
@@ -108,5 +118,9 @@ export class ProductCatalog {
 
   productImages(product: RecommendedProduct): string[] {
     return (product.imageUrls?.length ? product.imageUrls : product.imageUrl ? [product.imageUrl] : []).slice(0, 3);
+  }
+
+  primaryImage(product: RecommendedProduct): string | null {
+    return this.productImages(product)[0] ?? null;
   }
 }

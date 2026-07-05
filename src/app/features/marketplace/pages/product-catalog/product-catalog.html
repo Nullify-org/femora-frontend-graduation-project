@@ -2,74 +2,62 @@
   <app-sidebar />
   <main class="flex-1 p-6 md:p-10">
     <div class="max-w-7xl mx-auto">
-      <div class="grid xl:grid-cols-[300px_1fr] gap-6 items-start">
-        <aside class="sticky top-6 rounded-3xl bg-white border border-blush/30 femora-shadow p-5 space-y-6">
-          <div>
-            <h1 class="text-2xl font-bold text-navy font-display">منتجات Femora</h1>
-            <p class="text-terracotta-dark mt-2 text-sm leading-6">منتجات يدوية مختارة مع تصفح أسرع وفلترة أبسط.</p>
-          </div>
 
-          <div>
-            <p class="text-xs uppercase tracking-[0.2em] text-stone-400 mb-3">الفئات</p>
-            <div class="space-y-2 max-h-[30rem] overflow-y-auto pr-1">
-              <button
-                type="button"
-                (click)="onCategoryChange('')"
-                class="w-full text-right rounded-2xl border px-4 py-3 transition"
-                [class.bg-terracotta]="selectedCategoryId() === ''"
-                [class.text-white]="selectedCategoryId() === ''"
-                [class.border-terracotta]="selectedCategoryId() === ''"
-                [class.bg-white]="selectedCategoryId() !== ''"
-                [class.text-terracotta-dark]="selectedCategoryId() !== ''"
-                [class.border-blush/30]="selectedCategoryId() !== ''"
-              >
-                <div class="flex items-center justify-between">
-                  <span class="font-semibold">الكل</span>
-                  <span class="text-xs opacity-75">{{ totalCount() }}</span>
-                </div>
-              </button>
+      <!-- Hero banner -->
+      <div class="relative overflow-hidden rounded-3xl femora-shadow mb-8 bg-gradient-to-l from-terracotta via-terracotta-dark to-navy px-6 py-10 md:px-12 md:py-14">
+        <div class="absolute -top-10 -left-10 w-56 h-56 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="absolute -bottom-16 -right-8 w-64 h-64 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="relative">
+          <p class="text-white/70 text-sm tracking-[0.2em] uppercase mb-2">Femora Marketplace</p>
+          <h1 class="text-3xl md:text-4xl font-bold text-white font-display mb-3">سوق فيمورا</h1>
+          <p class="text-white/85 max-w-xl leading-7">منتجات يدوية أصيلة، مصنوعة بحب من سيدات مصر — تصفحي، اكتشفي، وادعمي صانعة مصرية اليوم.</p>
 
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            <div class="flex-1 min-w-[240px] max-w-lg relative">
+              <input
+                type="search"
+                [value]="searchTerm()"
+                (input)="onSearchInput($any($event.target).value)"
+                placeholder="ابحثي عن منتج..."
+                class="w-full rounded-2xl border-0 bg-white/95 px-5 py-3 pr-12 text-navy placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-white/70 femora-shadow"
+              />
+              <span class="absolute top-1/2 -translate-y-1/2 right-4 text-terracotta-dark">🔍</span>
+            </div>
+
+            <select
+              id="category-filter"
+              [value]="selectedCategoryId()"
+              (change)="onCategoryChange($any($event.target).value)"
+              class="rounded-2xl border-0 bg-white/95 text-navy text-sm font-medium px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/70 femora-shadow cursor-pointer"
+            >
+              <option value="">🗂️ كل الفئات ({{ totalCount() }})</option>
               @for (category of categories(); track category.id) {
-                <button
-                  type="button"
-                  (click)="onCategoryChange(category.id)"
-                  class="w-full text-right rounded-2xl border px-4 py-3 transition"
-                  [class.bg-terracotta]="selectedCategoryId() === category.id"
-                  [class.text-white]="selectedCategoryId() === category.id"
-                  [class.border-terracotta]="selectedCategoryId() === category.id"
-                  [class.bg-white]="selectedCategoryId() !== category.id"
-                  [class.text-terracotta-dark]="selectedCategoryId() !== category.id"
-                  [class.border-blush/30]="selectedCategoryId() !== category.id"
-                >
-                  <div class="flex items-center justify-between gap-3">
-                    <span class="font-semibold">{{ category.name }}</span>
-                    @if (category.productCount) {
-                      <span class="text-xs opacity-75">{{ category.productCount }}</span>
-                    }
-                  </div>
-                </button>
+                <option [value]="category.id">
+                  {{ category.name }}{{ category.productCount ? ' (' + category.productCount + ')' : '' }}
+                </option>
               }
-            </div>
+            </select>
           </div>
-        </aside>
+        </div>
+      </div>
 
-        <section>
-          <div class="flex items-baseline justify-between mb-6">
-            <div>
-              <p class="text-sm text-terracotta-dark">السوق</p>
-              <p class="text-stone-500 mt-1">اكتشفي منتجات يدوية مختارة من سيدات مصر</p>
-            </div>
-            @if (totalCount() > 0) {
-              <p class="text-sm text-terracotta-dark">{{ totalCount() }} منتج</p>
-            }
+      <section>
+        <div class="flex items-baseline justify-between mb-6">
+          <div>
+            <p class="text-sm text-terracotta-dark font-semibold">السوق</p>
+            <p class="text-stone-500 mt-1">اكتشفي منتجات يدوية مختارة من سيدات مصر</p>
           </div>
+          @if (totalCount() > 0) {
+            <p class="text-sm text-white bg-terracotta rounded-full px-3 py-1">{{ totalCount() }} منتج</p>
+          }
+        </div>
 
           @if (errorMessage()) {
             <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">{{ errorMessage() }}</div>
           }
 
           @if (isLoading()) {
-            <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
               @for (_ of [1,2,3,4,5,6]; track $index) {
                 <div class="bg-white rounded-3xl overflow-hidden border border-blush/30 femora-shadow animate-pulse">
                   <div class="h-40 bg-blush/40"></div>
@@ -82,33 +70,48 @@
               }
             </div>
           } @else if (products().length === 0) {
-            <div class="rounded-3xl bg-white border border-blush/30 femora-shadow p-12 text-center text-terracotta-dark">
-              لا توجد منتجات متاحة حاليًا
+            <div class="rounded-3xl bg-white border border-blush/30 femora-shadow p-12 text-center">
+              <div class="text-5xl mb-3">🧺</div>
+              <p class="text-terracotta-dark font-semibold">لا توجد منتجات متاحة حاليًا</p>
+              @if (searchTerm() || selectedCategoryId()) {
+                <p class="text-stone-400 text-sm mt-1">جربي كلمة بحث مختلفة أو امسحي الفلاتر</p>
+              }
             </div>
           } @else {
-            <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
               @for (product of products(); track product.id) {
                 <a
                   [routerLink]="['/marketplace/product', product.id]"
-                  class="group bg-white rounded-3xl overflow-hidden femora-shadow border border-blush/30 hover:-translate-y-1 transition-transform block"
+                  class="group relative bg-white rounded-3xl overflow-hidden femora-shadow border border-blush/30 hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 block"
                 >
-                  @if (!imageFailed(product.id) && productImages(product).length > 0) {
-                    <div class="grid grid-cols-3 gap-1 h-44 bg-stone-100 p-1">
-                      @for (image of productImages(product); track image; let i = $index) {
-                        <img
-                          [src]="image"
-                          [alt]="product.name ?? 'صورة المنتج'"
-                          (error)="onImageError(product.id)"
-                          class="h-full w-full object-cover rounded-2xl group-hover:scale-[1.01] transition"
-                          [class.col-span-2]="i === 0 && productImages(product).length > 1"
-                        />
-                      }
+                  @if (!imageFailed(product.id) && primaryImage(product); as img) {
+                    <div class="relative h-48 bg-stone-100 overflow-hidden">
+                      <img
+                        [src]="img"
+                        [alt]="product.name ?? 'صورة المنتج'"
+                        (error)="onImageError(product.id)"
+                        class="h-full w-full object-cover group-hover:scale-[1.06] transition duration-300"
+                      />
+                      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+
+                      <!-- Price is always visible, overlaid on the image -->
+                      <span class="absolute bottom-3 right-3 text-sm font-bold text-white bg-sage rounded-full px-3 py-1.5 femora-shadow">
+                        {{ formatPrice(product.price) }}
+                      </span>
                     </div>
                   } @else {
-                    <div class="h-44 bg-gradient-to-br from-terracotta/20 via-blush/30 to-sand/50 flex items-center justify-center text-5xl">
+                    <div class="relative h-48 bg-gradient-to-br from-terracotta/20 via-blush/30 to-sand/50 flex items-center justify-center text-5xl">
                       {{ productEmoji(product.category) }}
+                      <span class="absolute bottom-3 right-3 text-sm font-bold text-white bg-sage rounded-full px-3 py-1.5 femora-shadow">
+                        {{ formatPrice(product.price) }}
+                      </span>
                     </div>
                   }
+
+                  <!-- Quick-view pill that appears on hover -->
+                  <span class="absolute top-3 left-3 text-[11px] font-semibold bg-white/90 text-navy rounded-full px-3 py-1 opacity-0 group-hover:opacity-100 transition femora-shadow">
+                    عرض المنتج ←
+                  </span>
 
                   <div class="p-5">
                     <div class="flex items-start justify-between gap-3 mb-2">
@@ -118,13 +121,14 @@
                             {{ product.categoryName }}
                           </span>
                         }
-                        <h3 class="font-bold text-navy font-display leading-snug">{{ product.name }}</h3>
+                        <h3 class="font-bold text-navy font-display leading-snug group-hover:text-terracotta-dark transition">{{ product.name }}</h3>
                       </div>
-                      <span class="text-xs font-semibold text-terracotta-dark bg-cream rounded-full px-2.5 py-1">{{ formatPrice(product.price) }}</span>
                     </div>
 
                     @if (product.sellerName) {
-                      <p class="text-xs text-terracotta-dark mt-1">{{ product.sellerName }}</p>
+                      <p class="text-xs text-terracotta-dark mt-1 flex items-center gap-1">
+                        <span>🧵</span> {{ product.sellerName }}
+                      </p>
                     }
                   </div>
                 </a>
@@ -137,13 +141,13 @@
                   type="button"
                   (click)="previousPage()"
                   [disabled]="currentPage() === 1"
-                  class="px-4 py-2 rounded-full border border-blush/50 bg-white text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                  class="px-4 py-2 rounded-full border border-blush/50 bg-white text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed transition"
                 >
                   السابق
                 </button>
 
                 @if (pageWindow()[0] > 1) {
-                  <button type="button" (click)="goToPage(1)" class="w-10 h-10 rounded-full text-sm bg-white border border-blush/50 text-terracotta-dark hover:bg-blush/20">1</button>
+                  <button type="button" (click)="goToPage(1)" class="w-10 h-10 rounded-full text-sm bg-white border border-blush/50 text-terracotta-dark hover:bg-blush/20 transition">1</button>
                 }
 
                 @for (page of pageWindow(); track page) {
@@ -154,6 +158,7 @@
                     [class.bg-terracotta]="page === currentPage()"
                     [class.text-white]="page === currentPage()"
                     [class.border-terracotta]="page === currentPage()"
+                    [class.femora-shadow]="page === currentPage()"
                     [class.bg-white]="page !== currentPage()"
                     [class.border-blush/50]="page !== currentPage()"
                     [class.text-terracotta-dark]="page !== currentPage()"
@@ -167,7 +172,7 @@
                   type="button"
                   (click)="nextPage()"
                   [disabled]="currentPage() === totalPages()"
-                  class="px-4 py-2 rounded-full border border-blush/50 bg-white text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                  class="px-4 py-2 rounded-full border border-blush/50 bg-white text-terracotta-dark text-sm hover:bg-blush/20 disabled:opacity-40 disabled:cursor-not-allowed transition"
                 >
                   التالي
                 </button>
@@ -175,7 +180,6 @@
             }
           }
         </section>
-      </div>
     </div>
   </main>
 </div>
