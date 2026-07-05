@@ -1,11 +1,12 @@
-﻿import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { QuizService } from '../../services/quiz.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { EnrollmentService } from '../../services/enrollment.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Quiz as QuizModel, QuizAnswerRequest, SubmitQuizResult } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
@@ -19,8 +20,9 @@ export class Quiz {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly quizApi = inject(QuizService);
-  private readonly auth = inject(AuthService);
+  private readonly enrollmentsApi = inject(EnrollmentService);
   private readonly notifications = inject(NotificationService);
+  private readonly auth = inject(AuthService);
 
   readonly quiz = signal<QuizModel | null>(null);
   // Kept as a plain object on purpose: [(ngModel)]="answers[question.questionId]"
@@ -30,6 +32,7 @@ export class Quiz {
   readonly isLoading = signal(true);
   readonly isSubmitting = signal(false);
   readonly isGenerating = signal(false);
+  readonly isUnlocking = signal(false);
   readonly errorMessage = signal('');
 
   readonly moduleId = signal<string>('');
@@ -90,6 +93,9 @@ export class Quiz {
     this.quizApi.getQuiz(id).subscribe({
       next: (quiz) => {
         this.quiz.set({ ...quiz, quizId: quiz.quizId ?? id });
+        if (!this.moduleId() && quiz.moduleId) {
+          this.moduleId.set(quiz.moduleId);
+        }
         this.answers = {};
         this.result.set(null);
         this.errorMessage.set('');
@@ -141,13 +147,8 @@ export class Quiz {
           });
           this.isSubmitting.set(false);
 
-          if (result.isPassed && quiz.moduleId) {
-            this.notifications.success('ممتاز! سيتم فتح الوحدة التالية الآن');
-            setTimeout(() => {
-              this.router.navigate(['/lms/player', enrollmentId], {
-                queryParams: { fromQuizModuleId: quiz.moduleId },
-              });
-            }, 900);
+          if (result.isPassed) {
+            this.unlockNextModule();
           }
         },
         error: (err) => {
@@ -155,6 +156,36 @@ export class Quiz {
           this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذر إرسال الإجابات');
         },
       });
+  }
+
+  /** Automatic on a pass - no button, no extra click. */
+  private unlockNextModule(): void {
+    const moduleId = this.moduleId();
+    const enrollmentId = this.enrollmentId();
+    if (!moduleId) return;
+
+    this.isUnlocking.set(true);
+    this.enrollmentsApi.unlockNextModule(moduleId).subscribe({
+      next: (res) => {
+        this.isUnlocking.set(false);
+        if (res.isLastModule && !res.unlockedModuleId) {
+          this.notifications.success('مبروك! خلصتِ كل وحدات الدورة 🎉');
+        } else {
+          this.notifications.success(`ممتاز! اتفتحت الوحدة الجاية: ${res.unlockedModuleTitle ?? ''}`);
+        }
+
+        if (enrollmentId) {
+          setTimeout(() => {
+            this.router.navigate(['/lms/player', enrollmentId], {
+              queryParams: { fromQuizModuleId: moduleId },
+            });
+          }, 900);
+        }
+      },
+      error: () => {
+        this.isUnlocking.set(false);
+      },
+    });
   }
 
   retryWithFreshQuiz(): void {
@@ -188,6 +219,11 @@ export class Quiz {
       },
     });
   }
+
+  backToCourse(): void {
+    const enrollmentId = this.enrollmentId();
+    if (enrollmentId) {
+      this.router.navigate(['/lms/player', enrollmentId]);
+    }
+  }
 }
-
-

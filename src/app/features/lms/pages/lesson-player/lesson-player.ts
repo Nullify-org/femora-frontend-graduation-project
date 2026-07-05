@@ -156,8 +156,17 @@ export class LessonPlayer {
     this.isMarkingComplete.set(true);
 
     this.learningApi.markLessonComplete(this.lessonId).subscribe({
-      next: () => {
+      next: (res) => {
         this.isMarkingComplete.set(false);
+
+        if (res.isLastLessonInModule && res.moduleQuizId) {
+          this.notifications.info('خلصتِ آخر درس فى الوحدة دى - يلا نبدأ الاختبار');
+          this.router.navigate(['/lms/quiz', res.moduleQuizId], {
+            queryParams: { enrollmentId: this.enrollmentId, moduleId: res.moduleId },
+          });
+          return;
+        }
+
         this.loadEnrollment(this.enrollmentId);
 
         const next = this.nextLesson();
