@@ -9,6 +9,5 @@ export interface Course {
   level: string;
   instructorName: string;
   enrollmentsCount: number;
+  isPublished?: boolean;
 }
-
-

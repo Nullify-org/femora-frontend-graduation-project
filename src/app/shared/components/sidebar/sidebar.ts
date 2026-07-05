@@ -67,7 +67,7 @@ export class Sidebar {
     if (prof === 'instructor' || prof === 'instructor') {
       return [
         { label: 'لوحة التحكم', path: '/dashboard/instructor', icon: 'dashboard' },
-        { label: 'دوراتي', path: '/dashboard/instructor', icon: 'courses' },
+        { label: 'دوراتي', path: '/dashboard/instructor/courses', icon: 'courses' },
         { label: 'الدروس', path: '/dashboard/instructor/lessons', icon: 'lessons' },
         { label: 'الاختبارات', path: '/dashboard/instructor/quizzes', icon: 'quizzes' },
         { label: 'الطلاب', path: '/dashboard/instructor/students', icon: 'users' },

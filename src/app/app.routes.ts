@@ -127,6 +127,25 @@ export const routes: Routes = [
             (m) => m.InstructorDashboard,
           ),
       },
+
+      {
+  path: 'instructor/courses',
+  canActivate: [roleGuard],
+  data: { roles: ['Instructor'] },
+  loadComponent: () =>
+    import('./features/lms/pages/instructor-courses/instructor-courses')
+      .then((m) => m.InstructorCourses),
+  },
+
+{
+  path: 'instructor/courses/:id',
+  canActivate: [roleGuard],
+  data: { roles: ['Instructor'] },
+  loadComponent: () =>
+    import(
+      './features/lms/pages/instructor-course-details/instructor-course-details'
+    ).then(m => m.InstructorCourseDetails),
+},
       {
         path: 'seller',
         canActivate: [roleGuard],

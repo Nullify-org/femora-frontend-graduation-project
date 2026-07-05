@@ -1,0 +1,155 @@
+<div class="flex min-h-screen bg-stone-50">
+  <app-sidebar />
+
+  <main class="flex-1 p-8">
+    <div class="max-w-7xl mx-auto">
+
+      <div class="mb-8">
+        <h1 class="text-4xl font-bold text-stone-800">دوراتي</h1>
+        <p class="text-stone-500 mt-2">إدارة ومتابعة جميع الدورات الخاصة بك</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white rounded-3xl p-6 shadow-sm">
+          <div class="text-stone-500 text-sm">إجمالي الدورات</div>
+          <div class="text-3xl font-bold mt-2">{{ totalCount() }}</div>
+        </div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm">
+          <div class="text-stone-500 text-sm">المنشورة</div>
+          <div class="text-3xl font-bold mt-2 text-green-600">{{ publishedCount() }}</div>
+        </div>
+        <div class="bg-white rounded-3xl p-6 shadow-sm">
+          <div class="text-stone-500 text-sm">إجمالي الطلاب</div>
+          <div class="text-3xl font-bold mt-2 text-orange-500">{{ totalStudents() }}</div>
+        </div>
+      </div>
+
+      <!-- Search + Filter -->
+      <div class="bg-white rounded-2xl shadow-sm p-4 mb-6 flex flex-wrap gap-3">
+        <input
+          type="text"
+          [value]="searchTerm()"
+          (input)="onSearch($any($event.target).value)"
+          placeholder="ابحث عن دورة..."
+          class="flex-1 min-w-50 border border-stone-200 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-300"
+        />
+
+        <div class="flex gap-2">
+          <button
+            (click)="onFilterChange('all')"
+            class="px-4 py-2 rounded-xl text-sm font-medium transition"
+            [class.bg-stone-800]="selectedFilter() === 'all'"
+            [class.text-white]="selectedFilter() === 'all'"
+            [class.bg-stone-100]="selectedFilter() !== 'all'"
+          >الكل</button>
+
+          <button
+            (click)="onFilterChange('published')"
+            class="px-4 py-2 rounded-xl text-sm font-medium transition"
+            [class.bg-green-600]="selectedFilter() === 'published'"
+            [class.text-white]="selectedFilter() === 'published'"
+            [class.bg-stone-100]="selectedFilter() !== 'published'"
+          >منشورة</button>
+
+          <button
+            (click)="onFilterChange('draft')"
+            class="px-4 py-2 rounded-xl text-sm font-medium transition"
+            [class.bg-yellow-500]="selectedFilter() === 'draft'"
+            [class.text-white]="selectedFilter() === 'draft'"
+            [class.bg-stone-100]="selectedFilter() !== 'draft'"
+          >مسودة</button>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="text-center py-24">جارى تحميل الدورات...</div>
+      }
+      @else if (filteredCourses().length === 0) {
+        <div class="bg-white rounded-3xl p-12 text-center">لا توجد دورات</div>
+      }
+      @else {
+        <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+          @for (course of paginatedCourses(); track course.id) {
+            <div class="bg-white rounded-3xl p-6 shadow-sm hover:shadow-lg transition">
+
+              <div class="flex justify-between items-start mb-4">
+                <span class="font-bold text-lg line-clamp-1">{{ course.title }}</span>
+                <span
+                  class="px-3 py-1 rounded-full text-xs shrink-0 ml-2"
+                  [class.bg-green-100]="course.isPublished"
+                  [class.text-green-700]="course.isPublished"
+                  [class.bg-yellow-100]="!course.isPublished"
+                  [class.text-yellow-700]="!course.isPublished"
+                >
+                  {{ course.isPublished ? 'Published' : 'Draft' }}
+                </span>
+              </div>
+
+              <p class="text-stone-500 text-sm line-clamp-3">{{ course.description }}</p>
+
+              <div class="flex justify-between mt-4 text-sm text-stone-600">
+                <span>{{ course.price }} EGP</span>
+                <span>{{ course.enrollmentsCount }} طالب</span>
+              </div>
+
+   <div class="mt-5 flex gap-2 flex-wrap">
+<a
+    [routerLink]="['/dashboard/instructor/courses', course.id]"
+    class="flex-1 text-center text-sm border border-stone-200 rounded-xl py-2 hover:bg-stone-50 transition"
+  >عرض</a>
+
+<a
+    [routerLink]="['/dashboard/instructor/courses', course.id, 'edit']"
+    class="flex-1 text-center text-sm border border-orange-200 text-orange-600 rounded-xl py-2 hover:bg-orange-50 transition"
+  >تعديل</a>
+
+<a
+    [routerLink]="['/dashboard/instructor/courses', course.id, 'modules']"
+    class="flex-1 text-center text-sm border border-stone-200 rounded-xl py-2 hover:bg-stone-50 transition"
+  >الوحدات</a>
+
+  <button
+    class="flex-1 text-center text-sm border border-blue-200 text-blue-600 rounded-xl py-2 hover:bg-blue-50 transition"
+  >
+    {{ course.isPublished ? 'إلغاء النشر' : 'نشر' }}
+  </button>
+
+  <button
+    class="flex-1 text-center text-sm border border-red-200 text-red-600 rounded-xl py-2 hover:bg-red-50 transition"
+  >حذف</button>
+</div>
+            </div>
+          }
+        </div>
+
+        @if (totalPages() > 1) {
+          <div class="flex items-center justify-center gap-2 mt-10">
+            <button
+              (click)="goToPage(pageNumber() - 1)"
+              [disabled]="pageNumber() === 1"
+              class="px-4 py-2 rounded-xl border border-stone-200 disabled:opacity-40"
+            >السابق</button>
+
+            @for (page of pages(); track page) {
+              <button
+                (click)="goToPage(page)"
+                class="w-10 h-10 rounded-xl text-sm font-medium transition"
+                [class.bg-orange-500]="page === pageNumber()"
+                [class.text-white]="page === pageNumber()"
+                [class.bg-stone-100]="page !== pageNumber()"
+              >{{ page }}</button>
+            }
+
+            <button
+              (click)="goToPage(pageNumber() + 1)"
+              [disabled]="pageNumber() === totalPages()"
+              class="px-4 py-2 rounded-xl border border-stone-200 disabled:opacity-40"
+            >التالي</button>
+          </div>
+        }
+      }
+
+    </div>
+  </main>
+</div>
