@@ -1,10 +1,10 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { QuizService } from '../../services/quiz.service';
-import { AuthService } from '../../../../core/auth/auth.service';
+import { EnrollmentService } from '../../services/enrollment.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { Quiz as QuizModel, QuizAnswerRequest, SubmitQuizResult } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
@@ -17,8 +17,9 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 })
 export class Quiz {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly quizApi = inject(QuizService);
-  private readonly auth = inject(AuthService);
+  private readonly enrollmentsApi = inject(EnrollmentService);
   private readonly notifications = inject(NotificationService);
 
   readonly quiz = signal<QuizModel | null>(null);
@@ -30,7 +31,12 @@ export class Quiz {
   readonly isLoading = signal(true);
   readonly isSubmitting = signal(false);
   readonly isGenerating = signal(false);
+  readonly isUnlocking = signal(false);
   readonly errorMessage = signal('');
+
+  /** Comes from the lesson player's redirect after completing the module's last lesson. */
+  enrollmentId = '';
+  moduleId = '';
 
   readonly answeredQuestionsCount = computed(() =>
     Object.values(this.answers).filter(Boolean).length,
@@ -45,6 +51,9 @@ export class Quiz {
   constructor() {
     runInBrowser(() => {
       const id = this.route.snapshot.paramMap.get('id');
+      this.enrollmentId = this.route.snapshot.queryParamMap.get('enrollmentId') ?? '';
+      this.moduleId = this.route.snapshot.queryParamMap.get('moduleId') ?? '';
+
       if (!id) {
         this.errorMessage.set('معرّف الاختبار غير صالح');
         this.isLoading.set(false);
@@ -54,6 +63,7 @@ export class Quiz {
       this.quizApi.getQuiz(id).subscribe({
         next: (quiz) => {
           this.quiz.set({ ...quiz, quizId: quiz.quizId ?? id });
+          this.moduleId = this.moduleId || quiz.moduleId || '';
           this.isLoading.set(false);
         },
         error: () => {
@@ -99,6 +109,11 @@ export class Quiz {
       return;
     }
 
+    if (!this.enrollmentId) {
+      this.errorMessage.set('لا يمكن إرسال الاختبار بدون معرّف التسجيل فى الدورة');
+      return;
+    }
+
     const answers: QuizAnswerRequest[] = Object.entries(this.answers).map(([questionId, choiceId]) => ({
       questionId,
       choiceId,
@@ -114,7 +129,7 @@ export class Quiz {
 
     this.quizApi
       .submitQuiz(quiz.quizId, {
-        traineeProfileId: this.auth.user()?.id,
+        enrollmentId: this.enrollmentId,
         answers,
       })
       .subscribe({
@@ -124,11 +139,41 @@ export class Quiz {
             maxScore: result.maxScore ?? quiz.questions?.length ?? 0,
           });
           this.isSubmitting.set(false);
+
+          if (result.isPassed) {
+            this.unlockNextModule();
+          }
         },
         error: (err) => {
           this.isSubmitting.set(false);
           this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذّر إرسال الإجابات');
         },
       });
+  }
+
+  /** Automatic on a pass - no button, no extra click. */
+  private unlockNextModule(): void {
+    if (!this.moduleId) return;
+
+    this.isUnlocking.set(true);
+    this.enrollmentsApi.unlockNextModule(this.moduleId).subscribe({
+      next: (res) => {
+        this.isUnlocking.set(false);
+        if (res.isLastModule && !res.unlockedModuleId) {
+          this.notifications.success('مبروك! خلصتِ كل وحدات الدورة 🎉');
+        } else {
+          this.notifications.success(`اتفتحت الوحدة الجاية: ${res.unlockedModuleTitle ?? ''}`);
+        }
+      },
+      error: () => {
+        this.isUnlocking.set(false);
+      },
+    });
+  }
+
+  backToCourse(): void {
+    if (this.enrollmentId) {
+      this.router.navigate(['/lms/player', this.enrollmentId]);
+    }
   }
 }

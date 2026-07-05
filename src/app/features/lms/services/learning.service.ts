@@ -1,9 +1,9 @@
 
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { ApiClient } from '../../../core/services/api-client.service';
-import { Enrollment, EnrollmentDetailsResponse } from '../../../core/models/api.model';
+import { CompleteLessonResponse, Enrollment, EnrollmentDetailsResponse } from '../../../core/models/api.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { unwrapList } from '../../../core/utils/api-response.util';
 
@@ -33,13 +33,9 @@ export class LearningService {
     );
   }
 
-  markLessonComplete(lessonId: string): Observable<void> {
-    return this.api.post<void>(`${this.base}/lessons/${lessonId}/complete`, {}).pipe(
+  markLessonComplete(lessonId: string): Observable<CompleteLessonResponse> {
+    return this.api.post<CompleteLessonResponse>(`${this.base}/lessons/${lessonId}/complete`, {}).pipe(
       tap(() => this.notifications.success('تم تسجيل الدرس كمكتمل')),
-      catchError(() => {
-        this.notifications.info('تم تحديث تقدم الدورة محلياً');
-        return of(undefined);
-      }),
     );
   }
 }

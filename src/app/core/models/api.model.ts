@@ -217,6 +217,16 @@ export interface SubmitQuizResult {
   answerResults?: Array<{ questionId: string; isCorrect: boolean }>;
 }
 
+export interface CompleteLessonResponse {
+  lessonId: string;
+  enrollmentId: string;
+  enrollmentCompleted: boolean;
+  enrollmentCompletedAt?: string | null;
+  isLastLessonInModule: boolean;
+  moduleId: string;
+  moduleQuizId?: string | null;
+}
+
 export interface ChatMessage {
   messageId?: string;
   role: 'user' | 'assistant' | string;
