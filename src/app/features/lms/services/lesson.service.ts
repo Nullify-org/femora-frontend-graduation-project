@@ -11,4 +11,8 @@ export class LessonService {
   getById(lessonId: string): Observable<LessonDetails> {
     return this.api.get<LessonDetails>(`${this.base}/${lessonId}`);
   }
+
+  update(id: string, body: any): Observable<any> {
+  return this.api.put(`/api/lessons/${id}`, body);
+}
 }

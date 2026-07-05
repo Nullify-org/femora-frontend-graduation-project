@@ -80,7 +80,12 @@ export class AuthService {
         catchError((err) => throwError(() => err)),
       );
   }
-
+getMyProfile(): Observable<any> {
+  return this.http.get<any>(
+    `${environment.apiUrl}/api/profile`,
+    { withCredentials: true },
+  );
+}
   // ── External Login (Google / Facebook) ───────────────────────────────────
   /** Unified external login — provider: "Google" | "Facebook", token: id_token or access_token */
   signinWithExternal(provider: 'Google' | 'Facebook', token: string): Observable<SigninResponse> {
@@ -389,4 +394,5 @@ export class AuthService {
     this.storage.remove(REFRESH_TOKEN_KEY);
     this.storage.remove(AUTH_STORAGE_KEY);
   }
+  
 }

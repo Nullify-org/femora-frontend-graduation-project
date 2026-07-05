@@ -123,29 +123,58 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['Instructor'] },
         loadComponent: () =>
-          import('./features/lms/pages/instructor-dashboard/instructor-dashboard').then(
-            (m) => m.InstructorDashboard,
-          ),
+          import('./features/lms/pages/instructor-dashboard/instructor-dashboard')
+            .then((m) => m.InstructorDashboard),
       },
-
       {
-  path: 'instructor/courses',
-  canActivate: [roleGuard],
-  data: { roles: ['Instructor'] },
-  loadComponent: () =>
-    import('./features/lms/pages/instructor-courses/instructor-courses')
-      .then((m) => m.InstructorCourses),
-  },
-
-{
-  path: 'instructor/courses/:id',
-  canActivate: [roleGuard],
-  data: { roles: ['Instructor'] },
-  loadComponent: () =>
-    import(
-      './features/lms/pages/instructor-course-details/instructor-course-details'
-    ).then(m => m.InstructorCourseDetails),
-},
+        path: 'instructor/courses',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-courses/instructor-courses')
+            .then((m) => m.InstructorCourses),
+      },
+      {
+        path: 'instructor/courses/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-course-details/instructor-course-details')
+            .then((m) => m.InstructorCourseDetails),
+      },
+      {
+        path: 'instructor/course-create',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-course-create/instructor-course-create')
+            .then((m) => m.InstructorCourseCreate),
+      },
+      {
+        path: 'instructor/course-edit/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-course-edit/instructor-course-edit')
+            .then((m) => m.InstructorCourseEdit),
+      },
+      {
+        path: 'instructor/module-edit/:moduleId',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-module-edit/instructor-module-edit')
+            .then((m) => m.InstructorModuleEdit),
+      },
+      {
+        path: 'instructor/lesson-edit/:lessonId',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-lesson-edit/instructor-lesson-edit')
+            .then((m) => m.InstructorLessonEdit),
+      },
+      // -------------------------------
       {
         path: 'seller',
         canActivate: [roleGuard],
@@ -320,4 +349,6 @@ export const routes: Routes = [
       import('./features/profile/pages/preferences/preferences').then((m) => m.Preferences),
   },
   { path: '**', redirectTo: '' },
+
+  
 ];

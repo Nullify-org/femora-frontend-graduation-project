@@ -112,7 +112,7 @@
       <div class="bg-white border border-blush/60 rounded-3xl p-5 shadow-sm">
         <h3 class="text-xs font-bold uppercase tracking-wider text-text-light mb-4">إجراءات سريعة</h3>
         <div class="space-y-2">
-          <button (click)="showCreate.set(true)" class="w-full flex items-center justify-between p-3 bg-cream/30 border border-blush/20 rounded-xl hover:border-terracotta transition text-sm font-semibold text-text-dark text-right">
+          <button (click)="goToCreateCourse()" class="w-full flex items-center justify-between p-3 bg-cream/30 border border-blush/20 rounded-xl hover:border-terracotta transition text-sm font-semibold text-text-dark text-right">
             <span>إنشاء دورة جديدة</span>
             <span class="text-terracotta">+</span>
           </button>
@@ -122,10 +122,7 @@
               <span class="text-terracotta">✔️</span>
             </button>
           }
-          <a routerLink="/lms/catalog" class="w-full flex items-center justify-between p-3 bg-cream/30 border border-blush/20 rounded-xl hover:border-terracotta transition text-sm font-semibold text-text-dark text-right">
-            <span>تصفّح كل الدورات</span>
-            <span class="text-terracotta">📚</span>
-          </a>
+    
         </div>
       </div>
 
@@ -143,29 +140,6 @@
           <div class="flex gap-2 justify-end">
             <button type="button" (click)="showApply.set(false)" class="px-4 py-2 text-sm text-text-medium hover:bg-cream rounded-xl transition">إلغاء</button>
             <button type="button" (click)="applyInstructor()" class="px-4 py-2 text-sm bg-terracotta text-white rounded-xl hover:opacity-90 transition">إرسال</button>
-          </div>
-        </div>
-      </div>
-    }
-
-    @if (showCreate()) {
-      <div class="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl text-right max-h-[90vh] overflow-y-auto">
-          <h3 class="font-bold text-navy mb-4">إنشاء دورة جديدة</h3>
-          <div class="space-y-4">
-            <input [(ngModel)]="newCourse.title" class="w-full border border-blush bg-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta" placeholder="عنوان الدورة" />
-            <textarea [(ngModel)]="newCourse.description" rows="3" class="w-full border border-blush bg-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta" placeholder="وصف الدورة"></textarea>
-            <input [(ngModel)]="newCourse.price" type="number" class="w-full border border-blush bg-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta" placeholder="السعر (EGP)" />
-            <select [(ngModel)]="newCourse.level" class="w-full border border-blush bg-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta">
-              <option value="Beginner">مبتدئ</option>
-              <option value="Intermediate">متوسط</option>
-              <option value="Advanced">متقدم</option>
-              <option value="Expert">خبير</option>
-            </select>
-          </div>
-          <div class="flex gap-2 justify-end mt-5">
-            <button type="button" (click)="showCreate.set(false)" class="px-4 py-2 text-sm text-text-medium hover:bg-cream rounded-xl transition">إلغاء</button>
-            <button type="button" (click)="createCourse()" class="px-4 py-2 text-sm bg-terracotta text-white rounded-xl hover:opacity-90 transition">إنشاء</button>
           </div>
         </div>
       </div>

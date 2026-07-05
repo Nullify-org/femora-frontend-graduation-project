@@ -6,7 +6,6 @@ import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { QuizService } from '../../services/quiz.service';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthService } from '../../../../core/services/auth.service';
 import { Quiz as QuizModel, QuizAnswerRequest, SubmitQuizResult } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
@@ -22,7 +21,6 @@ export class Quiz {
   private readonly quizApi = inject(QuizService);
   private readonly enrollmentsApi = inject(EnrollmentService);
   private readonly notifications = inject(NotificationService);
-  private readonly auth = inject(AuthService);
 
   readonly quiz = signal<QuizModel | null>(null);
   // Kept as a plain object on purpose: [(ngModel)]="answers[question.questionId]"
@@ -61,6 +59,7 @@ export class Quiz {
   readonly canRetry = computed(() => {
     return !!this.moduleId() && !!this.enrollmentId() && !!this.result() && !this.result()!.isPassed && (this.remainingAttempts() ?? 0) > 0;
   });
+  auth: any;
 
   constructor() {
     runInBrowser(() => {

@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
 import { Course } from '../models/course.model';
@@ -9,8 +10,16 @@ import { CourseFilterOptions } from '../models/course-filter-options.model';
 
 @Injectable({ providedIn: 'root' })
 export class CourseService {
+
   private readonly api = inject(ApiClient);
+  private readonly http = inject(HttpClient);
+
   private readonly base = '/api/courses';
+  private readonly baseUrl = 'https://localhost:7162/api';
+
+  // ========================
+  // Courses (existing logic)
+  // ========================
 
   list(params?: Record<string, string | number>): Observable<Course[]> {
     const request = this.toCourseRequest(params);
@@ -22,59 +31,68 @@ export class CourseService {
   }
 
   getCourses(request?: GetCoursesRequest): Observable<PagedResponse<Course>> {
-    return this.api.get<unknown>(this.base, { params: this.toQueryParams(request) }).pipe(
-      map((response) => this.normalizePagedResponse(response as PagedResponse<Course> | Course[])),
-    );
+    return this.api
+      .get<unknown>(this.base, { params: this.toQueryParams(request) })
+      .pipe(
+        map((response) =>
+          this.normalizePagedResponse(
+            response as PagedResponse<Course> | Course[]
+          )
+        )
+      );
   }
 
-getMyCourses(
-  pageNumber = 1,
-  pageSize = 12,
-  search = '',
-  filter: 'all' | 'published' | 'draft' = 'all',
-): Observable<PagedResponse<Course>> {
+  getMyCourses(
+    pageNumber = 1,
+    pageSize = 12,
+    search = '',
+    filter: 'all' | 'published' | 'draft' = 'all',
+  ): Observable<PagedResponse<Course>> {
 
-  const params: Record<string, any> = {
-    pageNumber,
-    pageSize,
-  };
+    const params: Record<string, any> = {
+      pageNumber,
+      pageSize,
+    };
 
-  if (search.trim()) {
-    params['search'] = search.trim();
+    if (search.trim()) {
+      params['search'] = search.trim();
+    }
+
+    if (filter === 'published') {
+      params['isPublished'] = true;
+    } else if (filter === 'draft') {
+      params['isPublished'] = false;
+    }
+
+    return this.api
+      .get<PagedResponse<Course>>(`${this.base}/my`, { params })
+      .pipe(
+        map((response) => ({
+          ...response,
+          data: response.data.map((course) =>
+            this.normalizeCourse(course),
+          ),
+        })),
+      );
   }
-
-  if (filter === 'published') {
-    params['isPublished'] = true;
-  } else if (filter === 'draft') {
-    params['isPublished'] = false;
-  }
-
-  return this.api
-    .get<PagedResponse<Course>>(
-      `${this.base}/my`,
-      { params },
-    )
-    .pipe(
-      map((response) => ({
-        ...response,
-        data: response.data.map((course) =>
-          this.normalizeCourse(course),
-        ),
-      })),
-    );
-}
 
   getCourseById(id: string): Observable<CourseDetails> {
-    return this.api.get<CourseDetails | Course>(`${this.base}/${id}`).pipe(
-      map((course) => this.normalizeCourseDetails(course as CourseDetails | Course)),
-    );
+    return this.api
+      .get<CourseDetails | Course>(`${this.base}/${id}`)
+      .pipe(
+        map((course) =>
+          this.normalizeCourseDetails(
+            course as CourseDetails | Course
+          )
+        ),
+      );
   }
 
   getFilterOptions() {
-  return this.api.get<CourseFilterOptions>(
-    `${this.base}/filter-options`
-  );
-}
+    return this.api.get<CourseFilterOptions>(
+      `${this.base}/filter-options`
+    );
+  }
 
   create(body: Record<string, unknown>): Observable<string> {
     return this.api.post<string>(this.base, body);
@@ -88,65 +106,106 @@ getMyCourses(
     return this.api.post(`${this.base}/${id}/publish`, {});
   }
 
+  unpublish(id: string): Observable<unknown> {
+    return this.api.post(`${this.base}/${id}/unpublish`, {});
+  }
+
+  deleteCourse(id: string): Observable<unknown> {
+    return this.api.delete(`${this.base}/${id}`);
+  }
+
+  // ========================
+  // NEW: Update endpoints
+  // ========================
+
+  updateCourse(id: string, data: any): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/courses/${id}`,
+      data
+    );
+  }
+
+  updateModule(moduleId: string, data: any): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/modules/${moduleId}`,
+      data
+    );
+  }
+
+  updateLesson(lessonId: string, data: any): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/lessons/${lessonId}`,
+      data
+    );
+  }
+
+  // ========================
+  // Helpers
+  // ========================
+
   private toQueryParams(
-  request?: GetCoursesRequest
+    request?: GetCoursesRequest
   ): Record<string, string> | undefined {
 
-  if (!request) return undefined;
+    if (!request) return undefined;
 
-  const params: Record<string, string> = {};
+    const params: Record<string, string> = {};
 
-  if (request.search?.trim())
-    params['search'] = request.search.trim();
+    if (request.search?.trim())
+      params['search'] = request.search.trim();
 
-  if (request.category)
-    params['category'] = request.category;
+    if (request.category)
+      params['category'] = request.category;
 
-  if (request.level)
-    params['level'] = request.level;
+    if (request.level)
+      params['level'] = request.level;
 
-  if (request.minPrice != null)
-    params['minPrice'] = request.minPrice.toString();
+    if (request.minPrice != null)
+      params['minPrice'] = request.minPrice.toString();
 
-  if (request.maxPrice != null)
-    params['maxPrice'] = request.maxPrice.toString();
+    if (request.maxPrice != null)
+      params['maxPrice'] = request.maxPrice.toString();
 
-  if (request.sortBy != null)
-    params['sortBy'] = request.sortBy.toString();
+    if (request.sortBy != null)
+      params['sortBy'] = request.sortBy.toString();
 
-  if (request.pageNumber != null)
-    params['pageNumber'] = request.pageNumber.toString();
+    if (request.pageNumber != null)
+      params['pageNumber'] = request.pageNumber.toString();
 
-  if (request.pageSize != null)
-    params['pageSize'] = request.pageSize.toString();
+    if (request.pageSize != null)
+      params['pageSize'] = request.pageSize.toString();
 
-  return Object.keys(params).length
-    ? params
-    : undefined;
-}
+    return Object.keys(params).length ? params : undefined;
+  }
 
-  private toCourseRequest(params?: Record<string, string | number>): GetCoursesRequest | undefined {
+  private toCourseRequest(
+    params?: Record<string, string | number>
+  ): GetCoursesRequest | undefined {
+
     if (!params) {
       return undefined;
     }
 
-    const search = typeof params['Search'] === 'string'
-      ? params['Search']
-      : typeof params['search'] === 'string'
-        ? params['search']
-        : '';
+    const search =
+      typeof params['Search'] === 'string'
+        ? params['Search']
+        : typeof params['search'] === 'string'
+          ? params['search']
+          : '';
 
-    const pageNumber = typeof params['PageNumber'] === 'number'
-      ? params['PageNumber']
-      : typeof params['pageNumber'] === 'number'
-        ? params['pageNumber']
-        : 1;
+    const pageNumber =
+      typeof params['PageNumber'] === 'number'
+        ? params['PageNumber']
+        : typeof params['pageNumber'] === 'number'
+          ? params['pageNumber']
+          : 1;
 
-    const pageSize = typeof params['PageSize'] === 'number'
-      ? params['PageSize']
-      : typeof params['pageSize'] === 'number'
-        ? params['pageSize']
-        : undefined;
+    const pageSize =
+      typeof params['PageSize'] === 'number'
+        ? params['PageSize']
+        : typeof params['pageSize'] === 'number'
+          ? params['pageSize']
+          : undefined;
 
     return {
       search: String(search).trim() || undefined,
@@ -155,10 +214,15 @@ getMyCourses(
     };
   }
 
-  private normalizePagedResponse(response: PagedResponse<Course> | Course[]): PagedResponse<Course> {
+  private normalizePagedResponse(
+    response: PagedResponse<Course> | Course[]
+  ): PagedResponse<Course> {
+
     if (Array.isArray(response)) {
       return {
-        data: response.map((course) => this.normalizeCourse(course as Course)),
+        data: response.map((course) =>
+          this.normalizeCourse(course as Course)
+        ),
         page: 1,
         pageSize: response.length,
         totalCount: response.length,
@@ -168,11 +232,15 @@ getMyCourses(
       };
     }
 
-    const data = Array.isArray(response.data) ? response.data : [];
+    const data = Array.isArray(response.data)
+      ? response.data
+      : [];
 
     return {
       ...response,
-      data: data.map((course) => this.normalizeCourse(course as Course)),
+      data: data.map((course) =>
+        this.normalizeCourse(course as Course)
+      ),
       page: response.page ?? 1,
       pageSize: response.pageSize ?? data.length,
       hasNext: response.hasNext ?? false,
@@ -187,59 +255,44 @@ getMyCourses(
     };
   }
 
-private normalizeCourseDetails(
-  course: CourseDetails | Course,
-): CourseDetails {
+  private normalizeCourseDetails(
+    course: CourseDetails | Course,
+  ): CourseDetails {
 
-  const baseCourse = this.normalizeCourse(
-    course as Course,
-  );
+    const baseCourse = this.normalizeCourse(
+      course as Course,
+    );
 
-  const details = course as CourseDetails;
+    const details = course as CourseDetails;
 
-  return {
-    ...baseCourse,
+    return {
+      ...baseCourse,
 
-  instructorProfileId:
-    String(details.instructorProfileId),
+      instructorProfileId: String(details.instructorProfileId),
 
-  isPublished:
-    details.isPublished ?? false,
+      isPublished: details.isPublished ?? false,
 
-  createdAt:
-    details.createdAt,
+      createdAt: details.createdAt,
 
-  updatedAt:
-    details.updatedAt,
+      updatedAt: details.updatedAt,
 
-  totalLessons:
-    details.totalLessons ?? 0,
+      totalLessons: details.totalLessons ?? 0,
 
-    modules:
-      (details.modules ?? []).map(
-        (module) => ({
-          ...module,
+      modules: (details.modules ?? []).map((module) => ({
+        ...module,
 
-          id: String(module.id),
+        id: String(module.id),
 
-          courseId: String(
-            module.courseId,
-          ),
+        courseId: String(module.courseId),
 
-          lessons:
-            (module.lessons ?? []).map(
-              (lesson) => ({
-                ...lesson,
+        lessons: (module.lessons ?? []).map((lesson) => ({
+          ...lesson,
 
-                id: String(lesson.id),
+          id: String(lesson.id),
 
-                moduleId: String(
-                  lesson.moduleId,
-                ),
-              }),
-            ),
-        }),
-      ),
-  };
-}
+          moduleId: String(lesson.moduleId),
+        })),
+      })),
+    };
+  }
 }

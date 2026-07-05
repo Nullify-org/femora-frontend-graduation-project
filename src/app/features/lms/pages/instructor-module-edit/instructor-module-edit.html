@@ -1,0 +1,10 @@
+<div class="edit-container">
+  <h2>Edit Module</h2>
+  <form [formGroup]="moduleForm" (ngSubmit)="save()">
+    <div class="form-group">
+      <label>Module Title</label>
+      <input formControlName="title" type="text" placeholder="Enter module title" />
+    </div>
+    <button type="submit" [disabled]="moduleForm.invalid">Save Changes</button>
+  </form>
+</div>

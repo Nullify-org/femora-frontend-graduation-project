@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ApprovalService } from '../../../../core/services/approval.service';
@@ -24,13 +24,11 @@ export class InstructorDashboard implements OnInit {
   private readonly approvalsApi = inject(ApprovalService);
   private readonly notifications = inject(NotificationService);
   private readonly statsApi = inject(InstructorStatsService);
+  private readonly router = inject(Router);
 
   readonly courses = signal<Course[]>([]);
   readonly showApply = signal(false);
-  readonly showCreate = signal(false);
 
-  // Dashboard cards (statistics) + recent-courses section — real data from
-  // GET /api/courses/my/stats instead of the hardcoded placeholder numbers.
   readonly stats = signal<InstructorStats | null>(null);
   readonly statsLoading = signal(true);
 
@@ -39,14 +37,6 @@ export class InstructorDashboard implements OnInit {
 
   applyBio = '';
   applyPortfolio = '';
-  newCourse = {
-    title: '',
-    description: '',
-    price: 0,
-    category: 'Development',
-    language: 'ar',
-    level: 'Beginner',
-  };
 
   ngOnInit(): void {
     runInBrowser(() => {
@@ -88,26 +78,9 @@ export class InstructorDashboard implements OnInit {
     });
   }
 
-  createCourse(): void {
-    if (!this.newCourse.title.trim()) {
-      this.notifications.error('عنوان الدورة مطلوب');
-      return;
-    }
-    this.coursesApi
-      .create({
-        instructorProfileId: this.auth.user()?.id,
-        ...this.newCourse,
-      })
-      .subscribe({
-        next: () => {
-          this.notifications.success('تم إنشاء الدورة');
-          this.showCreate.set(false);
-          this.newCourse = { title: '', description: '', price: 0, category: 'Development', language: 'ar', level: 'Beginner' };
-          this.loadCourses();
-          this.loadStats();
-        },
-        error: () => this.notifications.error('فشل إنشاء الدورة'),
-      });
+  /** يودّي المستخدم على صفحة إنشاء الدورة المنفصلة */
+  goToCreateCourse(): void {
+    this.router.navigate(['/dashboard/instructor/course-create']);
   }
 
   publishCourse(id: string): void {

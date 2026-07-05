@@ -1,6 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
 import { CourseDetails } from '../../models/course-details.model';
@@ -8,10 +8,11 @@ import { CourseDetails } from '../../models/course-details.model';
 @Component({
   selector: 'app-instructor-course-details',
   standalone: true,
-  imports: [CommonModule, Sidebar],
+  imports: [CommonModule, Sidebar, RouterModule],
   templateUrl: './instructor-course-details.html',
 })
 export class InstructorCourseDetails implements OnInit {
+
   private readonly route = inject(ActivatedRoute);
   private readonly coursesApi = inject(CourseService);
 
@@ -27,6 +28,8 @@ export class InstructorCourseDetails implements OnInit {
   }
 
   private loadCourse(id: string): void {
+    this.isLoading.set(true);
+
     this.coursesApi.getCourseById(id).subscribe({
       next: (course) => {
         this.course.set(course);

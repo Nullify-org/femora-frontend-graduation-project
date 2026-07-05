@@ -1,0 +1,53 @@
+<div class="edit-container">
+  <h3 class="font-bold text-navy mb-4">إنشاء دورة جديدة</h3>
+
+  @if (errorMessage()) {
+    <div class="error-banner">{{ errorMessage() }}</div>
+  }
+
+  <form [formGroup]="courseForm" (ngSubmit)="save()">
+
+    <div class="form-group">
+      <label>عنوان الدورة</label>
+      <input formControlName="title" placeholder="مثال: أساسيات الديكوباج" />
+    </div>
+
+    <div class="form-group">
+      <label>وصف الدورة</label>
+      <textarea formControlName="description" rows="3" placeholder="اشرحي محتوى الدورة باختصار"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>السعر (جنيه مصري)</label>
+      <input formControlName="price" type="number" placeholder="0" />
+    </div>
+
+    <div class="form-group">
+      <label>التصنيف</label>
+      <input formControlName="category" placeholder="مثال: Development" />
+    </div>
+
+    <div class="form-group">
+      <label>اللغة</label>
+      <input formControlName="language" placeholder="مثال: ar أو English" />
+    </div>
+
+    <div class="form-group">
+      <label>المستوى</label>
+      <select formControlName="level">
+        <option value="Beginner">مبتدئ</option>
+        <option value="Intermediate">متوسط</option>
+        <option value="Advanced">متقدم</option>
+        <option value="Expert">خبير</option>
+      </select>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="cancel()">إلغاء</button>
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting() || courseForm.invalid">
+        {{ isSubmitting() ? 'جارٍ الإنشاء...' : 'إنشاء' }}
+      </button>
+    </div>
+
+  </form>
+</div>

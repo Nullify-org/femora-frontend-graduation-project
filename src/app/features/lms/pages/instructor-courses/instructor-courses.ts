@@ -24,6 +24,9 @@ export class InstructorCourses {
   readonly pageNumber = signal(1);
   readonly pageSize = 12;
 
+  // معرف الكورس اللي بيتنفذ عليه عملية دلوقتي (عشان نعطل زراره بس أثناء الطلب)
+  readonly processingCourseId = signal<string | null>(null);
+
   // فلترة محلية
   readonly filteredCourses = computed(() => {
     let courses = this.allCourses();
@@ -100,5 +103,51 @@ export class InstructorCourses {
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages()) return;
     this.pageNumber.set(page);
+  }
+
+  togglePublish(course: Course): void {
+    if (this.processingCourseId()) return;
+
+    this.processingCourseId.set(course.id);
+    const request$ = course.isPublished
+      ? this.coursesApi.unpublish(course.id)
+      : this.coursesApi.publish(course.id);
+
+    request$.subscribe({
+      next: () => {
+        this.allCourses.update(list =>
+          list.map(c =>
+            c.id === course.id ? { ...c, isPublished: !c.isPublished } : c
+          )
+        );
+        this.processingCourseId.set(null);
+      },
+      error: (err) => {
+        console.error('فشل تغيير حالة النشر:', err);
+        this.processingCourseId.set(null);
+      },
+    });
+  }
+
+  deleteCourse(course: Course): void {
+    if (this.processingCourseId()) return;
+
+    const confirmed = confirm(
+      `متأكد إنك عايز تحذف كورس "${course.title}"؟ الإجراء ده مش قابل للتراجع.`
+    );
+    if (!confirmed) return;
+
+    this.processingCourseId.set(course.id);
+    this.coursesApi.deleteCourse(course.id).subscribe({
+      next: () => {
+        this.allCourses.update(list => list.filter(c => c.id !== course.id));
+        this.totalCount.update(n => Math.max(0, n - 1));
+        this.processingCourseId.set(null);
+      },
+      error: (err) => {
+        console.error('فشل حذف الكورس:', err);
+        this.processingCourseId.set(null);
+      },
+    });
   }
 }
