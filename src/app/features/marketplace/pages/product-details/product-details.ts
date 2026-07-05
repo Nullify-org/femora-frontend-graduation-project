@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+﻿import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
@@ -46,18 +46,12 @@ export class ProductDetails {
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
 
-  // Angular 21 is zoneless by default — plain field assignments inside
-  // .subscribe() callbacks do NOT trigger a re-render on their own.
-  // Signals are the supported way to get automatic UI updates here.
-
-  /** The row originally resolved from the URL id — used as a fallback before variants load. */
   readonly product = signal<RecommendedProduct | null>(null);
-  /** Every sibling variant sharing the same productId (color/size/etc options). Length 1 = no real choice to make. */
   readonly variants = signal<RecommendedProduct[]>([]);
-  /** User's picks when variants expose structured `attributes` (e.g. { Color: 'Red' }). */
   readonly selectedAttributes = signal<Record<string, string>>({});
-  /** User's pick when variants do NOT expose structured attributes — just a flat list to choose from. */
   readonly selectedVariantId = signal<string | null>(null);
+  readonly galleryImages = signal<string[]>([]);
+  readonly selectedImageIndex = signal(0);
 
   readonly isLoading = signal(true);
   readonly isAdding = signal(false);
@@ -68,7 +62,6 @@ export class ProductDetails {
   readonly formatPrice = formatPrice;
   readonly productEmoji = productEmoji;
 
-  /** Union of attribute keys (e.g. ["Color", "Size"]) across all variants, if the backend provides them. */
   readonly attributeKeys = computed(() => {
     const keys = new Set<string>();
     for (const v of this.variants()) {
@@ -79,7 +72,6 @@ export class ProductDetails {
 
   readonly hasStructuredAttributes = computed(() => this.attributeKeys().length > 0);
 
-  /** Distinct available values per attribute key, e.g. { Color: ['Red','Blue'], Size: ['S','M'] }. */
   readonly attributeOptions = computed(() => {
     const map: Record<string, string[]> = {};
     for (const key of this.attributeKeys()) {
@@ -93,7 +85,6 @@ export class ProductDetails {
     return map;
   });
 
-  /** The variant that fully matches the current selection, or null if the pick is incomplete/invalid. */
   readonly selectedVariant = computed<RecommendedProduct | null>(() => {
     const variants = this.variants();
     if (variants.length === 0) return this.product();
@@ -102,7 +93,7 @@ export class ProductDetails {
     if (this.hasStructuredAttributes()) {
       const selected = this.selectedAttributes();
       const keys = this.attributeKeys();
-      if (keys.some((k) => !selected[k])) return null; // selection incomplete
+      if (keys.some((k) => !selected[k])) return null;
       return variants.find((v) => keys.every((k) => v.attributes?.[k] === selected[k])) ?? null;
     }
 
@@ -111,15 +102,18 @@ export class ProductDetails {
     return variants.find((v) => (v.productVariantId ?? v.id) === id) ?? null;
   });
 
-  /** What the page actually displays (price/image/stock) — the selected variant, falling back to the base product. */
   readonly displayProduct = computed(() => this.selectedVariant() ?? this.product());
+
+  readonly displayImage = computed(() => {
+    const gallery = this.galleryImages();
+    return gallery[this.selectedImageIndex()] ?? this.displayProduct()?.imageUrl ?? null;
+  });
 
   readonly isOutOfStock = computed(() => {
     const stock = this.selectedVariant()?.stock;
     return stock !== undefined && stock <= 0;
   });
 
-  /** Never render a raw database ID (e.g. a categoryId GUID) as if it were a category name. */
   readonly categoryLabel = computed(() => displayLabel(this.displayProduct()?.category));
 
   readonly stockLabel = computed(() => {
@@ -139,8 +133,6 @@ export class ProductDetails {
         return;
       }
 
-      // Single call to GET /api/products/{id} — gets both the display fallback and the
-      // real variant list in one round trip (was previously two separate list scans).
       this.productsApi.getDetails(id).subscribe({
         next: (details) => {
           this.isLoading.set(false);
@@ -150,6 +142,10 @@ export class ProductDetails {
             return;
           }
 
+          const gallery = (details.images ?? []).slice(0, 3);
+          this.galleryImages.set(gallery);
+          this.selectedImageIndex.set(0);
+
           const variants: RecommendedProduct[] = (details.variants ?? []).map((v) => ({
             id: v.id,
             productId: details.id,
@@ -158,6 +154,7 @@ export class ProductDetails {
             price: v.price,
             category: details.categoryId ?? undefined,
             imageUrl: details.images?.[0] ?? undefined,
+            imageUrls: details.images?.slice(0, 3) ?? [],
             variantLabel: v.name,
             stock: v.stockQuantity,
           }));
@@ -168,6 +165,7 @@ export class ProductDetails {
             name: details.name,
             category: details.categoryId ?? undefined,
             imageUrl: details.images?.[0] ?? undefined,
+            imageUrls: details.images?.slice(0, 3) ?? [],
             price: variants.length ? Math.min(...variants.map((v) => v.price ?? 0)) : undefined,
           };
 
@@ -184,7 +182,7 @@ export class ProductDetails {
           }
         },
         error: () => {
-          this.errorMessage.set('تعذّر تحميل تفاصيل المنتج');
+          this.errorMessage.set('تعذر تحميل تفاصيل المنتج');
           this.isLoading.set(false);
         },
       });
@@ -199,7 +197,6 @@ export class ProductDetails {
     return this.selectedAttributes()[key] === value;
   }
 
-  /** A value is pickable if some variant matches it plus every other attribute already chosen. */
   isAttributeValueAvailable(key: string, value: string): boolean {
     const others = { ...this.selectedAttributes() };
     delete others[key];
@@ -210,6 +207,11 @@ export class ProductDetails {
 
   selectVariant(variantId: string | undefined): void {
     if (variantId) this.selectedVariantId.set(variantId);
+  }
+
+  selectGalleryImage(index: number): void {
+    this.selectedImageIndex.set(index);
+    this.imageFailed.set(false);
   }
 
   variantLabel(variant: RecommendedProduct): string {
@@ -257,7 +259,7 @@ export class ProductDetails {
       },
       error: (err) => {
         this.isAdding.set(false);
-        this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذّر الإضافة للسلة');
+        this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذر الإضافة للسلة');
       },
     });
   }

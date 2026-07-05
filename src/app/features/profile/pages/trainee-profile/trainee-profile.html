@@ -32,7 +32,7 @@
         } @else {
           <div class="space-y-3">
             @for (e of enrollments(); track e.enrollmentId ?? e.courseId) {
-              <a [routerLink]="['/lms/player', e.courseId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
+              <a [routerLink]="['/lms/player', e.enrollmentId || e.courseId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
                 <p class="text-sm font-semibold text-navy">{{ e.courseTitle }}</p>
               </a>
             }

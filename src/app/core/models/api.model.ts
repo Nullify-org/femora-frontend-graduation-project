@@ -11,6 +11,8 @@ export interface Course {
   instructorName?: string | null;
   instructorProfileId?: string;
   modules?: CourseModule[];
+  /** Number of enrolled trainees â€” populated by CourseDto.EnrollmentsCount (e.g. instructor "my courses"/dashboard endpoints). */
+  enrollmentsCount?: number;
 }
 
 export interface CourseModule {
@@ -95,10 +97,15 @@ export interface RecommendedProduct {
   sellerName?: string | null;
   category?: string | null;
   imageUrl?: string | null;
+  imageUrls?: string[] | null;
   score?: number;
+  /** Product category id â€” matches ProductSummaryDto.CategoryId, used to filter the catalog. */
+  categoryId?: string | null;
+  /** Human-readable category name â€” matches ProductSummaryDto.CategoryName, shown as a badge. */
+  categoryName?: string | null;
   /**
    * Variant attributes, e.g. { "Color": "Red", "Size": "M" }.
-   * Optional — not all backends expose this yet. When present, the product
+   * Optional â€” not all backends expose this yet. When present, the product
    * details page groups all rows sharing the same `productId` into pickable
    * attribute options (color swatches, size pills, etc).
    */
@@ -107,6 +114,14 @@ export interface RecommendedProduct {
   variantLabel?: string | null;
   /** Units in stock for this specific variant, if the backend tracks inventory. */
   stock?: number;
+}
+
+/** Matches Femora.Application.Features.MarketPlace.Categories.DTOs.ProductCategoryDto (GET /api/product-categories) */
+export interface ProductCategory {
+  id: string;
+  name: string;
+  description?: string | null;
+  productCount?: number;
 }
 
 export interface RecommendedCourse {
@@ -131,6 +146,7 @@ export interface CartItem {
   price?: number;
   lineTotal?: number;
   imageUrl?: string | null;
+  imageUrls?: string[] | null;
 }
 
 export interface Cart {
@@ -141,7 +157,7 @@ export interface Cart {
 }
 
 // Matches Femora.Domain.Entities.Marketplace.Order as serialized by the API
-// (camelCase + JsonStringEnumConverter — see Program.cs)
+// (camelCase + JsonStringEnumConverter â€” see Program.cs)
 export interface OrderItemDto {
   id: string;
   orderId: string;
@@ -214,6 +230,7 @@ export interface SubmitQuizResult {
   maxScore?: number;
   isPassed: boolean;
   attemptNumber?: number;
+  maxAttempts?: number;
   answerResults?: Array<{ questionId: string; isCorrect: boolean }>;
 }
 
@@ -299,6 +316,11 @@ export interface EnrollmentLesson {
   orderIndex: number;
   isCompleted: boolean;
   watchedSeconds: number;
+  description?: string | null;
+  contentUrl?: string | null;
+  contentType?: string | null;
+  contentText?: string | null;
+  contentMimeType?: string | null;
 }
 
 export interface UnlockNextModuleResponse {

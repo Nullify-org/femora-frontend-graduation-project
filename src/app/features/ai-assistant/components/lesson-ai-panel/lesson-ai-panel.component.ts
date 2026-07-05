@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+﻿import { Component, ElementRef, inject, input, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -10,7 +10,7 @@ interface QaTurn {
   answer: string;
 }
 
-type PanelTab = 'summarize' | 'ask' | 'quiz' | null;
+type PanelTab = 'summarize' | 'ask' | null;
 
 @Component({
   selector: 'app-lesson-ai-panel',
@@ -29,10 +29,13 @@ export class LessonAiPanel {
 
   readonly activeTab = signal<PanelTab>(null);
   readonly isLoading = signal(false);
-
-  // --- Summarize state ---
   readonly summary = signal<string | null>(null);
   readonly summaryLength = signal<'short' | 'medium' | 'detailed'>('medium');
+  readonly summaryOptions = [
+    { key: 'short', label: 'مختصر' },
+    { key: 'medium', label: 'متوسط' },
+    { key: 'detailed', label: 'تفصيلي' },
+  ] as const;
 
   readonly summaryLengthOptions: { key: 'short' | 'medium' | 'detailed'; label: string }[] = [
     { key: 'short', label: 'مختصر' },
@@ -50,12 +53,6 @@ export class LessonAiPanel {
   }
 
   openTab(tab: Exclude<PanelTab, null>): void {
-    if (tab === 'quiz') {
-      this.notifications.info('اختبرني هيتوصل قريبًا لكل درس 🚧');
-      return;
-    }
-
-    // Toggle closed if the same tab is clicked again.
     this.activeTab.set(this.activeTab() === tab ? null : tab);
 
     if (tab === 'summarize' && this.summary() === null) {
@@ -81,7 +78,7 @@ export class LessonAiPanel {
       },
       error: () => {
         this.isLoading.set(false);
-        this.notifications.error('تعذّر تلخيص الدرس. تأكد إن محتوى الدرس اتفهرس الأول.');
+        this.notifications.error('تعذر تلخيص الدرس. تأكدي من أن محتوى الدرس متاح أولاً.');
       },
     });
   }
@@ -96,7 +93,7 @@ export class LessonAiPanel {
   askQuestion(): void {
     const question = this.draftQuestion().trim();
     if (!question) {
-      this.notifications.info('اكتب سؤالك الأول');
+      this.notifications.info('اكتبي سؤالك أولاً');
       return;
     }
 
@@ -111,7 +108,7 @@ export class LessonAiPanel {
       },
       error: () => {
         this.isLoading.set(false);
-        this.notifications.error('تعذّر الحصول على إجابة. تأكد إن محتوى الدرس اتفهرس الأول.');
+        this.notifications.error('تعذر الحصول على إجابة. تأكدي من أن محتوى الدرس متاح أولاً.');
       },
     });
   }
