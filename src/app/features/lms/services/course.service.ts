@@ -5,6 +5,7 @@ import { Course } from '../models/course.model';
 import { CourseDetails } from '../models/course-details.model';
 import { GetCoursesRequest } from '../models/get-courses-request.model';
 import { PagedResponse } from '../models/paged-response.model';
+import { CourseFilterOptions } from '../models/course-filter-options.model';
 
 @Injectable({ providedIn: 'root' })
 export class CourseService {
@@ -32,6 +33,12 @@ export class CourseService {
     );
   }
 
+  getFilterOptions() {
+  return this.api.get<CourseFilterOptions>(
+    `${this.base}/filter-options`
+  );
+}
+
   create(body: Record<string, unknown>): Observable<string> {
     return this.api.post<string>(this.base, body);
   }
@@ -44,27 +51,42 @@ export class CourseService {
     return this.api.post(`${this.base}/${id}/publish`, {});
   }
 
-  private toQueryParams(request?: GetCoursesRequest): Record<string, string> | undefined {
-    if (!request) {
-      return undefined;
-    }
+  private toQueryParams(
+  request?: GetCoursesRequest
+  ): Record<string, string> | undefined {
 
-    const params: Record<string, string> = {};
+  if (!request) return undefined;
 
-    if (request.search?.trim()) {
-      params['search'] = request.search.trim();
-    }
+  const params: Record<string, string> = {};
 
-    if (request.pageNumber !== undefined) {
-      params['pageNumber'] = String(request.pageNumber);
-    }
+  if (request.search?.trim())
+    params['search'] = request.search.trim();
 
-    if (request.pageSize !== undefined) {
-      params['pageSize'] = String(request.pageSize);
-    }
+  if (request.category)
+    params['category'] = request.category;
 
-    return Object.keys(params).length > 0 ? params : undefined;
-  }
+  if (request.level)
+    params['level'] = request.level;
+
+  if (request.minPrice != null)
+    params['minPrice'] = request.minPrice.toString();
+
+  if (request.maxPrice != null)
+    params['maxPrice'] = request.maxPrice.toString();
+
+  if (request.sortBy != null)
+    params['sortBy'] = request.sortBy.toString();
+
+  if (request.pageNumber != null)
+    params['pageNumber'] = request.pageNumber.toString();
+
+  if (request.pageSize != null)
+    params['pageSize'] = request.pageSize.toString();
+
+  return Object.keys(params).length
+    ? params
+    : undefined;
+}
 
   private toCourseRequest(params?: Record<string, string | number>): GetCoursesRequest | undefined {
     if (!params) {

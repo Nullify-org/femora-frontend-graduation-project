@@ -331,3 +331,24 @@ export interface UnlockNextModuleResponse {
   alreadyUnlocked: boolean;
 }
 
+export enum CourseSortBy {
+  Newest = 1,
+  Oldest = 2,
+  PriceLowToHigh = 3,
+  PriceHighToLow = 4,
+  MostPopular = 5,
+}
+
+export type LessonType = 'Video' | 'Article' | 'Quiz' | 'Assignment';
+
+export interface LessonDetails {
+  id: string;
+  moduleId: string;
+  title: string;
+  type: LessonType;
+  articleContent?: string | null;
+  contentUrl?: string | null;
+  durationSeconds: number;
+  orderIndex: number;
+  isPreview: boolean;
+}

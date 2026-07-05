@@ -6,10 +6,19 @@ import { notAdminGuard } from './core/auth/not-admin.guard';
 
 export const routes: Routes = [
   {
-    path: '',
-    loadComponent: () =>
-      import('./features/landing/pages/landing/landing').then((m) => m.Landing),
+  path: '',
+  loadComponent: () =>
+    import('./core/pages/home-redirect/home-redirect')
+      .then((m) => m.HomeRedirect),
   },
+
+  {
+  path: 'landing',
+  loadComponent: () =>
+    import('./features/landing/pages/landing/landing')
+      .then((m) => m.Landing),
+  },
+
   { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
   { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
@@ -182,6 +191,12 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/lms/pages/course-player/course-player').then((m) => m.CoursePlayer),
+  },
+  {
+    path: 'lms/player/:enrollmentId/lesson/:lessonId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/lms/pages/lesson-player/lesson-player').then((m) => m.LessonPlayer),
   },
   {
     path: 'lms/my-learning',

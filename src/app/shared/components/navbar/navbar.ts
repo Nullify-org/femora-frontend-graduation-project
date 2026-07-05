@@ -25,7 +25,7 @@ import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [FormsModule, 
+  imports: [FormsModule,
     RouterLink,
     TranslatePipe,
     LucideBell,

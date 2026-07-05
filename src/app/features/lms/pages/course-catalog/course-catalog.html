@@ -8,21 +8,114 @@
         <p class="text-stone-500">تعلم المهارات اليدوية والحرفية من أفضل المدربين</p>
       </div>
 
-      <form (ngSubmit)="onSearch()" class="bg-white rounded-2xl shadow-sm p-4 mb-8">
-        <div class="flex gap-3">
-          <input
-            type="text"
-            [(ngModel)]="search"
-            name="search"
-            placeholder="ابحث عن دورة..."
-            class="flex-1 border border-stone-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-300"
-          />
+  <form
+  (ngSubmit)="onSearch()"
+  class="bg-white rounded-3xl shadow-sm border border-stone-200 p-6 mb-8"
+>
+  <div class="space-y-4">
 
-          <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white px-6 rounded-xl">
-            بحث
-          </button>
-        </div>
-      </form>
+    <!-- Search -->
+    <div>
+      <input
+        type="text"
+        [(ngModel)]="search"
+        name="search"
+        placeholder="ابحث عن دورة، مدرب، أو تصنيف..."
+        class="w-full border border-stone-200 rounded-2xl px-5 py-4
+               focus:outline-none focus:ring-2 focus:ring-orange-300
+               text-stone-700"
+      />
+    </div>
+
+    <!-- Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+      <!-- Category -->
+      <select
+        name="category"
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event)"
+        class="border border-stone-200 rounded-2xl px-4 py-3 bg-white"
+      >
+        <option value="">كل التصنيفات</option>
+
+        @for(category of categories(); track category){
+          <option [value]="category">
+            {{ category }}
+          </option>
+        }
+      </select>
+
+      <!-- Level -->
+      <select
+        name="level"
+        [ngModel]="selectedLevel()"
+        (ngModelChange)="selectedLevel.set($event)"
+        class="border border-stone-200 rounded-2xl px-4 py-3 bg-white"
+      >
+        <option value="">كل المستويات</option>
+
+        @for(level of levels(); track level){
+          <option [value]="level">
+            {{ level }}
+          </option>
+        }
+      </select>
+
+      <!-- Sort -->
+      <select
+        name="sortBy"
+        [ngModel]="selectedSort()"
+        (ngModelChange)="selectedSort.set(+$event)"
+        class="border border-stone-200 rounded-2xl px-4 py-3 bg-white"
+      >
+        <option [value]="1">الأحدث</option>
+        <option [value]="2">الأقدم</option>
+        <option [value]="3">السعر الأقل</option>
+        <option [value]="4">السعر الأعلى</option>
+        <option [value]="5">الأكثر تسجيلًا</option>
+      </select>
+
+      <!-- Button -->
+      <button
+        type="submit"
+        class="bg-orange-500 hover:bg-orange-600
+               text-white rounded-2xl px-6 py-3
+               font-medium transition-all duration-200
+               hover:shadow-lg"
+      >
+        بحث
+      </button>
+
+    </div>
+
+  </div>
+</form>
+
+<div class="flex flex-wrap items-center gap-3 mb-8">
+
+  <div
+    class="bg-white border border-stone-200 rounded-xl px-4 py-2 text-sm"
+  >
+    إجمالي الدورات:
+    <span class="font-bold text-orange-500">
+      {{ totalCount() }}
+    </span>
+  </div>
+
+  <div
+    class="bg-white border border-stone-200 rounded-xl px-4 py-2 text-sm"
+  >
+    الصفحة:
+    <span class="font-bold">
+      {{ pageNumber() }}
+    </span>
+    /
+    {{ totalPages() }}
+  </div>
+
+</div>
+
 
       @if (isLoading()) {
         <div class="text-center py-20 text-stone-500">جارى تحميل الدورات...</div>
@@ -50,10 +143,11 @@
           @for (page of pagesArray; track page) {
             <button
               (click)="goToPage(page)"
-              class="w-10 h-10 rounded-xl text-sm font-medium transition"
+             class="w-11 h-11 rounded-xl text-sm font-semibold transition-all"
               [class.bg-orange-500]="page === pageNumber()"
               [class.text-white]="page === pageNumber()"
               [class.text-stone-600]="page !== pageNumber()"
+              [class.shadow-lg]="page === pageNumber()"
               [class.hover:bg-stone-100]="page !== pageNumber()"
             >
               {{ page }}

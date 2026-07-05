@@ -157,6 +157,21 @@ export class ApiClient {
     }
 
 
+    const lessonDetailMatch = cleanUrl.match(/\/api\/lessons\/([^/]+)$/);
+    if (lessonDetailMatch && method === 'GET') {
+      return {
+        id: lessonDetailMatch[1],
+        moduleId: 'module_1',
+        title: 'درس تجريبى (وضع عدم الاتصال)',
+        type: 'Video',
+        contentUrl: null,
+        articleContent: 'هذا محتوى تجريبى لأن السيرفر غير متاح حاليًا.',
+        durationSeconds: 300,
+        orderIndex: 1,
+        isPreview: true,
+      };
+    }
+
     const enrollmentDetailMatch = cleanUrl.match(/\/api\/enrollments\/([^/]+)$/);
     if (enrollmentDetailMatch) {
       return {
