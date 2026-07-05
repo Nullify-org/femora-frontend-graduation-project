@@ -42,6 +42,13 @@ export class LessonPlayer {
   readonly isMarkingComplete = signal(false);
   readonly errorMessage = signal('');
 
+  /** Controls the visibility of the "محتوى الدورة" sidebar on the lesson page. */
+  readonly isContentSidebarOpen = signal(true);
+
+  toggleContentSidebar(): void {
+    this.isContentSidebarOpen.update((open) => !open);
+  }
+
   enrollmentId = '';
   lessonId = '';
 
