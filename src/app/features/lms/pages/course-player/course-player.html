@@ -161,16 +161,17 @@
                       → الدرس السابق
                     </button>
 
-                    <!-- Complete & next -->
+                    <!-- Complete lesson (calls the real backend endpoint) / or just move to next -->
                     @if (!lesson.isCompleted) {
                       <button
                         id="btn-complete-lesson"
                         type="button"
-                        (click)="completeAndNext()"
-                        class="flex items-center gap-2 rounded-xl bg-terracotta px-6 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-terracotta-dark"
+                        (click)="completeLesson()"
+                        [disabled]="isMarkingComplete()"
+                        class="flex items-center gap-2 rounded-xl bg-terracotta px-6 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-terracotta-dark disabled:opacity-50"
                       >
-                        ✓ إتمام الدرس
-                        @if (nextLesson()) { والانتقال للتالي }
+                        {{ isMarkingComplete() ? 'جارٍ الحفظ...' : '✓ إتمام الدرس' }}
+                        @if (nextLesson() && !isMarkingComplete()) { والانتقال للتالي }
                       </button>
                     } @else if (nextLesson()) {
                       <button
@@ -183,6 +184,23 @@
                       </button>
                     }
                   </div>
+
+                  <!-- Manual quiz entry point once the module is done and awaiting its quiz -->
+                  @if (selectedModule(); as module) {
+                    @if (module.isCompleted && !module.quizPassed) {
+                      <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5 flex items-center justify-between gap-3 flex-wrap">
+                        <p class="text-sm font-semibold text-amber-800">أنهيت دروس هذه الوحدة. لازم تجتاز الاختبار عشان تفتح الوحدة التالية.</p>
+                        <button
+                          type="button"
+                          (click)="takeModuleQuiz()"
+                          [disabled]="isLaunchingQuiz()"
+                          class="rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-amber-700 disabled:opacity-50"
+                        >
+                          {{ isLaunchingQuiz() ? 'جارٍ التجهيز...' : 'ابدأ الاختبار' }}
+                        </button>
+                      </div>
+                    }
+                  }
 
                   @if (isTraineeProfile()) {
                     <app-lesson-ai-panel [lessonId]="lesson.lessonId" />
@@ -207,24 +225,34 @@
                   <button
                     type="button"
                     (click)="selectModule(module)"
+                    [disabled]="!module.isUnlocked"
                     class="w-full text-right border rounded-2xl p-4 transition"
                     [class.border-terracotta]="selectedModuleId() === module.moduleId"
                     [class.bg-terracotta/5]="selectedModuleId() === module.moduleId"
                     [class.border-blush/30]="selectedModuleId() !== module.moduleId"
+                    [class.opacity-50]="!module.isUnlocked"
+                    [class.cursor-not-allowed]="!module.isUnlocked"
                   >
                     <div class="flex items-center justify-between gap-3">
-                      <div>
-                        <p class="font-semibold text-navy">{{ module.title }}</p>
-                        <p class="text-xs text-stone-500">{{ module.lessons.length }} درس</p>
+                      <div class="flex items-center gap-2">
+                        @if (!module.isUnlocked) {
+                          <span class="text-stone-400" title="وحدة مقفلة">🔒</span>
+                        }
+                        <div>
+                          <p class="font-semibold text-navy">{{ module.title }}</p>
+                          <p class="text-xs text-stone-500">{{ module.lessons.length }} درس</p>
+                        </div>
                       </div>
                       <span
                         class="text-xs font-semibold rounded-full px-2.5 py-1"
                         [class.bg-green-50]="module.quizPassed"
                         [class.text-green-700]="module.quizPassed"
-                        [class.bg-stone-100]="!module.quizPassed"
-                        [class.text-stone-500]="!module.quizPassed"
+                        [class.bg-amber-50]="!module.quizPassed && module.isCompleted"
+                        [class.text-amber-700]="!module.quizPassed && module.isCompleted"
+                        [class.bg-stone-100]="!module.quizPassed && !module.isCompleted"
+                        [class.text-stone-500]="!module.quizPassed && !module.isCompleted"
                       >
-                        {{ module.quizPassed ? '✓ تم' : (module.isCompleted ? 'بانتظار الاختبار' : 'جارٍ') }}
+                        {{ module.quizPassed ? '✓ تم' : (!module.isUnlocked ? 'مقفلة' : (module.isCompleted ? 'بانتظار الاختبار' : 'جارٍ')) }}
                       </span>
                     </div>
                   </button>
