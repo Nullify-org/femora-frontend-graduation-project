@@ -6,7 +6,8 @@ import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { QuizService } from '../../services/quiz.service';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { AuthService } from '../../../../core/services/auth.service';
+// import { AuthService } from '../../../../core/services/auth.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { Quiz as QuizModel, QuizAnswerRequest, SubmitQuizResult } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
