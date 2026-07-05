@@ -7,6 +7,7 @@ import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { LessonAiPanel } from '../../../ai-assistant/components/lesson-ai-panel/lesson-ai-panel.component';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { QuizService } from '../../services/quiz.service';
+import { LearningService } from '../../services/learning.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { runInBrowser } from '../../../../core/utils/platform.util';
@@ -27,6 +28,7 @@ export class CoursePlayer {
   private readonly sanitizer = inject(DomSanitizer);
   private readonly enrollmentsApi = inject(EnrollmentService);
   private readonly quizApi = inject(QuizService);
+  private readonly learningApi = inject(LearningService);
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
 
@@ -35,6 +37,7 @@ export class CoursePlayer {
   readonly errorMessage = signal('');
   readonly isUnlocking = signal(false);
   readonly isLaunchingQuiz = signal(false);
+  readonly isMarkingComplete = signal(false);
   readonly selectedModuleId = signal('');
   readonly selectedLessonId = signal('');
   readonly fromQuizModuleId = signal('');
@@ -159,6 +162,13 @@ export class CoursePlayer {
   }
 
   selectModule(module: EnrollmentModule): void {
+    // Guard: never allow navigating into a locked module, even if the
+    // click somehow bypasses the disabled button in the template.
+    if (!module.isUnlocked) {
+      this.notifications.info('هذه الوحدة مقفلة. أكمل الوحدة الحالية واجتز اختبارها أولًا.');
+      return;
+    }
+
     this.selectedModuleId.set(module.moduleId);
     const nextLesson = module.lessons.find((lesson) => !lesson.isCompleted) ?? module.lessons[0];
     if (nextLesson) {
@@ -170,14 +180,46 @@ export class CoursePlayer {
     this.selectedLessonId.set(lesson.lessonId);
   }
 
-  /** Advance to the next lesson (no complete-lesson endpoint exists on this backend) */
-  completeAndNext(): void {
-    const next = this.nextLesson();
-    if (next) {
-      this.selectedLessonId.set(next.lessonId);
-    }
-    // Refresh enrollment to pick up any server-side progress updates
-    this.loadEnrollment();
+  /** Marks the current lesson complete via the real backend endpoint
+   *  (POST /api/enrollments/lessons/{lessonId}/complete). If it was the last
+   *  lesson in the module, the server tells us and we jump straight to the quiz. */
+  completeLesson(): void {
+    const lesson = this.selectedLesson();
+    if (!lesson) return;
+
+    this.isMarkingComplete.set(true);
+    this.learningApi.markLessonComplete(lesson.lessonId).subscribe({
+      next: (res) => {
+        this.isMarkingComplete.set(false);
+
+        if (res.isLastLessonInModule && res.moduleQuizId) {
+          this.router.navigate(['/lms/quiz', res.moduleQuizId], {
+            queryParams: { enrollmentId: this.enrollmentId, moduleId: res.moduleId },
+          });
+          return;
+        }
+
+        // Not the last lesson: refresh enrollment (picks up isCompleted from server)
+        // and advance to the next lesson if there is one.
+        const next = this.nextLesson();
+        this.loadEnrollment();
+        if (next) {
+          this.selectedLessonId.set(next.lessonId);
+        }
+      },
+      error: (err) => {
+        this.isMarkingComplete.set(false);
+        this.notifications.error(err?.error?.title ?? err?.error?.detail ?? 'تعذر تسجيل الدرس كمكتمل');
+      },
+    });
+  }
+
+  /** Manual entry point in case the auto-launch (maybeLaunchQuiz) didn't fire
+   *  for the currently selected module (e.g. user switched modules before it did). */
+  takeModuleQuiz(): void {
+    const module = this.selectedModule();
+    if (!module) return;
+    this.startModuleQuiz(module.moduleId, this.enrollmentId);
   }
 
   private maybeLaunchQuiz(data: EnrollmentDetailsResponse): void {
