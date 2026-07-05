@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { ApiClient } from '../../../core/services/api-client.service';
@@ -16,8 +16,13 @@ export class QuizService {
   private readonly notifications = inject(NotificationService);
   private readonly base = '/api/quizzes';
 
-  generateQuiz(moduleId: string, questionCount = 5): Observable<GenerateQuizResponse> {
-    return this.api.post<GenerateQuizResponse>(`${this.base}/generate`, { moduleId, questionCount }).pipe(
+  generateQuiz(moduleId: string, questionCount = 5, maxAttempts = 2): Observable<GenerateQuizResponse> {
+    return this.api.post<GenerateQuizResponse>(`${this.base}/generate`, {
+      moduleId,
+      questionCount,
+      maxAttempts,
+      minimumPassingScore: 60,
+    }).pipe(
       tap(() => this.notifications.success('تم إنشاء الاختبار بنجاح')),
     );
   }
@@ -37,7 +42,7 @@ export class QuizService {
     return this.api.post<unknown>(`${this.base}/${quizId}/submit`, payload).pipe(
       map((response) => this.mapSubmitResult(response as Record<string, unknown>)),
       tap((result) => {
-        const message = result.isPassed ? 'أحسنت! نجحت فى الاختبار' : 'تم إرسال الإجابات بنجاح';
+        const message = result.isPassed ? 'أحسنت! نجحت في الاختبار' : 'تم إرسال الإجابات بنجاح';
         this.notifications.success(message);
       }),
     );
@@ -64,7 +69,7 @@ export class QuizService {
       courseId: typeof response['courseId'] === 'string' ? response['courseId'] : undefined,
       moduleId: typeof response['moduleId'] === 'string' ? response['moduleId'] : null,
       minimumPassingScore: typeof response['minimumPassingScore'] === 'number' ? response['minimumPassingScore'] : (typeof response['passPercentage'] === 'number' ? response['passPercentage'] : 60),
-      maxAttempts: typeof response['maxAttempts'] === 'number' ? response['maxAttempts'] : 3,
+      maxAttempts: typeof response['maxAttempts'] === 'number' ? response['maxAttempts'] : 2,
       questions,
     };
   }
@@ -79,6 +84,7 @@ export class QuizService {
       maxScore,
       isPassed: response['isPassed'] === true,
       attemptNumber: typeof response['attemptNumber'] === 'number' ? response['attemptNumber'] : undefined,
+      maxAttempts: typeof response['maxAttempts'] === 'number' ? response['maxAttempts'] : undefined,
       answerResults: Array.isArray(response['answerResults'])
         ? (response['answerResults'] as Array<Record<string, unknown>>).map((item) => ({
             questionId: String(item['questionId'] ?? ''),

@@ -1,7 +1,6 @@
 import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideTranslateService, TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
@@ -132,7 +131,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(withFetch(), withInterceptors([jwtInterceptor])),
-    provideClientHydration(withEventReplay()),
     provideAnimations(),
     provideTranslateService({
       loader: { provide: TranslateLoader, useClass: InlineTranslateLoader },

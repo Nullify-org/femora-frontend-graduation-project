@@ -1,4 +1,4 @@
-<div class="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3" dir="rtl">
+﻿<div class="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3" dir="rtl">
 
   <!-- Expanded panel -->
   @if (isPanelOpen) {
@@ -53,7 +53,7 @@
       @if (activeTab() === 'ask') {
         <div class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
           @if (turns().length === 0 && !isLoading()) {
-            <p class="text-sm text-stone-500">اسأل أى سؤال عن محتوى الدرس ده وهيجاوبك المساعد الذكى.</p>
+            <p class="text-sm text-stone-500">اسأل أي سؤال عن محتوى الدرس ده وهيجاوبك المساعد الذكي.</p>
           }
 
           @for (turn of turns(); track $index) {
@@ -103,7 +103,7 @@
       [class.ring-2]="activeTab() === 'summarize'"
       class="ring-terracotta bg-white femora-shadow border border-blush/40 rounded-full px-4 py-2 text-sm font-bold text-terracotta hover:bg-cream-light transition"
     >
-      ✨ لخّص الدرس
+      ✨ لخص الدرس
     </button>
 
     <button
@@ -113,15 +113,6 @@
       class="ring-navy bg-white femora-shadow border border-blush/40 rounded-full px-4 py-2 text-sm font-bold text-navy hover:bg-cream-light transition"
     >
       💬 اسأل سؤال
-    </button>
-
-    <button
-      type="button"
-      (click)="openTab('quiz')"
-      class="bg-white femora-shadow border border-blush/40 rounded-full px-4 py-2 text-sm font-bold text-stone-400 hover:bg-cream-light transition"
-      title="قريبًا"
-    >
-      📝 اختبرني
     </button>
   </div>
 
