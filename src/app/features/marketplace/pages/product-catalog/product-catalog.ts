@@ -1,9 +1,9 @@
-import { Component, inject, signal, computed } from '@angular/core';
+﻿import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { ProductService } from '../../services/product.service';
-import { RecommendedProduct } from '../../../../core/models/api.model';
+import { ProductCategory, RecommendedProduct } from '../../../../core/models/api.model';
 import { formatPrice, productEmoji } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
@@ -18,21 +18,19 @@ const PAGE_SIZE = 12;
 export class ProductCatalog {
   private readonly productsApi = inject(ProductService);
 
-  // Signals — required for the view to update in Angular 21's zoneless mode
-  // when data arrives asynchronously inside a .subscribe() callback.
   readonly products = signal<RecommendedProduct[]>([]);
   readonly currentPage = signal(1);
   readonly totalCount = signal(0);
   readonly pageSize = PAGE_SIZE;
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
-  /** product ids whose image failed to load — falls back to the emoji tile per-card */
   readonly failedImageIds = signal<Set<string>>(new Set());
+
+  readonly categories = signal<ProductCategory[]>([]);
+  readonly selectedCategoryId = signal<string>('');
 
   readonly totalPages = computed(() => Math.max(1, Math.ceil(this.totalCount() / this.pageSize)));
 
-  /** A small window of page numbers around the current page, e.g. [3,4,5,6,7] — avoids
-   *  rendering hundreds of page buttons for large catalogs. */
   readonly pageWindow = computed(() => {
     const total = this.totalPages();
     const current = this.currentPage();
@@ -47,7 +45,22 @@ export class ProductCatalog {
   readonly productEmoji = productEmoji;
 
   constructor() {
-    runInBrowser(() => this.loadPage(1));
+    runInBrowser(() => {
+      this.loadCategories();
+      this.loadPage(1);
+    });
+  }
+
+  loadCategories(): void {
+    this.productsApi.getCategories().subscribe({
+      next: (categories) => this.categories.set(categories ?? []),
+      error: () => this.categories.set([]),
+    });
+  }
+
+  onCategoryChange(categoryId: string): void {
+    this.selectedCategoryId.set(categoryId);
+    this.loadPage(1);
   }
 
   loadPage(page: number): void {
@@ -56,17 +69,16 @@ export class ProductCatalog {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.productsApi.browse(page, this.pageSize).subscribe({
+    this.productsApi.browse(page, this.pageSize, undefined, this.selectedCategoryId() || undefined).subscribe({
       next: (result) => {
         this.products.set(result.items);
         this.totalCount.set(result.totalCount);
         this.currentPage.set(result.pageNumber);
         this.isLoading.set(false);
-        // Scroll back to the top of the list on page change, not just on first load.
         if (page !== 1) window.scrollTo({ top: 0, behavior: 'smooth' });
       },
       error: () => {
-        this.errorMessage.set('تعذّر تحميل المنتجات');
+        this.errorMessage.set('تعذر تحميل المنتجات');
         this.isLoading.set(false);
       },
     });
@@ -92,5 +104,9 @@ export class ProductCatalog {
 
   imageFailed(productId: string | undefined): boolean {
     return !!productId && this.failedImageIds().has(productId);
+  }
+
+  productImages(product: RecommendedProduct): string[] {
+    return (product.imageUrls?.length ? product.imageUrls : product.imageUrl ? [product.imageUrl] : []).slice(0, 3);
   }
 }

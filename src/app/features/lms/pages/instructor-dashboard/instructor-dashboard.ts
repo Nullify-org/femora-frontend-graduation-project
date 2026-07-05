@@ -6,14 +6,16 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { ApprovalService } from '../../../../core/services/approval.service';
 import { CourseService } from '../../../lms/services/course.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { InstructorStatsService, InstructorStats } from '../../../../core/services/instructor-stats.service';
 import { Course } from '../../../../core/models/api.model';
+import { formatPrice, courseEmoji } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [Sidebar, FormsModule, SwitchRole],
+  imports: [Sidebar, FormsModule, RouterLink, SwitchRole],
   templateUrl: './instructor-dashboard.html',
 })
 export class InstructorDashboard implements OnInit {
@@ -21,10 +23,19 @@ export class InstructorDashboard implements OnInit {
   private readonly coursesApi = inject(CourseService);
   private readonly approvalsApi = inject(ApprovalService);
   private readonly notifications = inject(NotificationService);
+  private readonly statsApi = inject(InstructorStatsService);
 
   readonly courses = signal<Course[]>([]);
   readonly showApply = signal(false);
   readonly showCreate = signal(false);
+
+  // Dashboard cards (statistics) + recent-courses section — real data from
+  // GET /api/courses/my/stats instead of the hardcoded placeholder numbers.
+  readonly stats = signal<InstructorStats | null>(null);
+  readonly statsLoading = signal(true);
+
+  readonly formatPrice = formatPrice;
+  readonly courseEmoji = courseEmoji;
 
   applyBio = '';
   applyPortfolio = '';
@@ -38,7 +49,10 @@ export class InstructorDashboard implements OnInit {
   };
 
   ngOnInit(): void {
-    runInBrowser(() => this.loadCourses());
+    runInBrowser(() => {
+      this.loadCourses();
+      this.loadStats();
+    });
   }
 
   loadCourses(): void {
@@ -48,6 +62,14 @@ export class InstructorDashboard implements OnInit {
     }).subscribe({
       next: (response) => this.courses.set(response.data),
       error: () => this.courses.set([]),
+    });
+  }
+
+  loadStats(): void {
+    this.statsLoading.set(true);
+    this.statsApi.get().subscribe({
+      next: (data) => { this.stats.set(data); this.statsLoading.set(false); },
+      error: () => { this.statsLoading.set(false); },
     });
   }
 
@@ -82,6 +104,7 @@ export class InstructorDashboard implements OnInit {
           this.showCreate.set(false);
           this.newCourse = { title: '', description: '', price: 0, category: 'Development', language: 'ar', level: 'Beginner' };
           this.loadCourses();
+          this.loadStats();
         },
         error: () => this.notifications.error('فشل إنشاء الدورة'),
       });
@@ -92,6 +115,7 @@ export class InstructorDashboard implements OnInit {
       next: () => {
         this.notifications.success('تم إرسال الدورة للموافقة');
         this.loadCourses();
+        this.loadStats();
       },
       error: () => this.notifications.error('فشل نشر الدورة'),
     });

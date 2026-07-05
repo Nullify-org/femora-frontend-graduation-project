@@ -1,6 +1,6 @@
-import { Component, inject, signal, computed } from '@angular/core';
+﻿import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { QuizService } from '../../services/quiz.service';
@@ -17,20 +17,23 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 })
 export class Quiz {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly quizApi = inject(QuizService);
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
 
   readonly quiz = signal<QuizModel | null>(null);
   // Kept as a plain object on purpose: [(ngModel)]="answers[question.questionId]"
-  // mutates it directly from user input (a template-bound DOM event), which
-  // already schedules change detection on its own in zoneless mode.
+  // mutates it directly from user input and Angular picks it up via the form event.
   answers: Record<string, string> = {};
   readonly result = signal<SubmitQuizResult | null>(null);
   readonly isLoading = signal(true);
   readonly isSubmitting = signal(false);
   readonly isGenerating = signal(false);
   readonly errorMessage = signal('');
+
+  readonly moduleId = signal<string>('');
+  readonly enrollmentId = signal<string>('');
 
   readonly answeredQuestionsCount = computed(() =>
     Object.values(this.answers).filter(Boolean).length,
@@ -42,51 +45,58 @@ export class Quiz {
     return Math.round((this.answeredQuestionsCount() / total) * 100);
   });
 
+  readonly remainingAttempts = computed(() => {
+    const quiz = this.quiz();
+    const result = this.result();
+    if (!quiz || !result || result.isPassed) return null;
+
+    const maxAttempts = quiz.maxAttempts ?? result.maxAttempts ?? 2;
+    const usedAttempts = result.attemptNumber ?? 1;
+    return Math.max(0, maxAttempts - usedAttempts);
+  });
+
+  readonly canRetry = computed(() => {
+    return !!this.moduleId() && !!this.enrollmentId() && !!this.result() && !this.result()!.isPassed && (this.remainingAttempts() ?? 0) > 0;
+  });
+
   constructor() {
     runInBrowser(() => {
+      const userProfile = this.auth.activeProfile();
+      const isTrainee = userProfile === 'Trainee' || userProfile === 'student';
+      if (!isTrainee) {
+        this.errorMessage.set('الاختبار متاح لملف المتدرب فقط');
+        this.isLoading.set(false);
+        return;
+      }
+
       const id = this.route.snapshot.paramMap.get('id');
+      const moduleId = this.route.snapshot.queryParamMap.get('moduleId') ?? '';
+      const enrollmentId = this.route.snapshot.queryParamMap.get('enrollmentId') ?? '';
+
       if (!id) {
         this.errorMessage.set('معرّف الاختبار غير صالح');
         this.isLoading.set(false);
         return;
       }
 
-      this.quizApi.getQuiz(id).subscribe({
-        next: (quiz) => {
-          this.quiz.set({ ...quiz, quizId: quiz.quizId ?? id });
-          this.isLoading.set(false);
-        },
-        error: () => {
-          this.errorMessage.set('تعذّر تحميل الاختبار');
-          this.isLoading.set(false);
-        },
-      });
+      this.moduleId.set(moduleId);
+      this.enrollmentId.set(enrollmentId);
+      this.loadQuiz(id);
     });
   }
 
-  startQuiz(moduleId: string): void {
-    this.isGenerating.set(true);
-    this.errorMessage.set('');
-    this.quizApi.generateQuiz(moduleId).subscribe({
-      next: (res) => {
-        this.quizApi.getQuiz(res.quizId).subscribe({
-          next: (quiz) => {
-            this.quiz.set({ ...quiz, quizId: quiz.quizId ?? res.quizId });
-            this.answers = {};
-            this.result.set(null);
-            this.isLoading.set(false);
-            this.isGenerating.set(false);
-          },
-          error: () => {
-            this.isGenerating.set(false);
-            this.errorMessage.set('تعذّر إنشاء الاختبار');
-            this.isLoading.set(false);
-          },
-        });
+  private loadQuiz(id: string): void {
+    this.isLoading.set(true);
+    this.quizApi.getQuiz(id).subscribe({
+      next: (quiz) => {
+        this.quiz.set({ ...quiz, quizId: quiz.quizId ?? id });
+        this.answers = {};
+        this.result.set(null);
+        this.errorMessage.set('');
+        this.isLoading.set(false);
       },
       error: () => {
-        this.isGenerating.set(false);
-        this.errorMessage.set('تعذّر إنشاء الاختبار');
+        this.errorMessage.set('تعذر تحميل الاختبار');
         this.isLoading.set(false);
       },
     });
@@ -94,8 +104,14 @@ export class Quiz {
 
   submit(): void {
     const quiz = this.quiz();
+    const enrollmentId = this.enrollmentId();
     if (!quiz?.quizId) {
       this.errorMessage.set('لا يوجد اختبار محدد');
+      return;
+    }
+
+    if (!enrollmentId) {
+      this.errorMessage.set('معرّف التسجيل مطلوب لإرسال الاختبار');
       return;
     }
 
@@ -114,7 +130,7 @@ export class Quiz {
 
     this.quizApi
       .submitQuiz(quiz.quizId, {
-        traineeProfileId: this.auth.user()?.id,
+        enrollmentId,
         answers,
       })
       .subscribe({
@@ -124,11 +140,54 @@ export class Quiz {
             maxScore: result.maxScore ?? quiz.questions?.length ?? 0,
           });
           this.isSubmitting.set(false);
+
+          if (result.isPassed && quiz.moduleId) {
+            this.notifications.success('ممتاز! سيتم فتح الوحدة التالية الآن');
+            setTimeout(() => {
+              this.router.navigate(['/lms/player', enrollmentId], {
+                queryParams: { fromQuizModuleId: quiz.moduleId },
+              });
+            }, 900);
+          }
         },
         error: (err) => {
           this.isSubmitting.set(false);
-          this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذّر إرسال الإجابات');
+          this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذر إرسال الإجابات');
         },
       });
   }
+
+  retryWithFreshQuiz(): void {
+    const moduleId = this.moduleId() || this.quiz()?.moduleId || '';
+    if (!moduleId) {
+      this.errorMessage.set('لا يمكن إنشاء اختبار جديد بدون معرف الوحدة');
+      return;
+    }
+
+    this.isGenerating.set(true);
+    this.errorMessage.set('');
+
+    this.quizApi.generateQuiz(moduleId, 5, 2).subscribe({
+      next: (res) => {
+        this.quizApi.getQuiz(res.quizId).subscribe({
+          next: (quiz) => {
+            this.quiz.set({ ...quiz, quizId: quiz.quizId ?? res.quizId });
+            this.answers = {};
+            this.result.set(null);
+            this.isGenerating.set(false);
+          },
+          error: () => {
+            this.isGenerating.set(false);
+            this.errorMessage.set('تعذر تحميل الاختبار الجديد');
+          },
+        });
+      },
+      error: () => {
+        this.isGenerating.set(false);
+        this.errorMessage.set('تعذر إنشاء اختبار جديد');
+      },
+    });
+  }
 }
+
+

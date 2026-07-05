@@ -1,7 +1,7 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
-import { PagedResult, ProductDetailsDto, RecommendedProduct } from '../../../core/models/api.model';
+import { PagedResult, ProductCategory, ProductDetailsDto, RecommendedProduct } from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -35,6 +35,11 @@ export class ProductService {
     return this.browse(1, pageSize, search).pipe(map((res) => res.items));
   }
 
+  /** Every product category (id, name, product count) — powers the catalog's category filter. */
+  getCategories(): Observable<ProductCategory[]> {
+    return this.api.get<ProductCategory[]>('/api/product-categories');
+  }
+
   /**
    * Real product details — GET /api/products/{id} (GetProductDetailsQuery). Returns the
    * product's actual variants (id, name, price, stockQuantity), not a guess reconstructed
@@ -61,6 +66,7 @@ export class ProductService {
           price: cheapest?.price,
           category: details.categoryId ?? undefined,
           imageUrl: details.images?.[0] ?? undefined,
+          imageUrls: details.images?.slice(0, 3) ?? [],
         });
       }),
     );
@@ -79,6 +85,7 @@ export class ProductService {
             price: v.price,
             category: details.categoryId ?? undefined,
             imageUrl: details.images?.[0] ?? undefined,
+            imageUrls: details.images?.slice(0, 3) ?? [],
             variantLabel: v.name,
             stock: v.stockQuantity,
           }),
