@@ -267,6 +267,22 @@ export const routes: Routes = [
   },
   { path: 'marketplace/seller', redirectTo: 'dashboard/seller', pathMatch: 'full' },
   {
+    path: 'payment-success',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/payments/pages/payment-success/payment-success').then(
+        (m) => m.PaymentSuccess,
+      ),
+  },
+  {
+    path: 'payment-cancel',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/payments/pages/payment-cancel/payment-cancel').then(
+        (m) => m.PaymentCancel,
+      ),
+  },
+  {
     path: 'ai/chat',
     canActivate: [authGuard, notAdminGuard],
     loadComponent: () =>
