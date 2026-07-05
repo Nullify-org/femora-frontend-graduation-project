@@ -1,0 +1,66 @@
+<div class="min-h-screen flex items-center justify-center bg-[#FAF7F4] px-4">
+
+  <div class="bg-white rounded-3xl shadow-sm border border-[#F0E6DE] px-10 py-12 w-full max-w-md relative text-center">
+
+    @switch (state()) {
+
+      @case ('processing') {
+        <div class="flex justify-center mb-6">
+          <div class="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+        </div>
+        <h2 class="text-2xl font-bold text-[#3D2314] mb-3">جارٍ تأكيد الدفع...</h2>
+        <p class="text-sm text-[#8B6355] leading-relaxed">
+          تم استلام الدفع بنجاح، وجارٍ الآن تفعيل تسجيلك فى الدورة. لحظات من فضلك.
+        </p>
+      }
+
+      @case ('enrolled') {
+        <div class="text-6xl mb-6">🎉</div>
+        <h2 class="text-2xl font-bold text-[#3D2314] mb-3">تم الدفع والتسجيل بنجاح!</h2>
+        <p class="text-sm text-[#8B6355] leading-relaxed mb-8">
+          أصبحت الآن مشتركًا فى الدورة. يمكنك البدء فى التعلم مباشرة.
+        </p>
+        <button
+          (click)="goToCourse()"
+          class="w-full bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition"
+        >
+          ابدأ التعلم الآن
+        </button>
+      }
+
+      @case ('timeout') {
+        <div class="text-6xl mb-6">⏳</div>
+        <h2 class="text-2xl font-bold text-[#3D2314] mb-3">جارٍ إتمام العملية</h2>
+        <p class="text-sm text-[#8B6355] leading-relaxed mb-8">
+          تم تأكيد الدفع، لكن تفعيل التسجيل يستغرق وقتًا أطول من المعتاد. سيظهر تسجيلك فى "دوراتى" خلال دقائق قليلة.
+        </p>
+        <a
+          routerLink="/lms/my-learning"
+          class="block w-full bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition"
+        >
+          الذهاب إلى دوراتى
+        </a>
+      }
+
+      @case ('generic') {
+        <div class="text-6xl mb-6">✅</div>
+        <h2 class="text-2xl font-bold text-[#3D2314] mb-3">تم الدفع بنجاح!</h2>
+        <p class="text-sm text-[#8B6355] leading-relaxed mb-8">
+          شكرًا لطلبك. يمكنك متابعة حالة طلبك من صفحة طلباتى.
+        </p>
+        <a
+          routerLink="/marketplace/catalog"
+          class="block w-full bg-orange-500 text-white py-3 rounded-xl font-semibold hover:bg-orange-600 transition"
+        >
+          متابعة التسوق
+        </a>
+      }
+
+    }
+
+    <a routerLink="/" class="block text-xs text-[#C8956C] mt-6 hover:underline">
+      العودة إلى الرئيسية
+    </a>
+
+  </div>
+</div>
