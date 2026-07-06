@@ -7,21 +7,24 @@ import { AuthService } from '../../auth/auth.service';
   template: '',
 })
 export class HomeRedirect implements OnInit {
-
   private auth = inject(AuthService);
   private router = inject(Router);
 
   ngOnInit(): void {
-
     if (!this.auth.isAuthenticated()) {
       this.router.navigateByUrl('/landing');
       return;
     }
 
-    const dashboardRoute =
-      this.auth.getDashboardRoute();
+    const pendingProfiles = this.auth.pendingProfiles();
+    if (pendingProfiles.length > 0) {
+      this.router.navigateByUrl('/select-profile');
+      return;
+    }
 
-    if (dashboardRoute) {
+    const dashboardRoute = this.auth.getDashboardRoute();
+
+    if (dashboardRoute && dashboardRoute !== '') {
       this.router.navigateByUrl(dashboardRoute);
       return;
     }

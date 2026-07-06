@@ -1,7 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../../core/services/notification.service';
 
 interface GoalOption {
   label: string;
@@ -18,8 +20,11 @@ interface GoalOption {
 })
 export class Goal {
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
+  private readonly notifications = inject(NotificationService);
 
   selected: string | null = null;
+  isLoading = signal(false);
 
   options: GoalOption[] = [
     {
@@ -54,7 +59,22 @@ export class Goal {
   }
 
   next(): void {
-    this.router.navigate(['/']);
+    if (!this.selected) return;
+
+    this.isLoading.set(true);
+
+    // ✅ حسب الهدف المختار، اذهب إلى الخطوة التالية
+    if (this.selected.includes('تدريب')) {
+      // إذا اختارت التدريس، اذهب لاختيار الدور
+      this.router.navigate(['/onboarding/choose-role']).then(() => {
+        this.isLoading.set(false);
+      });
+    } else {
+      // خلاف ذلك، اذهب إلى صفحة المرحبة ثم الـ landing
+      this.router.navigate(['/onboarding/welcome']).then(() => {
+        this.isLoading.set(false);
+      });
+    }
   }
 
   get isValid(): boolean {

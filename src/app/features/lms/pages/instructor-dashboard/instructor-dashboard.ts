@@ -15,7 +15,7 @@ import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [Sidebar, FormsModule, RouterLink, SwitchRole],
+  imports: [Sidebar, FormsModule, SwitchRole],
   templateUrl: './instructor-dashboard.html',
 })
 export class InstructorDashboard implements OnInit {

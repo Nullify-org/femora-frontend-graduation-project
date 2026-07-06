@@ -1,6 +1,20 @@
 {
-  "name": "femora-frontend-graduation-project",
+  "name": "cls",
   "version": "0.0.0",
+  "private": true,
+  "description": "This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.9.",
+  "homepage": "https://github.com/Nullify-org/femora-frontend-graduation-project#readme",
+  "bugs": {
+    "url": "https://github.com/Nullify-org/femora-frontend-graduation-project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nullify-org/femora-frontend-graduation-project.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "tailwind.config.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -9,8 +23,6 @@
     "test": "ng test",
     "serve:ssr:femora-frontend-graduation-project": "node dist/femora-frontend-graduation-project/server/server.mjs"
   },
-  "private": true,
-  "packageManager": "npm@11.12.1",
   "dependencies": {
     "@angular/animations": "^21.2.17",
     "@angular/common": "^21.2.0",
@@ -43,5 +55,6 @@
     "@types/node": "^20.17.19",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2"
-  }
+  },
+  "packageManager": "npm@11.12.1"
 }

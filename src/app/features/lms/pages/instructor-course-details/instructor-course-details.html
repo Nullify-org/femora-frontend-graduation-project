@@ -129,7 +129,7 @@
                 </h2>
 
                 <span class="text-sm text-stone-500">
-                  {{ course.modules?.length || 0 }} Modules
+                  {{ course.modules.length || 0 }} Modules
                 </span>
 
               </div>
@@ -149,7 +149,7 @@
                         </h3>
 
                         <p class="text-sm text-stone-500">
-                          {{ module.lessons?.length || 0 }} Lessons
+                          {{ module.lessons.length || 0 }} Lessons
                         </p>
 
                       </div>
@@ -164,7 +164,7 @@
 
                   <div class="border-t border-stone-100 p-4 bg-stone-50">
 
-                    @if ((module.lessons?.length || 0) > 0) {
+                    @if ((module.lessons.length || 0) > 0) {
 
                       <div class="space-y-3">
 
@@ -265,7 +265,7 @@
                 </a>
 
                 <a
-                  [routerLink]="['/dashboard/instructor/module-edit', course.modules?.[0]?.id]"
+                  [routerLink]="['/dashboard/instructor/module-edit', course.modules[0].id]"
                   class="block w-full text-center border border-stone-300 rounded-xl py-3 hover:bg-stone-50 transition"
                 >
                   إدارة الوحدات

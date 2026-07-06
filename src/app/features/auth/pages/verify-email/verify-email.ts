@@ -2,6 +2,7 @@ import { Component, inject, OnDestroy, OnInit, signal, ElementRef, ViewChildren,
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-verify-email',
@@ -11,18 +12,19 @@ import { AuthService } from '../../../../core/auth/auth.service';
   styleUrl: './verify-email.css',
 })
 export class VerifyEmail implements OnInit, OnDestroy {
-  private readonly auth   = inject(AuthService);
+  private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notifications = inject(NotificationService);
 
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
-  email         = '';
-  digits        = signal<string[]>(['', '', '', '', '', '']);
-  countdown     = signal(300); // 5 minutes
-  isSending     = signal(false);
-  isVerifying   = signal(false);
-  sendError     = signal<string | null>(null);
-  verifyError   = signal<string | null>(null);
+  email = '';
+  digits = signal<string[]>(['', '', '', '', '', '']);
+  countdown = signal(300);
+  isSending = signal(false);
+  isVerifying = signal(false);
+  sendError = signal<string | null>(null);
+  verifyError = signal<string | null>(null);
   resendSuccess = signal(false);
 
   private timer: ReturnType<typeof setInterval> | null = null;
@@ -36,12 +38,11 @@ export class VerifyEmail implements OnInit, OnDestroy {
     if (this.timer) clearInterval(this.timer);
   }
 
-  // ── OTP input handling ──────────────────────────────────────────────────
   onInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
-    const val   = input.value.replace(/\D/g, '').slice(-1);
+    const val = input.value.replace(/\D/g, '').slice(-1);
     input.value = val;
-    const copy  = [...this.digits()];
+    const copy = [...this.digits()];
     copy[index] = val;
     this.digits.set(copy);
     if (val && index < 5) this.focusInput(index + 1);
@@ -50,14 +51,14 @@ export class VerifyEmail implements OnInit, OnDestroy {
   onKeydown(index: number, event: KeyboardEvent): void {
     if (event.key === 'Backspace' && !this.digits()[index] && index > 0) this.focusInput(index - 1);
     if (event.key === 'ArrowRight' && index < 5) this.focusInput(index + 1);
-    if (event.key === 'ArrowLeft'  && index > 0) this.focusInput(index - 1);
+    if (event.key === 'ArrowLeft' && index > 0) this.focusInput(index - 1);
   }
 
   onPaste(event: ClipboardEvent): void {
     event.preventDefault();
     const text = event.clipboardData?.getData('text') ?? '';
-    const nums  = text.replace(/\D/g, '').slice(0, 6).split('');
-    const copy  = ['', '', '', '', '', ''];
+    const nums = text.replace(/\D/g, '').slice(0, 6).split('');
+    const copy = ['', '', '', '', '', ''];
     nums.forEach((d, i) => (copy[i] = d));
     this.digits.set(copy);
     setTimeout(() => {
@@ -70,20 +71,23 @@ export class VerifyEmail implements OnInit, OnDestroy {
     this.otpInputs?.toArray()[index]?.nativeElement.focus();
   }
 
-  get otpCode(): string    { return this.digits().join(''); }
-  get isComplete(): boolean { return this.otpCode.length === 6; }
+  get otpCode(): string {
+    return this.digits().join('');
+  }
 
-  // ── Verify ──────────────────────────────────────────────────────────────
+  get isComplete(): boolean {
+    return this.otpCode.length === 6;
+  }
+
   verifyOtp(): void {
     if (!this.isComplete || this.isVerifying()) return;
-    
-    // Log the data being sent for debugging
-    console.log('Verifying OTP:', { 
-      email: this.email, 
+
+    console.log('Verifying OTP:', {
+      email: this.email,
       otpCode: this.otpCode,
-      otpLength: this.otpCode.length
+      otpLength: this.otpCode.length,
     });
-    
+
     this.isVerifying.set(true);
     this.verifyError.set(null);
 
@@ -91,23 +95,30 @@ export class VerifyEmail implements OnInit, OnDestroy {
       next: () => {
         this.isVerifying.set(false);
         this.auth.clearPendingEmail?.();
-        this.router.navigate(['/email-verified']);
+
+        // ✅ التعديل: انتظر قليلاً ثم انقل للصفحة التالية
+        setTimeout(() => {
+          // إذا كان هناك ملفات شخصية معلقة، اذهب إلى اختيار الملف
+          if (this.auth.pendingProfiles().length > 0) {
+            this.router.navigate(['/select-profile']);
+          } else {
+            // إذا لم يكن هناك ملفات معلقة، اذهب لصفحة الأهداف
+            this.router.navigate(['/onboarding/interests']);
+          }
+        }, 500);
       },
       error: (err: any) => {
         this.isVerifying.set(false);
-        
-        // Log the full error response for debugging
-        console.error('OTP Verification Error:', { 
+
+        console.error('OTP Verification Error:', {
           status: err.status,
           error: err.error,
-          fullError: err 
+          fullError: err,
         });
-        
-        // Extract error message from various possible response formats
+
         let errorMessage = 'الكود غير صحيح. حاولى مرة أخرى.';
-        
+
         if (err?.error) {
-          // Check for common error response structures
           if (err.error.detail) {
             errorMessage = err.error.detail;
           } else if (err.error.title) {
@@ -115,33 +126,28 @@ export class VerifyEmail implements OnInit, OnDestroy {
           } else if (err.error.message) {
             errorMessage = err.error.message;
           } else if (err.error.errors) {
-            // Handle validation errors object
             const errors = err.error.errors;
             if (typeof errors === 'object') {
               const errorMessages = Object.values(errors).flat();
               if (Array.isArray(errorMessages) && errorMessages.length > 0) {
                 errorMessage = errorMessages[0] as string;
-              } else if (typeof errors === 'string') {
-                errorMessage = errors;
               }
             }
           } else if (typeof err.error === 'string') {
-            // Handle string error responses
             errorMessage = err.error;
           }
         }
-        
+
         this.verifyError.set(errorMessage);
         this.digits.set(['', '', '', '', '', '']);
         setTimeout(() => {
-          this.otpInputs?.toArray().forEach(el => (el.nativeElement.value = ''));
+          this.otpInputs?.toArray().forEach((el) => (el.nativeElement.value = ''));
           this.focusInput(0);
         });
       },
     });
   }
 
-  // ── Resend ──────────────────────────────────────────────────────────────
   resendOtp(): void {
     if (!this.email || this.countdown() > 0 || this.isSending()) return;
     this.isSending.set(true);
@@ -158,10 +164,9 @@ export class VerifyEmail implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         this.isSending.set(false);
-        
-        // Extract error message from various possible response formats
+
         let errorMessage = 'فشل إرسال الكود. حاولى مرة أخرى.';
-        
+
         if (err?.error) {
           if (err.error.detail) {
             errorMessage = err.error.detail;
@@ -181,15 +186,14 @@ export class VerifyEmail implements OnInit, OnDestroy {
             errorMessage = err.error;
           }
         }
-        
+
         this.sendError.set(errorMessage);
       },
     });
   }
 
-  // ── Countdown ───────────────────────────────────────────────────────────
   startCountdown(): void {
-    this.countdown.set(300); // 5 minutes
+    this.countdown.set(300);
     if (this.timer) clearInterval(this.timer);
     this.timer = setInterval(() => {
       const current = this.countdown();
@@ -200,7 +204,9 @@ export class VerifyEmail implements OnInit, OnDestroy {
 
   formatCountdown(): string {
     const total = this.countdown();
-    const m = Math.floor(total / 60).toString().padStart(2, '0');
+    const m = Math.floor(total / 60)
+      .toString()
+      .padStart(2, '0');
     const s = (total % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   }

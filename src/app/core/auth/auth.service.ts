@@ -277,20 +277,33 @@ getMyProfile(): Observable<any> {
     if (profiles.length > 1) { this.router.navigate(['/select-profile']); return; }
     this.router.navigate([this.getDashboardRoute()]);
   }
+getDashboardRoute(): string {
+  const profile = this._activeProfile();
+  const role = this._user()?.role;
 
-  getDashboardRoute(): string {
-    const profile = this._activeProfile();
-    const role    = this._user()?.role;
-    const lookup  = profile ?? role ?? '';
-    const normalized = lookup.charAt(0).toUpperCase() + lookup.slice(1).toLowerCase();
+  // ✅ تحقق من الـ profile أو الـ role
+  const lookup = profile ?? role ?? '';
 
-    if (normalized === 'Admin' || role === 'admin' || role === 'Admin') return '/dashboard/admin';
-    if (normalized === 'Buyer' || role === 'buyer' || role === 'Buyer') return '/dashboard/buyer';
-    if (!profile) return '';
-
-    const config = PROFILE_CONFIGS.find((c) => c.type === profile);
-    return config?.dashboardRoute ?? '/dashboard/trainee';
+  // ✅ إذا لم يكن هناك profile و role معاً
+  if (!lookup) {
+    console.warn('⚠️ No active profile or role found');
+    return '/select-profile';  // بدلاً من إرجاع string فارغ
   }
+
+  // ✅ تحويل إلى النموذج الصحيح
+  const normalized = lookup.charAt(0).toUpperCase() + lookup.slice(1).toLowerCase();
+
+  if (normalized === 'Admin' || role === 'admin' || role === 'Admin') {
+    return '/dashboard/admin';
+  }
+  if (normalized === 'Buyer' || role === 'buyer' || role === 'Buyer') {
+    return '/dashboard/buyer';
+  }
+
+  // ✅ للمعلمين والبائعين والمتدربين
+  const config = PROFILE_CONFIGS.find((c) => c.type === profile);
+  return config?.dashboardRoute ?? '/dashboard/trainee';
+}
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   setPendingEmail(email: string): void  { this.storage.setString('femora_pending_email', email); }
@@ -394,5 +407,5 @@ getMyProfile(): Observable<any> {
     this.storage.remove(REFRESH_TOKEN_KEY);
     this.storage.remove(AUTH_STORAGE_KEY);
   }
-  
+
 }
