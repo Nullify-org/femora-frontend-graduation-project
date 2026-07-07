@@ -4,12 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { QuizService } from '../../services/quiz.service';
-<<<<<<< HEAD
-import { LearningService } from '../../services/learning.service';
-import { AuthService } from '../../../../core/auth/auth.service';
-=======
 import { EnrollmentService } from '../../services/enrollment.service';
->>>>>>> origin/master
 import { NotificationService } from '../../../../core/services/notification.service';
 import { Quiz as QuizModel, QuizAnswerRequest, SubmitQuizResult } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
@@ -24,41 +19,22 @@ export class Quiz {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly quizApi = inject(QuizService);
-<<<<<<< HEAD
-  private readonly learningService = inject(LearningService);
-  private readonly auth = inject(AuthService);
-=======
   private readonly enrollmentsApi = inject(EnrollmentService);
->>>>>>> origin/master
   private readonly notifications = inject(NotificationService);
 
   readonly quiz = signal<QuizModel | null>(null);
   // Kept as a plain object on purpose: [(ngModel)]="answers[question.questionId]"
   // mutates it directly from user input and Angular picks it up via the form event.
   answers: Record<string, string> = {};
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-  result: SubmitQuizResult | null = null;
-  isLoading = true;
-  isSubmitting = false;
-  errorMessage = '';
-=======
-=======
->>>>>>> origin/master
   readonly result = signal<SubmitQuizResult | null>(null);
   readonly isLoading = signal(true);
   readonly isSubmitting = signal(false);
   readonly isGenerating = signal(false);
-<<<<<<< HEAD
-  readonly errorMessage = signal('');
-  readonly returnLink = signal<string[] | null>(null);
-=======
   readonly isUnlocking = signal(false);
   readonly errorMessage = signal('');
 
   readonly moduleId = signal<string>('');
   readonly enrollmentId = signal<string>('');
->>>>>>> origin/master
 
   readonly answeredQuestionsCount = computed(() =>
     Object.values(this.answers).filter(Boolean).length,
@@ -69,9 +45,6 @@ export class Quiz {
     if (!total) return 0;
     return Math.round((this.answeredQuestionsCount() / total) * 100);
   });
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
 
   readonly remainingAttempts = computed(() => {
     const quiz = this.quiz();
@@ -87,7 +60,6 @@ export class Quiz {
     return !!this.moduleId() && !!this.enrollmentId() && !!this.result() && !this.result()!.isPassed && (this.remainingAttempts() ?? 0) > 0;
   });
   auth: any;
->>>>>>> origin/master
 
   constructor() {
     runInBrowser(() => {
@@ -99,26 +71,6 @@ export class Quiz {
         return;
       }
 
-<<<<<<< HEAD
-      this.quizApi.getById(id).subscribe({
-        next: (quiz) => {
-<<<<<<< Updated upstream
-          this.quiz = { ...quiz, quizId: quiz.quizId ?? id };
-          this.isLoading = false;
-=======
-          this.quiz.set({ ...quiz, quizId: quiz.quizId ?? id });
-          if (quiz.courseId) {
-            this.resolveReturnLink(quiz.courseId);
-          }
-          this.isLoading.set(false);
->>>>>>> Stashed changes
-        },
-        error: () => {
-          this.errorMessage = 'تعذّر تحميل الاختبار';
-          this.isLoading = false;
-        },
-      });
-=======
       const id = this.route.snapshot.paramMap.get('id');
       const moduleId = this.route.snapshot.queryParamMap.get('moduleId') ?? '';
       const enrollmentId = this.route.snapshot.queryParamMap.get('enrollmentId') ?? '';
@@ -152,44 +104,9 @@ export class Quiz {
         this.errorMessage.set('تعذر تحميل الاختبار');
         this.isLoading.set(false);
       },
->>>>>>> origin/master
     });
   }
 
-<<<<<<< Updated upstream
-=======
-  startQuiz(moduleId: string): void {
-    this.isGenerating.set(true);
-    this.errorMessage.set('');
-    this.quizApi.generateQuiz(moduleId).subscribe({
-      next: (res) => {
-        this.quizApi.getQuiz(res.quizId).subscribe({
-          next: (quiz) => {
-            this.quiz.set({ ...quiz, quizId: quiz.quizId ?? res.quizId });
-            if (quiz.courseId) {
-              this.resolveReturnLink(quiz.courseId);
-            }
-            this.answers = {};
-            this.result.set(null);
-            this.isLoading.set(false);
-            this.isGenerating.set(false);
-          },
-          error: () => {
-            this.isGenerating.set(false);
-            this.errorMessage.set('تعذّر إنشاء الاختبار');
-            this.isLoading.set(false);
-          },
-        });
-      },
-      error: () => {
-        this.isGenerating.set(false);
-        this.errorMessage.set('تعذّر إنشاء الاختبار');
-        this.isLoading.set(false);
-      },
-    });
-  }
-
->>>>>>> Stashed changes
   submit(): void {
     const quiz = this.quiz();
     const enrollmentId = this.enrollmentId();
@@ -240,19 +157,6 @@ export class Quiz {
       });
   }
 
-<<<<<<< HEAD
-  private resolveReturnLink(courseOrEnrollmentId: string): void {
-    this.learningService.getCourseLearningData(courseOrEnrollmentId).subscribe({
-      next: (details) => {
-        this.returnLink.set(['/lms/player', details.enrollmentId]);
-      },
-      error: () => {
-        this.returnLink.set(['/lms/course', courseOrEnrollmentId]);
-      },
-    });
-  }
-}
-=======
   /** Automatic on a pass - no button, no extra click. */
   private unlockNextModule(): void {
     const moduleId = this.moduleId();
@@ -322,4 +226,3 @@ export class Quiz {
     }
   }
 }
->>>>>>> origin/master

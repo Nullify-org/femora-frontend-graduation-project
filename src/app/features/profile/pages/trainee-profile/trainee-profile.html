@@ -31,21 +31,9 @@
           <a routerLink="/lms/catalog" class="text-sm text-terracotta hover:underline mt-2 inline-block">استكشفى الدورات</a>
         } @else {
           <div class="space-y-3">
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-            @for (e of enrollments; track e.enrollmentId ?? e.courseId) {
-              <a [routerLink]="['/lms/player', e.courseId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
-                <p class="text-sm font-semibold text-navy">{{ e.courseTitle ?? e.title ?? 'دورة' }}</p>
-=======
-            @for (e of enrollments(); track e.enrollmentId ?? e.courseId) {
-              <a [routerLink]="['/lms/player', e.enrollmentId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
-                <p class="text-sm font-semibold text-navy">{{ e.courseTitle }}</p>
->>>>>>> Stashed changes
-=======
             @for (e of enrollments(); track e.enrollmentId ?? e.courseId) {
               <a [routerLink]="['/lms/player', e.enrollmentId || e.courseId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
                 <p class="text-sm font-semibold text-navy">{{ e.courseTitle }}</p>
->>>>>>> origin/master
               </a>
             }
           </div>

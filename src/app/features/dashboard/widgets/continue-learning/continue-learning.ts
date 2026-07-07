@@ -22,24 +22,10 @@ export class ContinueLearning {
 
   constructor() {
     runInBrowser(() => {
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-      this.enrollmentsApi.myEnrollments(1, 3).subscribe({
-        next: (items) => {
-          this.enrollments = items;
-          this.isLoading = false;
-=======
-      this.enrollmentsApi.getMyEnrollments(1, 3).subscribe({
-        next: (response) => {
-          this.enrollments.set(response.items ?? []);
-          this.isLoading.set(false);
->>>>>>> Stashed changes
-=======
       this.enrollmentsApi.getMyEnrollments(1, 3).subscribe({
         next: (response) => {
           this.enrollments.set(response.data);
           this.isLoading.set(false);
->>>>>>> origin/master
         },
         error: () => {
           this.isLoading.set(false);

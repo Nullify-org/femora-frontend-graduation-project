@@ -1,20 +1,10 @@
-<<<<<<< HEAD
-import { Component, inject, signal } from '@angular/core';
-=======
 ﻿import { Component, inject, signal } from '@angular/core';
->>>>>>> origin/master
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 
 import { EnrollmentService } from '../../services/enrollment.service';
 import { Enrollment } from '../../../../core/models/api.model';
-<<<<<<< HEAD
-
-@Component({
-  selector: 'app-my-learning',
-  imports: [CommonModule,RouterLink,Sidebar],
-=======
 import { runInBrowser } from '../../../../core/utils/platform.util';
 import { StorageService } from '../../../../core/services/storage.service';
 
@@ -22,53 +12,10 @@ import { StorageService } from '../../../../core/services/storage.service';
   selector: 'app-my-learning',
   standalone: true,
   imports: [CommonModule, RouterLink, Sidebar],
->>>>>>> origin/master
   templateUrl: './my-learning.html',
   styleUrl: './my-learning.css',
 })
 export class MyLearning {
-<<<<<<< HEAD
-
-  private readonly enrollmentApi =
-    inject(EnrollmentService);
-
-  readonly enrollments =
-    signal<Enrollment[]>([]);
-
-  readonly loading =
-    signal(true);
-
-  readonly error =
-    signal('');
-
-  constructor() {
-    this.loadEnrollments();
-  }
-
-  loadEnrollments(): void {
-
-    this.loading.set(true);
-
-    this.enrollmentApi
-      .getMyEnrollments()
-      .subscribe({
-        next: (response) => {
-          this.enrollments.set(response.items ?? []);
-          this.loading.set(false);
-        },
-
-        error: () => {
-
-          this.error.set(
-            'تعذر تحميل الدورات'
-          );
-
-          this.loading.set(false);
-        },
-      });
-  }
-}
-=======
   private readonly enrollmentApi = inject(EnrollmentService);
   private readonly storage = inject(StorageService);
   private readonly cacheKey = 'femora.my-learning.enrollments';
@@ -112,4 +59,3 @@ export class MyLearning {
 }
 
 
->>>>>>> origin/master
