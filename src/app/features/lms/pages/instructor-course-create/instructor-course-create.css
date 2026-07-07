@@ -1,0 +1,37 @@
+:host {
+  display: block;
+}
+
+/* Smooth entrance for newly expanded module bodies / newly added modules & lessons */
+@keyframes femora-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section :is(div, button) {
+  animation-fill-mode: both;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(75, 46, 31, 0.15);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.35;
+}
+
+.cdk-drag-animating {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.cdk-drop-list-dragging .cdk-drag {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}

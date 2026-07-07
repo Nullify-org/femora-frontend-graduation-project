@@ -7,11 +7,26 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
+<<<<<<< Updated upstream
       import('./features/landing/pages/landing/landing').then((m) => m.Landing),
   },
   { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
   { path: 'courses', redirectTo: 'lms/catalog', pathMatch: 'full' },
+=======
+      import('./core/pages/home-redirect/home-redirect')
+        .then((m) => m.HomeRedirect),
+  },
+  {
+    path: 'landing',
+    loadComponent: () =>
+      import('./features/landing/pages/landing/landing')
+        .then((m) => m.Landing),
+  },
+  { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
+  { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
+>>>>>>> Stashed changes
   {
     path: 'courses/:id',
     loadComponent: () =>
@@ -29,6 +44,26 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/register/register').then((m) => m.Register),
   },
+<<<<<<< Updated upstream
+=======
+  {
+    path: 'forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/forgot-password/forgot-password').then((m) => m.ForgotPassword),
+  },
+  {
+    path: 'reset-password',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/pages/reset-password/reset-password').then((m) => m.ResetPassword),
+  },
+  {
+    path: 'signin-google',
+    loadComponent: () =>
+      import('./features/auth/pages/signin-google/signin-google').then((m) => m.SigninGoogle),
+  },
+>>>>>>> Stashed changes
   {
     path: 'verify-email',
     canActivate: [authGuard],
@@ -97,6 +132,57 @@ export const routes: Routes = [
           ),
       },
       {
+<<<<<<< Updated upstream
+=======
+        path: 'instructor/courses',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-courses/instructor-courses')
+            .then((m) => m.InstructorCourses),
+      },
+      {
+        path: 'instructor/courses/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-course-details/instructor-course-details')
+            .then((m) => m.InstructorCourseDetails),
+      },
+      {
+        path: 'instructor/course-create',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-course-create/instructor-course-create')
+            .then((m) => m.InstructorCourseCreate),
+      },
+      {
+        path: 'instructor/course-edit/:id',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-course-edit/instructor-course-edit')
+            .then((m) => m.InstructorCourseEdit),
+      },
+      {
+        path: 'instructor/module-edit/:moduleId',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-module-edit/instructor-module-edit')
+            .then((m) => m.InstructorModuleEdit),
+      },
+      {
+        path: 'instructor/lesson-edit/:lessonId',
+        canActivate: [roleGuard],
+        data: { roles: ['Instructor'] },
+        loadComponent: () =>
+          import('./features/lms/pages/instructor-lesson-edit/instructor-lesson-edit')
+            .then((m) => m.InstructorLessonEdit),
+      },
+      {
+>>>>>>> Stashed changes
         path: 'seller',
         canActivate: [roleGuard],
         data: { roles: ['Seller'] },
@@ -113,6 +199,31 @@ export const routes: Routes = [
             (m) => m.AdminDashboard,
           ),
       },
+<<<<<<< Updated upstream
+=======
+      {
+        path: 'buyer',
+        loadComponent: () =>
+          import('./features/dashboard/pages/buyer-dashboard/buyer-dashboard').then(
+            (m) => m.BuyerDashboard,
+          ),
+      },
+      {
+        path: 'users',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/dashboard/pages/admin-users/admin-users').then((m) => m.AdminUsers),
+      },
+      {
+        path: 'orders',
+        canActivate: [adminGuard],
+        loadComponent: () =>
+          import('./features/dashboard/pages/admin-orders/admin-orders').then((m) => m.AdminOrders),
+      },
+      { path: 'products', redirectTo: '/dashboard/admin' },
+      { path: 'courses', redirectTo: '/dashboard/admin' },
+      { path: 'reports', redirectTo: '/dashboard/admin' },
+>>>>>>> Stashed changes
     ],
   },
   {
@@ -132,6 +243,21 @@ export const routes: Routes = [
       import('./features/lms/pages/course-player/course-player').then((m) => m.CoursePlayer),
   },
   {
+<<<<<<< Updated upstream
+=======
+    path: 'lms/player/:enrollmentId/lesson/:lessonId',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/lms/pages/lesson-player/lesson-player').then((m) => m.LessonPlayer),
+  },
+  {
+    path: 'lms/my-learning',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/lms/pages/my-learning/my-learning').then((m) => m.MyLearning),
+  },
+  {
+>>>>>>> Stashed changes
     path: 'lms/quiz/:id',
     canActivate: [authGuard],
     loadComponent: () => import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
@@ -226,4 +352,8 @@ export const routes: Routes = [
       import('./features/profile/pages/preferences/preferences').then((m) => m.Preferences),
   },
   { path: '**', redirectTo: '' },
+<<<<<<< Updated upstream
 ];
+=======
+];
+>>>>>>> Stashed changes
