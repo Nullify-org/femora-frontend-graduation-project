@@ -2,26 +2,31 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, profileSelectionGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { adminGuard } from './core/auth/admin.guard';
-import { notAdminGuard } from './core/auth/not-admin.guard';
 
 export const routes: Routes = [
   {
-  path: '',
-  loadComponent: () =>
-    import('./core/pages/home-redirect/home-redirect')
-      .then((m) => m.HomeRedirect),
+    path: '',
+    loadComponent: () =>
+<<<<<<< Updated upstream
+      import('./features/landing/pages/landing/landing').then((m) => m.Landing),
   },
-
+  { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
+  { path: 'courses', redirectTo: 'lms/catalog', pathMatch: 'full' },
+=======
+      import('./core/pages/home-redirect/home-redirect')
+        .then((m) => m.HomeRedirect),
+  },
   {
-  path: 'landing',
-  loadComponent: () =>
-    import('./features/landing/pages/landing/landing')
-      .then((m) => m.Landing),
+    path: 'landing',
+    loadComponent: () =>
+      import('./features/landing/pages/landing/landing')
+        .then((m) => m.Landing),
   },
-
   { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
   { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
+>>>>>>> Stashed changes
   {
     path: 'courses/:id',
     loadComponent: () =>
@@ -39,7 +44,8 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/register/register').then((m) => m.Register),
   },
-
+<<<<<<< Updated upstream
+=======
   {
     path: 'forgot-password',
     canActivate: [guestGuard],
@@ -52,14 +58,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/reset-password/reset-password').then((m) => m.ResetPassword),
   },
-
-  // ✅ Google OAuth Callback — لازم يكون بدون guard
   {
     path: 'signin-google',
     loadComponent: () =>
       import('./features/auth/pages/signin-google/signin-google').then((m) => m.SigninGoogle),
   },
-
+>>>>>>> Stashed changes
   {
     path: 'verify-email',
     canActivate: [authGuard],
@@ -82,7 +86,7 @@ export const routes: Routes = [
     path: 'onboarding/interests',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/auth/pages/onboarding/interests/interests.api').then((m) => m.Interests),
+      import('./features/auth/pages/onboarding/interests/interests').then((m) => m.Interests),
   },
   {
     path: 'onboarding/goal',
@@ -123,10 +127,13 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['Instructor'] },
         loadComponent: () =>
-          import('./features/lms/pages/instructor-dashboard/instructor-dashboard')
-            .then((m) => m.InstructorDashboard),
+          import('./features/lms/pages/instructor-dashboard/instructor-dashboard').then(
+            (m) => m.InstructorDashboard,
+          ),
       },
       {
+<<<<<<< Updated upstream
+=======
         path: 'instructor/courses',
         canActivate: [roleGuard],
         data: { roles: ['Instructor'] },
@@ -174,8 +181,8 @@ export const routes: Routes = [
           import('./features/lms/pages/instructor-lesson-edit/instructor-lesson-edit')
             .then((m) => m.InstructorLessonEdit),
       },
-      // -------------------------------
       {
+>>>>>>> Stashed changes
         path: 'seller',
         canActivate: [roleGuard],
         data: { roles: ['Seller'] },
@@ -185,11 +192,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'seller/orders',
-        redirectTo: 'seller',
-        pathMatch: 'full',
-      },
-      {
         path: 'admin',
         canActivate: [adminGuard],
         loadComponent: () =>
@@ -197,6 +199,8 @@ export const routes: Routes = [
             (m) => m.AdminDashboard,
           ),
       },
+<<<<<<< Updated upstream
+=======
       {
         path: 'buyer',
         loadComponent: () =>
@@ -216,11 +220,10 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/pages/admin-orders/admin-orders').then((m) => m.AdminOrders),
       },
-      // TODO: Products/Courses/Reports admin pages aren't built yet — point them at the
-      // admin dashboard for now instead of letting the wildcard route bounce to landing.
       { path: 'products', redirectTo: '/dashboard/admin' },
       { path: 'courses', redirectTo: '/dashboard/admin' },
       { path: 'reports', redirectTo: '/dashboard/admin' },
+>>>>>>> Stashed changes
     ],
   },
   {
@@ -233,14 +236,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/lms/pages/course-details/course-details').then((m) => m.CourseDetails),
   },
-
   {
-    path: 'lms/player/:enrollmentId',
+    path: 'lms/player/:id',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/lms/pages/course-player/course-player').then((m) => m.CoursePlayer),
   },
   {
+<<<<<<< Updated upstream
+=======
     path: 'lms/player/:enrollmentId/lesson/:lessonId',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -250,20 +254,14 @@ export const routes: Routes = [
     path: 'lms/my-learning',
     canActivate: [authGuard],
     loadComponent: () =>
-      import(
-        './features/lms/pages/my-learning/my-learning'
-      ).then(
-        (m) => m.MyLearning
-      ),
+      import('./features/lms/pages/my-learning/my-learning').then((m) => m.MyLearning),
   },
   {
+>>>>>>> Stashed changes
     path: 'lms/quiz/:id',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
+    loadComponent: () => import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
   },
-//   { path: 'lms/instructor',       redirectTo: 'dashboard/instructor', pathMatch: 'full' },
-
   {
     path: 'lms/instructor',
     redirectTo: 'dashboard/instructor',
@@ -294,26 +292,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/marketplace/pages/checkout/checkout').then((m) => m.Checkout),
   },
-  { path: 'marketplace/seller', redirectTo: 'dashboard/seller', pathMatch: 'full' },
   {
-    path: 'payment-success',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/payments/pages/payment-success/payment-success').then(
-        (m) => m.PaymentSuccess,
-      ),
-  },
-  {
-    path: 'payment-cancel',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/payments/pages/payment-cancel/payment-cancel').then(
-        (m) => m.PaymentCancel,
-      ),
+    path: 'marketplace/seller',
+    redirectTo: 'dashboard/seller',
+    pathMatch: 'full',
   },
   {
     path: 'ai/chat',
-    canActivate: [authGuard, notAdminGuard],
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./features/ai-assistant/pages/chat/chat').then((m) => m.Chat),
   },
@@ -325,15 +311,16 @@ export const routes: Routes = [
         (m) => m.Conversations,
       ),
   },
-  { path: 'profile',       redirectTo: 'profile/trainee',      pathMatch: 'full' },
+  {
+    path: 'profile',
+    redirectTo: 'profile/trainee',
+    pathMatch: 'full',
+  },
   {
     path: 'profile/edit',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/profile/pages/edit-profile/edit-profile').then((m) => m.EditProfile),
+    redirectTo: 'profile/preferences',
+    pathMatch: 'full',
   },
-  { path: 'profile/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
-  { path: 'dashboard/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
   {
     path: 'profile/trainee',
     canActivate: [authGuard],
@@ -365,6 +352,8 @@ export const routes: Routes = [
       import('./features/profile/pages/preferences/preferences').then((m) => m.Preferences),
   },
   { path: '**', redirectTo: '' },
-
-  
+<<<<<<< Updated upstream
 ];
+=======
+];
+>>>>>>> Stashed changes
