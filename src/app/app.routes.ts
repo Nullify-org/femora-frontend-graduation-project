@@ -6,6 +6,30 @@ import { notAdminGuard } from './core/auth/not-admin.guard';
 
 export const routes: Routes = [
   {
+<<<<<<< HEAD
+    path: '',
+    loadComponent: () =>
+<<<<<<< Updated upstream
+      import('./features/landing/pages/landing/landing').then((m) => m.Landing),
+  },
+  { path: 'auth/login', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register', pathMatch: 'full' },
+  { path: 'courses', redirectTo: 'lms/catalog', pathMatch: 'full' },
+=======
+      import('./core/pages/home-redirect/home-redirect')
+        .then((m) => m.HomeRedirect),
+  },
+  {
+    path: 'landing',
+    loadComponent: () =>
+      import('./features/landing/pages/landing/landing')
+        .then((m) => m.Landing),
+  },
+  { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
+  { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
+>>>>>>> Stashed changes
+=======
   path: '',
   loadComponent: () =>
     import('./core/pages/home-redirect/home-redirect')
@@ -22,6 +46,7 @@ export const routes: Routes = [
   { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
   { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
+>>>>>>> origin/master
   {
     path: 'courses/:id',
     loadComponent: () =>
@@ -39,7 +64,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/register/register').then((m) => m.Register),
   },
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+=======
 
+>>>>>>> origin/master
   {
     path: 'forgot-password',
     canActivate: [guestGuard],
@@ -52,14 +82,21 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/reset-password/reset-password').then((m) => m.ResetPassword),
   },
+<<<<<<< HEAD
+=======
 
   // ✅ Google OAuth Callback — لازم يكون بدون guard
+>>>>>>> origin/master
   {
     path: 'signin-google',
     loadComponent: () =>
       import('./features/auth/pages/signin-google/signin-google').then((m) => m.SigninGoogle),
   },
+<<<<<<< HEAD
+>>>>>>> Stashed changes
+=======
 
+>>>>>>> origin/master
   {
     path: 'verify-email',
     canActivate: [authGuard],
@@ -127,6 +164,11 @@ export const routes: Routes = [
             .then((m) => m.InstructorDashboard),
       },
       {
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> origin/master
         path: 'instructor/courses',
         canActivate: [roleGuard],
         data: { roles: ['Instructor'] },
@@ -174,8 +216,13 @@ export const routes: Routes = [
           import('./features/lms/pages/instructor-lesson-edit/instructor-lesson-edit')
             .then((m) => m.InstructorLessonEdit),
       },
+<<<<<<< HEAD
+      {
+>>>>>>> Stashed changes
+=======
       // -------------------------------
       {
+>>>>>>> origin/master
         path: 'seller',
         canActivate: [roleGuard],
         data: { roles: ['Seller'] },
@@ -197,6 +244,11 @@ export const routes: Routes = [
             (m) => m.AdminDashboard,
           ),
       },
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> origin/master
       {
         path: 'buyer',
         loadComponent: () =>
@@ -216,11 +268,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/pages/admin-orders/admin-orders').then((m) => m.AdminOrders),
       },
+<<<<<<< HEAD
+      { path: 'products', redirectTo: '/dashboard/admin' },
+      { path: 'courses', redirectTo: '/dashboard/admin' },
+      { path: 'reports', redirectTo: '/dashboard/admin' },
+>>>>>>> Stashed changes
+=======
       // TODO: Products/Courses/Reports admin pages aren't built yet — point them at the
       // admin dashboard for now instead of letting the wildcard route bounce to landing.
       { path: 'products', redirectTo: '/dashboard/admin' },
       { path: 'courses', redirectTo: '/dashboard/admin' },
       { path: 'reports', redirectTo: '/dashboard/admin' },
+>>>>>>> origin/master
     ],
   },
   {
@@ -241,6 +300,11 @@ export const routes: Routes = [
       import('./features/lms/pages/course-player/course-player').then((m) => m.CoursePlayer),
   },
   {
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> origin/master
     path: 'lms/player/:enrollmentId/lesson/:lessonId',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -250,6 +314,12 @@ export const routes: Routes = [
     path: 'lms/my-learning',
     canActivate: [authGuard],
     loadComponent: () =>
+<<<<<<< HEAD
+      import('./features/lms/pages/my-learning/my-learning').then((m) => m.MyLearning),
+  },
+  {
+>>>>>>> Stashed changes
+=======
       import(
         './features/lms/pages/my-learning/my-learning'
       ).then(
@@ -257,6 +327,7 @@ export const routes: Routes = [
       ),
   },
   {
+>>>>>>> origin/master
     path: 'lms/quiz/:id',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -365,6 +436,14 @@ export const routes: Routes = [
       import('./features/profile/pages/preferences/preferences').then((m) => m.Preferences),
   },
   { path: '**', redirectTo: '' },
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+];
+=======
+];
+>>>>>>> Stashed changes
+=======
 
   
 ];
+>>>>>>> origin/master

@@ -30,8 +30,18 @@ export class TraineeProfile {
     runInBrowser(() => {
       const userId = this.auth.user()?.id;
 
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+      this.enrollmentsApi.myEnrollments().subscribe({
+        next: (items) => (this.enrollments = items),
+=======
+      this.enrollmentsApi.getMyEnrollments().subscribe({
+        next: (response) => this.enrollments.set(response.items),
+>>>>>>> Stashed changes
+=======
       this.enrollmentsApi.getMyEnrollments().subscribe({
         next: (response) => this.enrollments.set(response.data),
+>>>>>>> origin/master
       });
 
       this.ordersApi.myOrders(userId).subscribe({

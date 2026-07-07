@@ -12,6 +12,18 @@ import { CourseFilterOptions } from '../models/course-filter-options.model';
 export class CourseService {
 
   private readonly api = inject(ApiClient);
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+  private readonly base = '/api/courses';
+=======
+
+  private readonly base = '/api/courses';
+
+  // ========================
+  // Courses
+  // ========================
+>>>>>>> Stashed changes
+=======
   private readonly http = inject(HttpClient);
 
   private readonly base = '/api/courses';
@@ -20,6 +32,7 @@ export class CourseService {
   // ========================
   // Courses (existing logic)
   // ========================
+>>>>>>> origin/master
 
   list(params?: Record<string, string | number>): Observable<Course[]> {
     const request = this.toCourseRequest(params);
@@ -106,6 +119,11 @@ export class CourseService {
     return this.api.post(`${this.base}/${id}/publish`, {});
   }
 
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+=======
+=======
+>>>>>>> origin/master
   unpublish(id: string): Observable<unknown> {
     return this.api.post(`${this.base}/${id}/unpublish`, {});
   }
@@ -115,6 +133,8 @@ export class CourseService {
   }
 
   // ========================
+<<<<<<< HEAD
+=======
   // NEW: Update endpoints
   // ========================
 
@@ -140,6 +160,7 @@ export class CourseService {
   }
 
   // ========================
+>>>>>>> origin/master
   // Helpers
   // ========================
 
@@ -248,6 +269,10 @@ export class CourseService {
     };
   }
 
+<<<<<<< HEAD
+>>>>>>> Stashed changes
+=======
+>>>>>>> origin/master
   private normalizeCourse(course: Course): Course {
     return {
       ...course,

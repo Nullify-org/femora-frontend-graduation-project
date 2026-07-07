@@ -156,6 +156,13 @@ export class ApiClient {
       }
     }
 
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+    // ENROLLMENTS
+    if (cleanUrl.match(/\/api\/enrollments$/)) {
+      return seed.MOCK_ENROLLMENTS;
+=======
+=======
 
     const lessonDetailMatch = cleanUrl.match(/\/api\/lessons\/([^/]+)$/);
     if (lessonDetailMatch && method === 'GET') {
@@ -171,6 +178,7 @@ export class ApiClient {
         isPreview: true,
       };
     }
+>>>>>>> origin/master
 
     const enrollmentDetailMatch = cleanUrl.match(/\/api\/enrollments\/([^/]+)$/);
     if (enrollmentDetailMatch) {
@@ -184,6 +192,14 @@ export class ApiClient {
       };
     }
 
+<<<<<<< HEAD
+    const markLessonCompleteMatch = cleanUrl.match(/\/api\/enrollments\/lessons\/([^/]+)\/complete$/);
+    if (markLessonCompleteMatch && method === 'POST') {
+      return null;
+    }
+
+=======
+>>>>>>> origin/master
     if (cleanUrl.match(/\/api\/quizzes\/generate$/)) {
       return { quizId: 'quiz_mock_id' };
     }
@@ -213,6 +229,10 @@ export class ApiClient {
         maxScore: 1,
         isPassed: true,
       };
+<<<<<<< HEAD
+>>>>>>> Stashed changes
+=======
+>>>>>>> origin/master
     }
 
     // RECOMMENDATIONS

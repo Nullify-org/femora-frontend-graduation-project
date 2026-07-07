@@ -8,7 +8,18 @@ import { EnrollmentService } from '../../services/enrollment.service';
 import { OrderService } from '../../../marketplace/services/order.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+import { Course } from '../../../../core/models/api.model';
+=======
 import { CourseDetails as CourseDetailsModel } from '../../models/course-details.model';
+import { EnrollmentResponse, EnrollmentStatus } from '../../../../core/models/api.model';
+
+>>>>>>> Stashed changes
+import { courseEmoji, formatPrice } from '../../../../core/utils/api-response.util';
+=======
+import { CourseDetails as CourseDetailsModel } from '../../models/course-details.model';
+>>>>>>> origin/master
 
 import { courseEmoji, formatPrice } from '../../../../core/utils/api-response.util';
 
@@ -77,6 +88,36 @@ export class CourseDetails {
       return;
     }
 
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+    this.isEnrolling = true;
+    this.enrollmentsApi.enroll(this.course.id).subscribe({
+      next: () => {
+        this.isEnrolling = false;
+        this.isEnrolled = true;
+        this.notifications.success('تم التسجيل في الدورة بنجاح!');
+        this.router.navigate(['/lms/player', this.course!.id]);
+      },
+      error: (err) => {
+        this.isEnrolling = false;
+        this.errorMessage =
+          err?.error?.title ?? err?.error?.detail ?? 'تعذّر التسجيل في الدورة';
+=======
+    this.isEnrolling.set(true);
+
+    this.enrollmentsApi.enroll(course.id).subscribe({
+      next: (response: EnrollmentResponse) => {
+        this.isEnrolling.set(false);
+        this.isEnrolled.set(true);
+        this.enrollmentId.set(response.enrollmentId);
+        this.notifications.success('تم التسجيل فى الدورة بنجاح');
+        this.router.navigate(['/lms/player', response.enrollmentId]);
+>>>>>>> Stashed changes
+      },
+      error: () => {
+        this.isEnrolling.set(false);
+        this.notifications.error('تعذر التسجيل في الدورة');
+=======
     // Paid courses go through Stripe Checkout — the backend blocks direct
     // enrollment for them (402 Payment Required) and the enrollment is
     // created by the Stripe webhook once payment succeeds.
@@ -110,16 +151,31 @@ export class CourseDetails {
         this.errorMessage.set(
           err?.error?.detail ?? err?.error?.title ?? 'تعذر إتمام التسجيل. يرجى المحاولة مرة أخرى.'
         );
+>>>>>>> origin/master
       },
     });
   }
 
   private checkEnrollment(courseId: string): void {
     this.enrollmentsApi.isEnrolled(courseId).subscribe({
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+      next: (enrolled) => (this.isEnrolled = enrolled),
+=======
+      next: (status: EnrollmentStatus) => {
+        this.isEnrolled.set(status.isEnrolled);
+        this.enrollmentId.set(status.enrollmentId ?? null);
+      },
+      error: () => {
+        this.isEnrolled.set(false);
+      },
+>>>>>>> Stashed changes
+=======
       next: (status) => {
         this.isEnrolled.set(status.isEnrolled);
         this.enrollmentId.set(status.enrollmentId ?? null);
       },
+>>>>>>> origin/master
     });
   }
 }

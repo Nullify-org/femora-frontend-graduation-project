@@ -4,7 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
-import { Course } from '../../models/course.model';
+import { Course } from '../../../../core/models';
+
+interface PageAlert {
+  type: 'success' | 'error';
+  message: string;
+}
 
 @Component({
   selector: 'app-instructor-courses',
@@ -19,15 +24,16 @@ export class InstructorCourses {
   readonly isLoading = signal(true);
   readonly totalCount = signal(0);
 
+  readonly alert = signal<PageAlert | null>(null);
+  private alertTimeout?: ReturnType<typeof setTimeout>;
+
   readonly searchTerm = signal('');
   readonly selectedFilter = signal<'all' | 'published' | 'draft'>('all');
   readonly pageNumber = signal(1);
   readonly pageSize = 12;
 
-  // معرف الكورس اللي بيتنفذ عليه عملية دلوقتي (عشان نعطل زراره بس أثناء الطلب)
   readonly processingCourseId = signal<string | null>(null);
 
-  // فلترة محلية
   readonly filteredCourses = computed(() => {
     let courses = this.allCourses();
 
@@ -46,7 +52,6 @@ export class InstructorCourses {
     return courses;
   });
 
-  // pagination محلي على الـ filtered
   readonly paginatedCourses = computed(() => {
     const start = (this.pageNumber() - 1) * this.pageSize;
     return this.filteredCourses().slice(start, start + this.pageSize);
@@ -60,7 +65,6 @@ export class InstructorCourses {
     Array.from({ length: this.totalPages() }, (_, i) => i + 1)
   );
 
-  // stats من الكل مش من الـ filtered
   readonly publishedCount = computed(() =>
     this.allCourses().filter(c => c.isPublished).length
   );
@@ -73,10 +77,24 @@ export class InstructorCourses {
     this.loadCourses();
   }
 
+  private showAlert(type: 'success' | 'error', message: string): void {
+    if (this.alertTimeout) {
+      clearTimeout(this.alertTimeout);
+    }
+    this.alert.set({ type, message });
+    this.alertTimeout = setTimeout(() => this.alert.set(null), 4500);
+  }
+
+  dismissAlert(): void {
+    if (this.alertTimeout) {
+      clearTimeout(this.alertTimeout);
+    }
+    this.alert.set(null);
+  }
+
   loadCourses(): void {
     this.isLoading.set(true);
 
-    // جيب الكل من غير filter (الباك إند مش بيدعمه)
     this.coursesApi.getMyCourses(1, 100).subscribe({
       next: (response) => {
         this.allCourses.set(response.data);
@@ -105,28 +123,63 @@ export class InstructorCourses {
     this.pageNumber.set(page);
   }
 
+  /**
+   * طلب النشر لا يفعّل isPublished فورًا في الواجهة، لأن النشر الفعلي
+   * يحتاج موافقة الأدمن (ApproveCourseCommand) على السيرفر. لذلك نكتفي
+   * بإعلام المدرب إن الطلب اتبعت للمراجعة، وأي خطأ من السيرفر يظهر برسالة
+   * ودّية بدل ما يوصل كـ Exception فى الـ console.
+   *
+   * إلغاء النشر إجراء فوري (مفيهوش موافقة مطلوبة)، فبيحدّث الحالة محليًا
+   * فور نجاحه.
+   */
   togglePublish(course: Course): void {
     if (this.processingCourseId()) return;
 
     this.processingCourseId.set(course.id);
-    const request$ = course.isPublished
-      ? this.coursesApi.unpublish(course.id)
-      : this.coursesApi.publish(course.id);
 
-    request$.subscribe({
-      next: () => {
-        this.allCourses.update(list =>
-          list.map(c =>
-            c.id === course.id ? { ...c, isPublished: !c.isPublished } : c
-          )
-        );
-        this.processingCourseId.set(null);
-      },
-      error: (err) => {
-        console.error('فشل تغيير حالة النشر:', err);
-        this.processingCourseId.set(null);
-      },
-    });
+    if (course.isPublished) {
+      // إلغاء النشر: إجراء فوري
+      this.coursesApi.unpublish(course.id).subscribe({
+        next: () => {
+          this.allCourses.update(list =>
+            list.map(c =>
+              c.id === course.id ? { ...c, isPublished: false } : c
+            )
+          );
+          this.showAlert('success', 'تم إلغاء نشر الدورة بنجاح.');
+          this.processingCourseId.set(null);
+        },
+        error: () => {
+          this.showAlert('error', 'تعذر إلغاء نشر الدورة حاليًا، يرجى المحاولة مرة أخرى لاحقًا.');
+          this.processingCourseId.set(null);
+        },
+      });
+    } else {
+      // محاولة النشر: قد يرفضها السيرفر لو الدورة محتاجة موافقة الأدمن
+      // (وده المتوقع دايمًا بعد أي إلغاء نشر سابق)
+      this.coursesApi.publish(course.id).subscribe({
+        next: () => {
+          this.allCourses.update(list =>
+            list.map(c =>
+              c.id === course.id ? { ...c, isPublished: true } : c
+            )
+          );
+          this.showAlert('success', 'تم نشر الدورة بنجاح.');
+          this.processingCourseId.set(null);
+        },
+        error: (err) => {
+          if (err?.status === 409) {
+            this.showAlert(
+              'success',
+              'تم إرسال الدورة إلى الإدارة للمراجعة، ولن تظهر للطلاب حتى تتم الموافقة عليها.'
+            );
+          } else {
+            this.showAlert('error', 'تعذر إرسال طلب النشر حاليًا، يرجى المحاولة مرة أخرى لاحقًا.');
+          }
+          this.processingCourseId.set(null);
+        },
+      });
+    }
   }
 
   deleteCourse(course: Course): void {
@@ -142,10 +195,11 @@ export class InstructorCourses {
       next: () => {
         this.allCourses.update(list => list.filter(c => c.id !== course.id));
         this.totalCount.update(n => Math.max(0, n - 1));
+        this.showAlert('success', 'تم حذف الدورة بنجاح.');
         this.processingCourseId.set(null);
       },
-      error: (err) => {
-        console.error('فشل حذف الكورس:', err);
+      error: () => {
+        this.showAlert('error', 'تعذر حذف الدورة حاليًا، يرجى المحاولة مرة أخرى لاحقًا.');
         this.processingCourseId.set(null);
       },
     });
