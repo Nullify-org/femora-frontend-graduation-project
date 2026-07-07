@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, profileSelectionGuard } from './core/auth/auth.guard';
+import { authGuard, guestGuard, profileSelectionGuard, landingGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { adminGuard } from './core/auth/admin.guard';
 import { notAdminGuard } from './core/auth/not-admin.guard';
@@ -12,13 +12,12 @@ export const routes: Routes = [
       .then((m) => m.HomeRedirect),
   },
 
-  {
+{
   path: 'landing',
+  canActivate: [landingGuard],   // ✅ أضف هذا السطر
   loadComponent: () =>
-    import('./features/landing/pages/landing/landing')
-      .then((m) => m.Landing),
-  },
-
+    import('./features/landing/pages/landing/landing').then((m) => m.Landing),
+},
   { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
   { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
   { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
@@ -366,5 +365,5 @@ export const routes: Routes = [
   },
   { path: '**', redirectTo: '' },
 
-  
+
 ];

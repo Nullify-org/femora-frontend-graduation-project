@@ -222,7 +222,9 @@ getMyProfile(): Observable<any> {
   // ── Payment / Stripe Checkout ─────────────────────────────────────────────
   createCheckoutSession(courseId?: string, successUrl?: string, cancelUrl?: string): Observable<{ sessionId: string; sessionUrl: string }> {
     const body: any = {
-      successUrl: successUrl ?? `${window.location.origin}/payment-success`,
+      successUrl: successUrl ?? (courseId
+      ? `${window.location.origin}/payment-success?courseId=${courseId}`
+       : `${window.location.origin}/payment-success`),
       cancelUrl:  cancelUrl  ?? `${window.location.origin}/payment-cancel`,
     };
     if (courseId) body['courseId'] = courseId;
@@ -237,15 +239,15 @@ getMyProfile(): Observable<any> {
   }
 
   // ── Refresh / Logout ──────────────────────────────────────────────────────
-  refreshToken(): Observable<AuthPayload> {
-    return this.http
-      .post<any>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
-      .pipe(
-        map((res) => this.normalize(res)),
-        tap((res) => { if (res.auth) this.setSession(res.auth); }),
-        map((res) => res.auth!),
-      );
-  }
+refreshToken(): Observable<SigninResponse> {
+  return this.http
+    .post<any>(`${environment.apiUrl}/api/auth/refresh`, {}, { withCredentials: true })
+    .pipe(
+      map((res) => this.normalize(res)),
+      tap((res) => this.apply(res)),
+      catchError((err) => throwError(() => err)),
+    );
+}
 
   logout(): Observable<void> {
     return this.http
@@ -261,6 +263,19 @@ getMyProfile(): Observable<any> {
     this.router.navigate(['/login']);
   }
 
+syncProfileAfterPayment(): Observable<SigninResponse> {
+  return this.http
+    .post<any>(
+      `${environment.apiUrl}/api/auth/sync-profile`,
+      {},
+      { withCredentials: true }
+    )
+    .pipe(
+      map((res) => this.normalize(res)),
+      tap((res) => this.apply(res)),
+      catchError((err) => throwError(() => err)),
+    );
+}
   // ── Navigation helpers ─────────────────────────────────────────────────────
   handlePostAuthNavigation(): void {
     const profiles = this._pendingProfiles();

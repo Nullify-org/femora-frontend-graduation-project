@@ -83,12 +83,11 @@ export class CourseDetails {
     if (course.price > 0) {
       this.isEnrolling.set(true);
       this.errorMessage.set('');
-
-      this.ordersApi.redirectToCheckoutSession({
-        courseId: course.id,
-        successUrl: `${window.location.origin}/payment-success?courseId=${course.id}`,
-        cancelUrl: `${window.location.origin}/lms/course/${course.id}`,
-      });
+({
+  courseId: course.id,
+  successUrl: `${window.location.origin}/payment-success?courseId=${course.id}&session_id={CHECKOUT_SESSION_ID}`,
+  cancelUrl: `${window.location.origin}/lms/course/${course.id}`,
+});
       // redirectToCheckoutSession navigates the browser away on success,
       // so isEnrolling stays true until the page unloads.
       return;

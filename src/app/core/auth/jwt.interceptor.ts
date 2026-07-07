@@ -78,26 +78,24 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
           }))),
         );
       }
+isRefreshing = true;
+refreshDone$.next(null);
 
-      isRefreshing = true;
-      refreshDone$.next(null);
-
-      return auth.refreshToken().pipe(
-        switchMap(payload => {
-          isRefreshing = false;
-          refreshDone$.next(payload.accessToken);
-          return next(req.clone({
-            withCredentials: true,
-            setHeaders: { Authorization: `Bearer ${payload.accessToken}`, 'X-Retry': 'true' },
-          }));
-        }),
-        catchError(refreshErr => {
-          isRefreshing = false;
-          refreshDone$.next(null);
-          // Silent logout — token expired, user needs to login again
-          auth.logoutLocal();
-          return throwError(() => refreshErr);
-        }),
+return auth.refreshToken().pipe(
+  switchMap(payload => {
+    isRefreshing = false;
+    refreshDone$.next(payload.accessToken ?? null);
+    return next(req.clone({
+      withCredentials: true,
+      setHeaders: { Authorization: `Bearer ${payload.accessToken}`, 'X-Retry': 'true' },
+    }));
+  }),
+  catchError(refreshErr => {
+    isRefreshing = false;
+    refreshDone$.next(null);
+    auth.logoutLocal();
+    return throwError(() => refreshErr);
+  }),
       );
     }),
   );

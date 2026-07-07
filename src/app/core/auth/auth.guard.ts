@@ -13,7 +13,6 @@ export const guestGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
   if (!auth.isAuthenticated()) return true;
-  // Already logged in — redirect to their space
   if (auth.pendingProfiles().length > 0) return router.createUrlTree(['/select-profile']);
   return router.createUrlTree([auth.getDashboardRoute()]);
 };
@@ -24,4 +23,21 @@ export const profileSelectionGuard: CanActivateFn = () => {
   if (!auth.isAuthenticated()) return router.createUrlTree(['/login']);
   if (auth.pendingProfiles().length > 0) return true;
   return router.createUrlTree([auth.getDashboardRoute()]);
+};
+
+export const landingGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (!auth.isAuthenticated()) return true;
+
+  if (auth.pendingProfiles().length > 0) {
+    return router.createUrlTree(['/select-profile']);
+  }
+
+  if (auth.activeProfile()) {
+    return router.createUrlTree([auth.getDashboardRoute()]);
+  }
+
+  return true;
 };
