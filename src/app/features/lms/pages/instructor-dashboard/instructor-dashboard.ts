@@ -12,11 +12,7 @@ import { runInBrowser } from '../../../../core/utils/platform.util';
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-<<<<<<< Updated upstream
   imports: [Sidebar, FormsModule, RouterLink],
-=======
-  imports: [Sidebar, FormsModule, SwitchRole],
->>>>>>> Stashed changes
   templateUrl: './instructor-dashboard.html',
 })
 export class InstructorDashboard implements OnInit {

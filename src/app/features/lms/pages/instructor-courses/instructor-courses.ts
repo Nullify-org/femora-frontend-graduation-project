@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { CourseService } from '../../services/course.service';
-import { Course } from '../../models/course.model';
+import { Course } from '../../../../core/models';
 
 interface PageAlert {
   type: 'success' | 'error';
