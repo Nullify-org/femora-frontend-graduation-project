@@ -2,6 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
 import { PagedResponse } from '../models/paged-response.model';
+<<<<<<< HEAD
+=======
+
+import {
+  Enrollment,
+  EnrollmentStatus,
+  EnrollmentResponse,
+  EnrollmentDetailsResponse,
+  UnlockNextModuleResponse,
+} from '../../../core/models/api.model';
+>>>>>>> origin/master
 
 import {
   Enrollment,
@@ -33,6 +44,19 @@ export class EnrollmentService {
 
   getEnrollmentDetails(enrollmentId: string): Observable<EnrollmentDetailsResponse> {
     return this.api.get<EnrollmentDetailsResponse>(`${this.base}/${enrollmentId}`);
+<<<<<<< HEAD
+=======
+  }
+
+  isEnrolled(courseId: string): Observable<EnrollmentStatus> {
+    return this.api.get<EnrollmentStatus>(`${this.base}/is-enrolled/${courseId}`);
+  }
+
+  unlockNextModule(currentModuleId: string): Observable<UnlockNextModuleResponse> {
+    return this.api.post<UnlockNextModuleResponse>(`${this.base}/unlock-next-module`, {
+      currentModuleId,
+    });
+>>>>>>> origin/master
   }
 
   isEnrolled(courseId: string): Observable<EnrollmentStatus> {

@@ -1,0 +1,155 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-4 md:p-8">
+    <div class="max-w-2xl mx-auto">
+      <h1 class="text-2xl font-bold text-navy font-display mb-6">تعديل الملف الشخصى</h1>
+
+      @if (isLoading()) {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 space-y-4 animate-pulse">
+          <div class="w-20 h-20 rounded-full bg-cream mx-auto"></div>
+          <div class="h-10 bg-cream rounded-xl"></div>
+          <div class="h-10 bg-cream rounded-xl"></div>
+          <div class="h-24 bg-cream rounded-xl"></div>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="save()" class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6 md:p-8 space-y-6">
+          <!-- Avatar -->
+          <div class="flex flex-col items-center gap-3">
+            <div class="relative">
+              <div class="w-24 h-24 rounded-full bg-blush overflow-hidden flex items-center justify-center femora-shadow">
+                @if (avatarPreview()) {
+                  <img [src]="avatarPreview()" alt="معاينة الصورة" class="w-full h-full object-cover" />
+                } @else if (currentAvatarUrl()) {
+                  <img [src]="currentAvatarUrl()" alt="الصورة الشخصية" class="w-full h-full object-cover" />
+                } @else {
+                  <svg lucideUser [size]="36" class="text-terracotta-dark/50"></svg>
+                }
+              </div>
+              <label
+                for="avatarInput"
+                class="absolute -bottom-1 -end-1 w-8 h-8 bg-terracotta text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-terracotta-dark transition femora-shadow"
+                title="تغيير الصورة"
+              >
+                <svg lucideCamera [size]="14"></svg>
+              </label>
+              <input id="avatarInput" type="file" accept="image/png,image/jpeg,image/webp" class="hidden" (change)="onAvatarSelected($event)" />
+            </div>
+            <p class="text-xs text-terracotta-dark/60">JPEG أو PNG أو WEBP، بحد أقصى 5 ميجا</p>
+          </div>
+
+          <!-- First / Last name -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-navy mb-1.5">الاسم الأول</label>
+              <input
+                type="text"
+                formControlName="firstName"
+                class="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+                [class.border-blush]="!(form.controls.firstName.invalid && form.controls.firstName.touched)"
+                [class.border-red-400]="form.controls.firstName.invalid && form.controls.firstName.touched"
+              />
+              @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+                <p class="text-red-500 text-xs mt-1">الاسم الأول مطلوب</p>
+              }
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-navy mb-1.5">اسم العائلة</label>
+              <input
+                type="text"
+                formControlName="lastName"
+                class="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+                [class.border-blush]="!(form.controls.lastName.invalid && form.controls.lastName.touched)"
+                [class.border-red-400]="form.controls.lastName.invalid && form.controls.lastName.touched"
+              />
+              @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+                <p class="text-red-500 text-xs mt-1">اسم العائلة مطلوب</p>
+              }
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label class="block text-sm font-semibold text-navy mb-1.5">رقم الهاتف</label>
+            <input
+              type="tel"
+              formControlName="phoneNumber"
+              placeholder="+20 1xx xxx xxxx"
+              class="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              [class.border-blush]="!(form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched)"
+              [class.border-red-400]="form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched"
+            />
+            @if (form.controls.phoneNumber.invalid && form.controls.phoneNumber.touched) {
+              <p class="text-red-500 text-xs mt-1">رقم الهاتف غير صحيح</p>
+            }
+          </div>
+
+          <!-- Bio -->
+          <div>
+            <label class="block text-sm font-semibold text-navy mb-1.5">نبذة تعريفية</label>
+            <textarea
+              formControlName="bio"
+              rows="4"
+              maxlength="1000"
+              placeholder="اكتبى نبذة قصيرة عنكِ..."
+              class="w-full border border-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30 resize-none"
+            ></textarea>
+            <p class="text-[11px] text-terracotta-dark/50 mt-1">{{ form.controls.bio.value.length }}/1000</p>
+          </div>
+
+          <!-- LinkedIn / GitHub -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-navy mb-1.5">LinkedIn</label>
+              <input
+                type="url"
+                formControlName="linkedInUrl"
+                placeholder="https://linkedin.com/in/..."
+                class="w-full border border-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-navy mb-1.5">GitHub</label>
+              <input
+                type="url"
+                formControlName="gitHubUrl"
+                placeholder="https://github.com/..."
+                class="w-full border border-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+              />
+            </div>
+          </div>
+
+          <!-- Country -->
+          <div>
+            <label class="block text-sm font-semibold text-navy mb-1.5">الدولة</label>
+            <input
+              type="text"
+              formControlName="country"
+              placeholder="مصر"
+              class="w-full border border-blush rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-terracotta/30"
+            />
+          </div>
+
+          <!-- Actions -->
+          <div class="flex items-center justify-end gap-3 pt-2 border-t border-blush/30">
+            <button
+              type="button"
+              (click)="cancel()"
+              class="flex items-center gap-1.5 px-5 py-3 rounded-xl text-sm font-medium text-terracotta-dark hover:bg-cream transition"
+            >
+              <svg lucideX [size]="16"></svg>
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              [disabled]="isSaving()"
+              class="flex items-center gap-1.5 bg-terracotta text-white px-5 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+            >
+              <svg lucideSave [size]="16"></svg>
+              {{ isSaving() ? 'جارِ الحفظ...' : 'حفظ التعديلات' }}
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+  </main>
+</div>

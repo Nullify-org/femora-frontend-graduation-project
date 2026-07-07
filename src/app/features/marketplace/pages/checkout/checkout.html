@@ -4,41 +4,51 @@
     <div class="max-w-xl mx-auto">
       <h1 class="text-2xl font-bold text-navy font-display mb-6">إتمام الشراء</h1>
 
-      @if (success) {
-        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
-          <img
-            src="/images/success-approval-state.png"
-            alt="تم تأكيد الطلب بنجاح"
-            class="w-32 h-32 object-cover rounded-full mx-auto mb-4 ring-4 ring-sage/20"
-          />
-          <p class="text-xl font-bold text-navy">شكراً لكِ!</p>
-          <p class="text-terracotta-dark mt-2">تم استلام طلبكِ وسيتم معالجته قريباً.</p>
-          <a routerLink="/dashboard" class="inline-block mt-6 text-terracotta hover:underline">العودة للوحة التحكم</a>
-        </div>
-      } @else {
-        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8">
-          <p class="text-terracotta-dark mb-6">راجعي طلبكِ ثم أكّدي الشراء.</p>
+      <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8">
+        <p class="text-terracotta-dark mb-6">راجعى طلبكِ ثم أكّدى الشراء عبر بوابة الدفع الآمنة.</p>
 
-          @if (errorMessage) {
-            <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
-              {{ errorMessage }}
-            </div>
+        @if (errorMessage()) {
+          <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        @if (createdOrder()) {
+          <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+            <p class="font-semibold text-emerald-800">تم إنشاء الطلب بنجاح</p>
+            <p class="text-sm text-emerald-700 mt-1">رقم الطلب: {{ createdOrder()?.orderId ?? createdOrder()?.id ?? '—' }}</p>
+            <p class="text-sm text-emerald-700">الحالة: {{ createdOrder()?.status ?? 'Pending' }}</p>
+          </div>
+        }
+
+        <div class="flex items-center gap-2 mb-6 text-xs text-text-light">
+          <svg class="w-4 h-4 text-terracotta" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M5 4h14a1 1 0 011 1v2H4V5a1 1 0 011-1zm-2 4h18v10a2 2 0 01-2 2H5a2 2 0 01-2-2V8zm4 3h2v5H7v-5zm4 0h2v5h-2v-5zm4 0h2v5h-2v-5z"/>
+          </svg>
+          سيتم إنشاء الطلب أولًا ثم تحويلكِ مباشرة إلى Stripe للدفع
+        </div>
+
+        <button
+          type="button"
+          (click)="placeOrder()"
+          [disabled]="isPlacing()"
+          class="w-full bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60 flex items-center justify-center gap-2"
+        >
+          @if (isPlacing()) {
+            <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
+            </svg>
+            جارى التحويل لبوابة الدفع...
+          } @else {
+            إنشاء الطلب والدفع
           }
+        </button>
 
-          <button
-            type="button"
-            (click)="placeOrder()"
-            [disabled]="isPlacing"
-            class="w-full bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
-          >
-            {{ isPlacing ? 'جاري التأكيد...' : 'تأكيد الطلب' }}
-          </button>
+        <a routerLink="/marketplace/cart" class="block text-center mt-4 text-sm text-terracotta hover:underline">
+          العودة للسلة
+        </a>
+      </div>
 
-          <a routerLink="/marketplace/cart" class="block text-center mt-4 text-sm text-terracotta hover:underline">
-            العودة للسلة
-          </a>
-        </div>
-      }
     </div>
   </main>
 </div>

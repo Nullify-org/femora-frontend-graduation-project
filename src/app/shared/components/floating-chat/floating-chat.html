@@ -1,9 +1,7 @@
 @if (auth.isAuthenticated()) {
   @if (open()) {
     <div
-      class="fixed bottom-24 z-[90] w-[min(380px,calc(100vw-2rem))] bg-warm-white rounded-2xl femora-shadow border border-sand/50 flex flex-col overflow-hidden animate-fade-in-up"
-      [class.start-6]="lang.currentLang() === 'ar'"
-      [class.end-6]="lang.currentLang() === 'en'"
+      class="fixed bottom-24 left-6 z-[90] w-[min(380px,calc(100vw-2rem))] bg-warm-white rounded-2xl femora-shadow border border-sand/50 flex flex-col overflow-hidden animate-fade-in-up"
       style="height: 420px"
     >
       <div class="bg-primary text-white px-4 py-3 flex items-center justify-between">
@@ -50,9 +48,7 @@
   <button
     type="button"
     (click)="toggle()"
-    class="fixed bottom-6 z-[90] w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center femora-shadow-hover animate-pulse-ring hover:scale-105 transition"
-    [class.start-6]="lang.currentLang() === 'ar'"
-    [class.end-6]="lang.currentLang() === 'en'"
+    class="fixed bottom-6 left-6 z-[90] w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center femora-shadow-hover animate-pulse-ring hover:scale-105 transition"
     aria-label="AI Chat"
   >
     <svg lucideMessageCircle [size]="26"></svg>

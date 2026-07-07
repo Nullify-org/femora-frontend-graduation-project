@@ -1,0 +1,83 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+  <main class="flex-1 p-6 lg:p-10">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-navy font-display">المنتجات في انتظار الموافقة</h1>
+          <p class="text-xs text-text-medium mt-1">اعرض وقرّر نشر المنتجات المعلقة من البائعين.</p>
+        </div>
+        <button type="button" (click)="loadPending()"
+          class="px-4 py-2 rounded-full text-sm border border-terracotta text-terracotta hover:bg-cream transition">
+          🔄 تحديث
+        </button>
+      </div>
+
+      @if (loading()) {
+        <p class="text-terracotta-dark text-center py-12">جاري التحميل...</p>
+      } @else if (errorMessage()) {
+        <div class="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+          <p class="text-red-600 text-sm mb-3">{{ errorMessage() }}</p>
+          <button (click)="loadPending()" class="text-xs bg-red-100 text-red-700 px-4 py-2 rounded-lg">إعادة المحاولة</button>
+        </div>
+      } @else if (productApprovals().length === 0) {
+        <div class="bg-cream/20 rounded-2xl p-8 text-center border border-blush/30">
+          <p class="text-3xl mb-2">✅</p>
+          <p class="text-xs text-text-medium">لا توجد منتجات في انتظار الموافقة</p>
+        </div>
+      } @else {
+        <div class="bg-white rounded-3xl shadow-sm border border-blush/30 overflow-hidden">
+          <table class="w-full text-sm text-right">
+            <thead class="bg-cream/80 text-text-light text-xs uppercase tracking-wide">
+              <tr>
+                <th class="px-5 py-3 font-medium">المنتج</th>
+                <th class="px-5 py-3 font-medium">البائعة</th>
+                <th class="px-5 py-3 font-medium">تاريخ الطلب</th>
+                <th class="px-5 py-3 font-medium">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of productApprovals(); track item.id) {
+                <tr class="border-b border-blush/15 hover:bg-cream/40">
+                  <td class="px-5 py-4">
+                    <div class="font-medium text-navy">{{ itemTitle(item) }}</div>
+                    <div class="text-[11px] text-text-light mt-1">{{ item.description || 'لا يوجد وصف' }}</div>
+                  </td>
+                  <td class="px-5 py-4 text-terracotta-dark">{{ item.requesterName || item.userFullName }}</td>
+                  <td class="px-5 py-4 text-terracotta-dark">{{ item.createdAt | date: 'd MMM y' }}</td>
+                  <td class="px-5 py-4 space-x-2 flex justify-end">
+                    <button type="button" (click)="approve(item.id)"
+                      class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs hover:bg-emerald-700 transition">
+                      ✅ نشر
+                    </button>
+                    <button type="button" (click)="openReject(item.id)"
+                      class="px-4 py-2 rounded-xl bg-red-600 text-white text-xs hover:bg-red-700 transition">
+                      ❌ رفض
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </main>
+</div>
+
+@if (rejectTargetId()) {
+  <div class="fixed inset-0 bg-black/40 z-[999] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl text-right">
+      <h3 class="font-bold text-navy mb-3">سبب الرفض (اختياري)</h3>
+      <textarea [(ngModel)]="rejectNote" rows="4"
+        class="w-full border border-blush rounded-xl p-3 text-sm mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-terracotta"
+        placeholder="اكتبي سبب الرفض..."></textarea>
+      <div class="flex gap-2 justify-end">
+        <button type="button" (click)="rejectTargetId.set(null)"
+          class="px-4 py-2 rounded-lg border border-blush text-text-medium">إلغاء</button>
+        <button type="button" (click)="confirmReject()"
+          class="px-4 py-2 rounded-lg bg-red-600 text-white">تأكيد الرفض</button>
+      </div>
+    </div>
+  </div>
+}

@@ -2,9 +2,11 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, profileSelectionGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { adminGuard } from './core/auth/admin.guard';
+import { notAdminGuard } from './core/auth/not-admin.guard';
 
 export const routes: Routes = [
   {
+<<<<<<< HEAD
     path: '',
     loadComponent: () =>
 <<<<<<< Updated upstream
@@ -27,6 +29,24 @@ export const routes: Routes = [
   { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
   { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
 >>>>>>> Stashed changes
+=======
+  path: '',
+  loadComponent: () =>
+    import('./core/pages/home-redirect/home-redirect')
+      .then((m) => m.HomeRedirect),
+  },
+
+  {
+  path: 'landing',
+  loadComponent: () =>
+    import('./features/landing/pages/landing/landing')
+      .then((m) => m.Landing),
+  },
+
+  { path: 'auth/login',    redirectTo: 'login',          pathMatch: 'full' },
+  { path: 'auth/register', redirectTo: 'register',        pathMatch: 'full' },
+  { path: 'courses',       redirectTo: 'lms/catalog',     pathMatch: 'full' },
+>>>>>>> origin/master
   {
     path: 'courses/:id',
     loadComponent: () =>
@@ -44,8 +64,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/register/register').then((m) => m.Register),
   },
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+
+>>>>>>> origin/master
   {
     path: 'forgot-password',
     canActivate: [guestGuard],
@@ -58,12 +82,21 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/pages/reset-password/reset-password').then((m) => m.ResetPassword),
   },
+<<<<<<< HEAD
+=======
+
+  // ✅ Google OAuth Callback — لازم يكون بدون guard
+>>>>>>> origin/master
   {
     path: 'signin-google',
     loadComponent: () =>
       import('./features/auth/pages/signin-google/signin-google').then((m) => m.SigninGoogle),
   },
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+
+>>>>>>> origin/master
   {
     path: 'verify-email',
     canActivate: [authGuard],
@@ -127,13 +160,15 @@ export const routes: Routes = [
         canActivate: [roleGuard],
         data: { roles: ['Instructor'] },
         loadComponent: () =>
-          import('./features/lms/pages/instructor-dashboard/instructor-dashboard').then(
-            (m) => m.InstructorDashboard,
-          ),
+          import('./features/lms/pages/instructor-dashboard/instructor-dashboard')
+            .then((m) => m.InstructorDashboard),
       },
       {
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> origin/master
         path: 'instructor/courses',
         canActivate: [roleGuard],
         data: { roles: ['Instructor'] },
@@ -181,8 +216,13 @@ export const routes: Routes = [
           import('./features/lms/pages/instructor-lesson-edit/instructor-lesson-edit')
             .then((m) => m.InstructorLessonEdit),
       },
+<<<<<<< HEAD
       {
 >>>>>>> Stashed changes
+=======
+      // -------------------------------
+      {
+>>>>>>> origin/master
         path: 'seller',
         canActivate: [roleGuard],
         data: { roles: ['Seller'] },
@@ -192,6 +232,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'seller/orders',
+        redirectTo: 'seller',
+        pathMatch: 'full',
+      },
+      {
         path: 'admin',
         canActivate: [adminGuard],
         loadComponent: () =>
@@ -199,8 +244,11 @@ export const routes: Routes = [
             (m) => m.AdminDashboard,
           ),
       },
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> origin/master
       {
         path: 'buyer',
         loadComponent: () =>
@@ -220,10 +268,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/dashboard/pages/admin-orders/admin-orders').then((m) => m.AdminOrders),
       },
+<<<<<<< HEAD
       { path: 'products', redirectTo: '/dashboard/admin' },
       { path: 'courses', redirectTo: '/dashboard/admin' },
       { path: 'reports', redirectTo: '/dashboard/admin' },
 >>>>>>> Stashed changes
+=======
+      // TODO: Products/Courses/Reports admin pages aren't built yet — point them at the
+      // admin dashboard for now instead of letting the wildcard route bounce to landing.
+      { path: 'products', redirectTo: '/dashboard/admin' },
+      { path: 'courses', redirectTo: '/dashboard/admin' },
+      { path: 'reports', redirectTo: '/dashboard/admin' },
+>>>>>>> origin/master
     ],
   },
   {
@@ -236,15 +292,19 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/lms/pages/course-details/course-details').then((m) => m.CourseDetails),
   },
+
   {
-    path: 'lms/player/:id',
+    path: 'lms/player/:enrollmentId',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/lms/pages/course-player/course-player').then((m) => m.CoursePlayer),
   },
   {
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> origin/master
     path: 'lms/player/:enrollmentId/lesson/:lessonId',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -254,14 +314,27 @@ export const routes: Routes = [
     path: 'lms/my-learning',
     canActivate: [authGuard],
     loadComponent: () =>
+<<<<<<< HEAD
       import('./features/lms/pages/my-learning/my-learning').then((m) => m.MyLearning),
   },
   {
 >>>>>>> Stashed changes
+=======
+      import(
+        './features/lms/pages/my-learning/my-learning'
+      ).then(
+        (m) => m.MyLearning
+      ),
+  },
+  {
+>>>>>>> origin/master
     path: 'lms/quiz/:id',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
+    loadComponent: () =>
+      import('./features/lms/pages/quiz/quiz').then((m) => m.Quiz),
   },
+//   { path: 'lms/instructor',       redirectTo: 'dashboard/instructor', pathMatch: 'full' },
+
   {
     path: 'lms/instructor',
     redirectTo: 'dashboard/instructor',
@@ -292,14 +365,26 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/marketplace/pages/checkout/checkout').then((m) => m.Checkout),
   },
+  { path: 'marketplace/seller', redirectTo: 'dashboard/seller', pathMatch: 'full' },
   {
-    path: 'marketplace/seller',
-    redirectTo: 'dashboard/seller',
-    pathMatch: 'full',
+    path: 'payment-success',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/payments/pages/payment-success/payment-success').then(
+        (m) => m.PaymentSuccess,
+      ),
+  },
+  {
+    path: 'payment-cancel',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/payments/pages/payment-cancel/payment-cancel').then(
+        (m) => m.PaymentCancel,
+      ),
   },
   {
     path: 'ai/chat',
-    canActivate: [authGuard],
+    canActivate: [authGuard, notAdminGuard],
     loadComponent: () =>
       import('./features/ai-assistant/pages/chat/chat').then((m) => m.Chat),
   },
@@ -311,16 +396,15 @@ export const routes: Routes = [
         (m) => m.Conversations,
       ),
   },
-  {
-    path: 'profile',
-    redirectTo: 'profile/trainee',
-    pathMatch: 'full',
-  },
+  { path: 'profile',       redirectTo: 'profile/trainee',      pathMatch: 'full' },
   {
     path: 'profile/edit',
-    redirectTo: 'profile/preferences',
-    pathMatch: 'full',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/profile/pages/edit-profile/edit-profile').then((m) => m.EditProfile),
   },
+  { path: 'profile/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
+  { path: 'dashboard/settings', redirectTo: 'profile/preferences', pathMatch: 'full' },
   {
     path: 'profile/trainee',
     canActivate: [authGuard],
@@ -352,8 +436,14 @@ export const routes: Routes = [
       import('./features/profile/pages/preferences/preferences').then((m) => m.Preferences),
   },
   { path: '**', redirectTo: '' },
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 ];
 =======
 ];
 >>>>>>> Stashed changes
+=======
+
+  
+];
+>>>>>>> origin/master

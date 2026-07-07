@@ -1,21 +1,40 @@
-<div class="flex min-h-screen bg-cream-light">
+﻿<div class="flex min-h-screen bg-cream-light">
   <app-sidebar />
   <main class="flex-1 p-8">
-    <div class="max-w-2xl mx-auto">
-      @if (isLoading) {
-        <p class="text-terracotta-dark">جاري التحميل...</p>
-      } @else if (errorMessage && !quiz) {
-        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage }}</div>
-      } @else if (quiz) {
-        <h1 class="text-2xl font-bold text-navy font-display mb-2">{{ quiz.title ?? 'الاختبار' }}</h1>
+    <div class="max-w-4xl mx-auto">
+      @if (isLoading()) {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-10 text-center">
+          <div class="mx-auto h-12 w-12 rounded-full bg-terracotta/10 animate-pulse"></div>
+          <p class="mt-4 text-terracotta-dark">جارى التحميل...</p>
+        </div>
+      } @else if (errorMessage() && !quiz()) {
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">{{ errorMessage() }}</div>
+      } @else if (quiz(); as quiz) {
+        <div class="mb-6 rounded-2xl border border-blush/30 bg-white p-6 femora-shadow">
+          <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p class="text-sm font-semibold text-terracotta">اختبار متدرّب</p>
+              <h1 class="text-2xl font-bold text-navy font-display mt-1">{{ quiz.title ?? 'الاختبار' }}</h1>
+              <p class="text-sm text-terracotta-dark mt-2">
+                أجيبي على الأسئلة ثم ارسلي النتيجة. إذا لم تنجحي، يمكنك إنشاء محاولة جديدة حتى مرتين.
+              </p>
+            </div>
+            <div class="rounded-xl bg-cream px-4 py-3 text-right">
+              <p class="text-xs text-terracotta-dark">التقدم</p>
+              <p class="text-xl font-bold text-navy">{{ answeredQuestionsCount() }}/{{ quiz.questions?.length ?? 0 }}</p>
+              <p class="text-xs text-terracotta-dark">{{ progressPercent() }}% مكتمل</p>
+            </div>
+          </div>
+        </div>
 
-        @if (result) {
+        @if (result(); as result) {
           <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
-            <p class="text-4xl mb-4">{{ result.isPassed ? '🎉' : '📝' }}</p>
+            <p class="text-4xl mb-4">{{ result.isPassed ? '🎉' : '📘' }}</p>
             <p class="text-xl font-bold text-navy">{{ result.score }} / {{ result.maxScore }}</p>
             <p class="text-terracotta-dark mt-2">
-              {{ result.isPassed ? 'نجحتِ في الاختبار!' : 'لم تنجحي هذه المرة — حاولي مجدداً' }}
+              {{ result.isPassed ? 'نجحتِ في الاختبار!' : 'لم تنجحي هذه المرة — حاولي مرة أخرى' }}
             </p>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
             @if (quiz.courseId) {
               <a [routerLink]="['/lms/player', quiz.courseId]" class="inline-block mt-6 text-terracotta hover:underline">
@@ -47,21 +66,43 @@
               </button>
             </div>
 >>>>>>> Stashed changes
+=======
+            @if (!result.isPassed && remainingAttempts() !== null) {
+              <p class="text-sm text-stone-500 mt-2">المحاولات المتبقية: {{ remainingAttempts() }}</p>
+            }
+            <div class="mt-6 flex flex-wrap justify-center gap-3">
+              @if (enrollmentId()) {
+                <a [routerLink]="['/lms/player', enrollmentId()]" class="inline-flex items-center rounded-xl border border-blush/40 px-4 py-2 text-sm text-terracotta hover:bg-cream">
+                  العودة للتعلّم
+                </a>
+              }
+              @if (!result.isPassed && canRetry()) {
+                <button
+                  type="button"
+                  (click)="retryWithFreshQuiz()"
+                  [disabled]="isGenerating()"
+                  class="rounded-xl bg-terracotta px-4 py-2 text-sm font-semibold text-white transition hover:bg-terracotta-dark disabled:opacity-60"
+                >
+                  {{ isGenerating() ? 'جارى إنشاء اختبار جديد...' : 'إنشاء اختبار جديد' }}
+                </button>
+              }
+            </div>
+>>>>>>> origin/master
           </div>
         } @else {
-          @if (errorMessage) {
+          @if (errorMessage()) {
             <div class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">
-              {{ errorMessage }}
+              {{ errorMessage() }}
             </div>
           }
 
-          <div class="space-y-6">
+          <div class="space-y-4">
             @for (question of quiz.questions ?? []; track question.questionId) {
               <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
                 <p class="font-semibold text-navy mb-4">{{ question.text }}</p>
                 <div class="space-y-2">
                   @for (choice of question.choices ?? []; track choice.choiceId) {
-                    <label class="flex items-center gap-3 p-3 rounded-xl hover:bg-cream cursor-pointer">
+                    <label class="flex items-center gap-3 rounded-xl border border-transparent p-3 transition hover:bg-cream cursor-pointer">
                       <input
                         type="radio"
                         [name]="question.questionId"
@@ -76,16 +117,29 @@
             }
           </div>
 
-          <button
-            type="button"
-            (click)="submit()"
-            [disabled]="isSubmitting"
-            class="w-full mt-8 bg-terracotta text-white py-3.5 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
-          >
-            {{ isSubmitting ? 'جاري الإرسال...' : 'إرسال الإجابات' }}
-          </button>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-sm text-terracotta-dark">إجاباتك محفوظة عند الإرسال فقط.</p>
+            <button
+              type="button"
+              (click)="submit()"
+              [disabled]="isSubmitting()"
+              class="rounded-xl bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-terracotta-dark disabled:opacity-60"
+            >
+              {{ isSubmitting() ? 'جارى الإرسال...' : 'إرسال الإجابات' }}
+            </button>
+          </div>
         }
+      } @else {
+        <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
+          <div class="text-5xl mb-4">🧠</div>
+          <h1 class="text-2xl font-bold text-navy font-display">اختبار سريع لمتابعة التعلم</h1>
+          <p class="text-terracotta-dark mt-3 max-w-xl mx-auto">
+            اختبري معرفتك في دقائق قليلة، ثم راجعي النتيجة مباشرة.
+          </p>
+        </div>
       }
     </div>
   </main>
 </div>
+
+

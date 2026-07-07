@@ -66,7 +66,7 @@ export class Register {
           const message: string = err?.error?.message ?? '';
 
           if (status === 409 || message.toLowerCase().includes('already exist') || message.toLowerCase().includes('already registered')) {
-            this.apiError.set('هذا البريد الإلكتروني مسجّل بالفعل. هل تريدين تسجيل الدخول؟');
+            this.apiError.set('هذا البريد الإلكترونى مسجّل بالفعل. هل تريدين تسجيل الدخول؟');
           } else {
             this.apiError.set(message || 'فشل إنشاء الحساب. حاول مرة أخرى.');
           }

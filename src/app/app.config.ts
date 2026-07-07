@@ -1,7 +1,6 @@
 import { ApplicationConfig, APP_INITIALIZER, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideTranslateService, TranslateLoader } from '@ngx-translate/core';
 import { Observable, of } from 'rxjs';
@@ -22,8 +21,8 @@ const AR_TRANSLATIONS = {
     REGISTER: 'إنشاء حساب',
     LOGOUT: 'تسجيل الخروج',
     DASHBOARD: 'لوحة التحكم',
-    PROFILE: 'الملف الشخصي',
-    EDIT_PROFILE: 'تعديل الملف الشخصي',
+    PROFILE: 'الملف الشخصى',
+    EDIT_PROFILE: 'تعديل الملف الشخصى',
     MY_COURSES: 'دوراتي',
     MY_ORDERS: 'طلباتي',
     SWITCH_ROLE: 'تبديل الدور',
@@ -35,14 +34,14 @@ const AR_TRANSLATIONS = {
     LOGOUT: 'تسجيل الخروج',
   },
   HERO: {
-    HEADLINE: 'اصنعي تعلّمي بيعي',
+    HEADLINE: 'تعلَّمى اصنعى اربحى',
     SUBTITLE: 'منصتك الشاملة لإتقان الحرف اليدوية والحصول على شهادات وتحويل منتجاتك إلى دخل حقيقي',
     CTA_PRIMARY: 'ابدئي رحلتك',
     CTA_SECONDARY: 'تصفّحي المنتجات',
     BRANDLINE: 'Femora — للمنتَجات المنزلية',
-    WORD_1: 'اصنعي',
-    WORD_2: 'تعلّمي',
-    WORD_3: 'بيعي',
+    WORD_1: 'اصنعى',
+    WORD_2: 'تعلّمى',
+    WORD_3: 'اربحى',
     IMAGE_ALT_1: 'صورة بانر Femora الرئيسية',
     IMAGE_ALT_2: 'سيدات يتعلّمن الحرف اليدوية',
     IMAGE_ALT_3: 'منتجات السوق اليدوية',
@@ -132,7 +131,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withViewTransitions()),
     provideHttpClient(withFetch(), withInterceptors([jwtInterceptor])),
-    provideClientHydration(withEventReplay()),
     provideAnimations(),
     provideTranslateService({
       loader: { provide: TranslateLoader, useClass: InlineTranslateLoader },

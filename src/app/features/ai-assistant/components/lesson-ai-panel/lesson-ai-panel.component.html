@@ -1,0 +1,119 @@
+﻿<div class="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3" dir="rtl">
+
+  <!-- Expanded panel -->
+  @if (isPanelOpen) {
+    <div class="w-[22rem] max-h-[28rem] flex flex-col bg-white rounded-2xl femora-shadow border border-blush/40 overflow-hidden mb-1">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between px-4 py-3 border-b border-blush/30 bg-cream-light">
+        <p class="font-bold text-navy text-sm">
+          {{ activeTab() === 'summarize' ? '✨ تلخيص الدرس' : '💬 اسأل عن الدرس' }}
+        </p>
+        <button
+          type="button"
+          (click)="close()"
+          class="text-stone-400 hover:text-navy transition text-lg leading-none"
+          aria-label="إغلاق"
+        >
+          ✕
+        </button>
+      </div>
+
+      <!-- Summarize tab -->
+      @if (activeTab() === 'summarize') {
+        <div class="flex-1 overflow-y-auto px-4 py-3">
+
+          <div class="flex gap-2 mb-3">
+            @for (opt of summaryLengthOptions; track opt.key) {
+              <button
+                type="button"
+                (click)="changeSummaryLength(opt.key)"
+                [class.bg-terracotta]="summaryLength() === opt.key"
+                [class.text-white]="summaryLength() === opt.key"
+                [class.bg-cream]="summaryLength() !== opt.key"
+                [class.text-navy]="summaryLength() !== opt.key"
+                class="text-xs font-medium rounded-full px-3 py-1 transition"
+              >
+                {{ opt.label }}
+              </button>
+            }
+          </div>
+
+          @if (isLoading()) {
+            <p class="text-sm text-stone-500">جارى تلخيص الدرس...</p>
+          } @else if (summary()) {
+            <p class="text-sm text-navy leading-relaxed whitespace-pre-line">{{ summary() }}</p>
+          } @else {
+            <p class="text-sm text-stone-500">مفيش ملخص لسه.</p>
+          }
+        </div>
+      }
+
+      <!-- Ask tab -->
+      @if (activeTab() === 'ask') {
+        <div class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
+          @if (turns().length === 0 && !isLoading()) {
+            <p class="text-sm text-stone-500">اسأل أي سؤال عن محتوى الدرس ده وهيجاوبك المساعد الذكي.</p>
+          }
+
+          @for (turn of turns(); track $index) {
+            <div class="space-y-1.5">
+              <div class="bg-terracotta/10 text-navy text-sm rounded-xl rounded-tl-sm px-3 py-2 self-end">
+                {{ turn.question }}
+              </div>
+              <div class="bg-cream-light text-navy text-sm rounded-xl rounded-tr-sm px-3 py-2 leading-relaxed whitespace-pre-line">
+                {{ turn.answer }}
+              </div>
+            </div>
+          }
+
+          @if (isLoading()) {
+            <p class="text-sm text-stone-500">جارى التفكير...</p>
+          }
+        </div>
+
+        <div class="border-t border-blush/30 p-3 flex items-end gap-2">
+          <textarea
+            #questionInput
+            [ngModel]="draftQuestion()"
+            (ngModelChange)="draftQuestion.set($event)"
+            (keydown)="onQuestionKeydown($event)"
+            rows="1"
+            placeholder="اكتب سؤالك..."
+            class="flex-1 resize-none text-sm rounded-xl border border-blush/50 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-terracotta/40"
+          ></textarea>
+          <button
+            type="button"
+            (click)="askQuestion()"
+            [disabled]="isLoading()"
+            class="shrink-0 rounded-xl bg-terracotta text-white text-sm font-medium px-3 py-2 hover:bg-terracotta-dark transition disabled:opacity-40"
+          >
+            إرسال
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Trigger buttons -->
+  <div class="flex flex-col items-start gap-2">
+    <button
+      type="button"
+      (click)="openTab('summarize')"
+      [class.ring-2]="activeTab() === 'summarize'"
+      class="ring-terracotta bg-white femora-shadow border border-blush/40 rounded-full px-4 py-2 text-sm font-bold text-terracotta hover:bg-cream-light transition"
+    >
+      ✨ لخص الدرس
+    </button>
+
+    <button
+      type="button"
+      (click)="openTab('ask')"
+      [class.ring-2]="activeTab() === 'ask'"
+      class="ring-navy bg-white femora-shadow border border-blush/40 rounded-full px-4 py-2 text-sm font-bold text-navy hover:bg-cream-light transition"
+    >
+      💬 اسأل سؤال
+    </button>
+  </div>
+
+</div>

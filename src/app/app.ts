@@ -5,6 +5,7 @@ import { FloatingChat } from './shared/components/floating-chat/floating-chat';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet, FloatingChat],
   templateUrl: './app.html',
 })

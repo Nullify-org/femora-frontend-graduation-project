@@ -1,0 +1,177 @@
+<div class="flex min-h-screen bg-cream-light" dir="rtl">
+  <app-sidebar />
+
+  <main class="flex-1 flex">
+
+    @if (errorMessage()) {
+      <div class="flex-1 p-8">
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3">
+          {{ errorMessage() }}
+        </div>
+      </div>
+    } @else {
+
+      <!-- Lesson content -->
+      <div class="flex-1 p-6 max-w-4xl transition-all duration-300">
+        <div class="flex items-center justify-between gap-3">
+          <a
+            [routerLink]="['/lms/player', enrollmentId]"
+            class="text-terracotta hover:underline text-sm"
+          >
+            ← رجوع لقائمة الوحدات
+          </a>
+
+          <!-- Toggle for the "محتوى الدورة" sidebar (works on mobile as a drawer, and on desktop as a collapsible panel) -->
+          <button
+            type="button"
+            (click)="toggleContentSidebar()"
+            class="flex items-center gap-2 text-sm rounded-lg border border-blush/50 bg-white px-3 py-1.5 text-navy font-medium hover:bg-cream transition"
+          >
+            <span>{{ isContentSidebarOpen() ? 'إخفاء محتوى الدورة' : 'إظهار محتوى الدورة' }}</span>
+            <span class="text-terracotta text-base leading-none">☰</span>
+          </button>
+        </div>
+
+        @if (isLoadingLesson()) {
+          <p class="text-terracotta-dark mt-4">جارى تحميل الدرس...</p>
+        } @else if (lesson(); as l) {
+
+          <h1 class="text-2xl font-bold text-navy font-display mt-2 mb-4">{{ l.title }}</h1>
+
+          <!-- Video lesson -->
+          @if (l.type === 'Video' && l.contentUrl) {
+            <video
+              [src]="l.contentUrl"
+              controls
+              class="w-full rounded-2xl femora-shadow bg-black aspect-video"
+            ></video>
+          }
+
+          <!-- Article lesson -->
+          @else if (l.type === 'Article' && l.articleContent) {
+            <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
+              <p class="text-navy leading-relaxed whitespace-pre-line">{{ l.articleContent }}</p>
+            </div>
+          }
+
+          <!-- Quiz / assignment / no-content lesson -->
+          @else {
+            <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6 text-center text-stone-500">
+              مفيش محتوى متاح لعرضه لهذا الدرس هنا مباشرة.
+            </div>
+          }
+
+          <!-- Navigation + progress -->
+          <div class="flex items-center justify-between mt-6">
+            <button
+              type="button"
+              [disabled]="!previousLesson()"
+              (click)="previousLesson() && goToLesson(previousLesson()!)"
+              class="text-sm rounded-lg border border-blush/50 px-4 py-2 text-navy font-medium hover:bg-cream transition disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              → الدرس السابق
+            </button>
+
+            <button
+              type="button"
+              (click)="markComplete()"
+              [disabled]="isMarkingComplete()"
+              class="text-sm rounded-lg bg-sage px-5 py-2 text-white font-medium hover:opacity-90 transition disabled:opacity-40"
+            >
+              {{ isMarkingComplete() ? 'جارى الحفظ...' : '✓ إنهاء الدرس والتالي' }}
+            </button>
+
+            <button
+              type="button"
+              [disabled]="!nextLesson()"
+              (click)="nextLesson() && goToLesson(nextLesson()!)"
+              class="text-sm rounded-lg border border-blush/50 px-4 py-2 text-navy font-medium hover:bg-cream transition disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              الدرس التالى ←
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Backdrop for the mobile drawer version of the sidebar -->
+      @if (isContentSidebarOpen()) {
+        <div
+          class="fixed inset-0 bg-navy/40 z-30 lg:hidden"
+          (click)="toggleContentSidebar()"
+        ></div>
+      }
+
+      <!-- Module / lesson list -->
+      <aside
+        class="border-blush/30 bg-white overflow-y-auto overflow-x-hidden max-h-screen sticky top-0 transition-all duration-300 ease-in-out z-40
+               fixed inset-y-0 left-0 lg:static lg:inset-auto"
+        [class.w-80]="isContentSidebarOpen()"
+        [class.w-0]="!isContentSidebarOpen()"
+        [class.p-4]="isContentSidebarOpen()"
+        [class.p-0]="!isContentSidebarOpen()"
+        [class.border-r]="isContentSidebarOpen()"
+        [class.opacity-0]="!isContentSidebarOpen()"
+        [class.pointer-events-none]="!isContentSidebarOpen()"
+      >
+        <div class="w-80" [class.hidden]="!isContentSidebarOpen()">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-navy text-sm">محتوى الدورة</h3>
+            <button
+              type="button"
+              (click)="toggleContentSidebar()"
+              class="text-stone-400 hover:text-terracotta transition text-lg leading-none"
+              aria-label="إخفاء محتوى الدورة"
+            >
+              ✕
+            </button>
+          </div>
+
+          @if (isLoadingEnrollment()) {
+            <p class="text-sm text-stone-500">جارى التحميل...</p>
+          } @else {
+            <div class="space-y-4">
+              @for (module of enrollment()?.modules; track module.moduleId) {
+                <div>
+                  <p class="text-xs font-bold text-stone-400 mb-1.5" [class.opacity-50]="!module.isUnlocked">
+                    {{ module.isUnlocked ? '' : '🔒 ' }}{{ module.title }}
+                  </p>
+                  <div class="space-y-1">
+                    @for (l of module.lessons; track l.lessonId) {
+                      <button
+                        type="button"
+                        (click)="goToLesson({ lessonId: l.lessonId, title: l.title, isCompleted: l.isCompleted, moduleId: module.moduleId, moduleTitle: module.title, moduleIsUnlocked: module.isUnlocked })"
+                        [class.bg-terracotta]="l.lessonId === lessonId"
+                        [class.text-white]="l.lessonId === lessonId"
+                        [class.opacity-50]="!module.isUnlocked"
+                        class="w-full text-right text-sm rounded-lg px-3 py-2 flex items-center gap-2 hover:bg-cream transition"
+                      >
+                        <span>{{ l.isCompleted ? '✓' : '○' }}</span>
+                        <span class="truncate">{{ l.title }}</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </aside>
+    }
+  </main>
+
+  <!-- Floating button to bring the sidebar back when it's collapsed on desktop -->
+  @if (!isContentSidebarOpen()) {
+    <button
+      type="button"
+      (click)="toggleContentSidebar()"
+      class="hidden lg:flex fixed top-1/2 left-0 -translate-y-1/2 z-40 items-center gap-1 bg-terracotta text-white text-xs font-medium rounded-r-lg px-2 py-3 shadow-lg hover:opacity-90 transition"
+    >
+      <span style="writing-mode: vertical-rl;">محتوى الدورة</span>
+    </button>
+  }
+
+  <!-- Floating AI assistant for the current lesson -->
+  @if (lesson(); as l) {
+    <app-lesson-ai-panel [lessonId]="l.id" />
+  }
+</div>

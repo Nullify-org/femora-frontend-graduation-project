@@ -1,4 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import {
@@ -16,12 +18,14 @@ import {
 import { AuthService } from '../../../core/auth/auth.service';
 import { CartService } from '../../../features/marketplace/services/cart.service';
 import { runInBrowser } from '../../../core/utils/platform.util';
-import { ProfileType, AvailableProfile } from '../../../core/models/user.model';
+import { PROFILE_CONFIGS, ProfileType, AvailableProfile } from '../../../core/models/user.model';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [
+  imports: [FormsModule,
     RouterLink,
     TranslatePipe,
     LucideBell,
@@ -104,17 +108,125 @@ export class Navbar implements OnInit {
   }
 
   /** Switch to a different profile from the dropdown */
-  switchProfile(profile: AvailableProfile): void {
-    this.auth.selectProfile(profile.type).subscribe({
+  private readonly http = inject(HttpClient);
+
+  switchRoleLoading = signal<ProfileType | null>(null);
+  switchRoleMessage = signal<string | null>(null);
+
+  switchProfile(role: { type: ProfileType; label: string }): void {
+    if (this.switchRoleLoading()) return;
+    this.switchRoleMessage.set(null);
+
+    const type = role.type;
+
+    // Already active → navigate
+    if (this.auth.activeProfile() === type) {
+      this.closeDropdown();
+      this.router.navigate([this.auth.getDashboardRoute()]);
+      return;
+    }
+
+    // Has profile already → just select it
+    if (this.hasProfile(type)) {
+      this.switchRoleLoading.set(type);
+      this.auth.selectProfile(type).subscribe({
+        next: () => {
+          this.switchRoleLoading.set(null);
+          this.closeDropdown();
+          this.router.navigate([this.auth.getDashboardRoute()]);
+        },
+        error: () => this.switchRoleLoading.set(null),
+      });
+      return;
+    }
+
+    // Trainee → create immediately via setupProfiles
+    if (type === 'Trainee') {
+      this.switchRoleLoading.set(type);
+      this.auth.setupProfiles(['Trainee']).subscribe({
+        next: ({ navigateTo }) => {
+          this.switchRoleLoading.set(null);
+          this.closeDropdown();
+          this.router.navigate([navigateTo]);
+        },
+        error: () => this.switchRoleLoading.set(null),
+      });
+      return;
+    }
+
+    // Instructor / Seller → open modal with form
+    if (type === 'Instructor') { this.activeModal.set('instructor'); this.closeDropdown(); return; }
+    if (type === 'Seller')     { this.activeModal.set('seller');     this.closeDropdown(); return; }
+  }
+
+  // ── Modal state ────────────────────────────────────────────────────────
+  activeModal        = signal<'instructor' | 'seller' | null>(null);
+  instructorBio          = '';
+  instructorPortfolioUrl = '';
+  sellerShopName    = '';
+  sellerDescription = '';
+
+  closeModal(): void {
+    this.activeModal.set(null);
+    this.instructorBio = '';
+    this.instructorPortfolioUrl = '';
+    this.sellerShopName = '';
+    this.sellerDescription = '';
+  }
+
+  submitInstructor(): void {
+    if (!this.instructorBio.trim()) return;
+    this.switchRoleLoading.set('Instructor');
+    this.http.post(
+      `${environment.apiUrl}/api/Approvals/instructors/apply`,
+      { bio: this.instructorBio, portfolioUrl: this.instructorPortfolioUrl },
+      { withCredentials: true }
+    ).subscribe({
       next: () => {
-        this.closeDropdown();
-        this.router.navigate([this.auth.getDashboardRoute()]);
+        this.switchRoleLoading.set(null);
+        this.closeModal();
+        this.switchRoleMessage.set('✨ تم إرسال طلب التسجيل كمدربة — سيتم مراجعته قريباً');
+      },
+      error: () => {
+        this.switchRoleLoading.set(null);
+        this.switchRoleMessage.set('حدث خطأ، حاولي مرة أخرى.');
+      },
+    });
+  }
+
+  submitSeller(): void {
+    if (!this.sellerShopName.trim()) return;
+    this.switchRoleLoading.set('Seller');
+    this.http.post(
+      `${environment.apiUrl}/api/Approvals/sellers/apply`,
+      { shopName: this.sellerShopName, description: this.sellerDescription },
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.switchRoleLoading.set(null);
+        this.closeModal();
+        this.switchRoleMessage.set('✨ تم إرسال طلب التسجيل كبائعة — سيتم مراجعته قريباً');
+      },
+      error: () => {
+        this.switchRoleLoading.set(null);
+        this.switchRoleMessage.set('حدث خطأ، حاولي مرة أخرى.');
       },
     });
   }
 
   /** True when user has multiple profiles to switch between */
   get canSwitchProfile(): boolean {
-    return this.auth.pendingProfiles().length > 1;
+    return this.auth.isAuthenticated();
+  }
+
+  // All non-admin switchable roles to show in dropdown
+  readonly switchableRoles = [
+    { type: 'Trainee'    as ProfileType, label: 'متدربة',   color: 'bg-blue-400',   desc: 'تعلمى مهارات جديدة',      dashboardRoute: '/dashboard/trainee' },
+    { type: 'Instructor' as ProfileType, label: 'مدربة',    color: 'bg-purple-400', desc: 'شاركي خبرتك وأنشئي دورات', dashboardRoute: '/dashboard/instructor' },
+    { type: 'Seller'     as ProfileType, label: 'بائعة',    color: 'bg-amber-400',  desc: 'اربحى منتجاتك واكسبي',      dashboardRoute: '/dashboard/seller' },
+  ];
+
+  hasProfile(type: ProfileType): boolean {
+    return this.auth.pendingProfiles().some(p => p.type === type);
   }
 }

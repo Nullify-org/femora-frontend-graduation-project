@@ -1,22 +1,27 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
-import { Card } from '../../../../shared/components/card/card';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { ContinueLearning } from '../../widgets/continue-learning/continue-learning';
-import { RecommendedProducts } from '../../widgets/recommended-products/recommended-products';
-import { AiWidget } from '../../widgets/ai-widget/ai-widget';
+import { SwitchRole } from '../../widgets/switch-role/switch-role';
+import { EnrollmentService } from '../../../lms/services/enrollment.service';
+import { OrderService } from '../../../marketplace/services/order.service';
+import { SubscriptionService, SubscriptionStatus } from '../../../../core/services/subscription.service';
+import { Enrollment, Order } from '../../../../core/models/api.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, Sidebar, Card, ContinueLearning, RecommendedProducts, AiWidget],
+  imports: [RouterLink, Sidebar, SwitchRole],
   templateUrl: './dashboard.html',
 })
 export class Dashboard {
   readonly auth = inject(AuthService);
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> origin/master
 
   private readonly enrollmentService  = inject(EnrollmentService);
   private readonly orderService       = inject(OrderService);
@@ -61,7 +66,11 @@ export class Dashboard {
       subscription: this.subscriptionService.getStatusOrNull(),
     }).subscribe({
       next: ({ enrollments, orders, subscription }) => {
+<<<<<<< HEAD
         this.enrollments.set(enrollments.items ?? []);
+=======
+        this.enrollments.set(enrollments.data ?? []);
+>>>>>>> origin/master
         this.orders.set(orders ?? []);
         this.subscription.set(subscription);
         this.isLoading.set(false);
@@ -72,5 +81,8 @@ export class Dashboard {
       },
     });
   }
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> origin/master
 }

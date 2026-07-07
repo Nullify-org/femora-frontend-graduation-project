@@ -1,0 +1,193 @@
+<div class="flex min-h-screen bg-cream-light">
+  <app-sidebar />
+
+  <main class="flex-1 p-6 lg:p-10 flex flex-col lg:flex-row gap-8 overflow-x-hidden">
+    <!-- Left / Center Section (Main Dashboard Data) -->
+    <div class="flex-1 space-y-8 order-2 lg:order-1">
+      
+      <!-- Metrics Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">رسائل المفضلة</p>
+            <p class="text-2xl font-bold text-navy mt-1">15</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-rose-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">قيد التنفيذ</p>
+            <p class="text-2xl font-bold text-navy mt-1">4</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center text-amber-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">الملاحظات</p>
+            <p class="text-2xl font-bold text-navy mt-1">8</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="bg-white border border-blush/60 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-text-light font-medium">إجمالى المشتريات</p>
+            <p class="text-2xl font-bold text-navy mt-1">12</p>
+          </div>
+          <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-500">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders Table -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-6 shadow-sm overflow-hidden">
+        <h2 class="text-base font-bold text-navy mb-4 flex items-center gap-2">
+          <span>🛍️</span> آخر الطلبات
+        </h2>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-right">
+            <thead>
+              <tr class="text-text-light border-b border-blush/30 pb-2">
+                <th class="py-2 font-semibold">رقم الطلب</th>
+                <th class="py-2 font-semibold">اسم المنتج</th>
+                <th class="py-2 font-semibold">القيمة</th>
+                <th class="py-2 font-semibold">حالة الطلب</th>
+                <th class="py-2 font-semibold">التاريخ</th>
+              </tr>
+            </thead>
+            <tbody class="text-text-medium">
+              <tr class="border-b border-blush/20">
+                <td class="py-3 font-semibold text-navy">#1004</td>
+                <td class="py-3">دمية كروشيه يدوية</td>
+                <td class="py-3">245 SAR</td>
+                <td class="py-3"><span class="bg-blue-100 text-blue-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">قيد التوصيل</span></td>
+                <td class="py-3">2024-05-20</td>
+              </tr>
+              <tr class="border-b border-blush/20">
+                <td class="py-3 font-semibold text-navy">#1003</td>
+                <td class="py-3">شمعة معطرة</td>
+                <td class="py-3">89 SAR</td>
+                <td class="py-3"><span class="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">قيد التجهيز</span></td>
+                <td class="py-3">2024-05-19</td>
+              </tr>
+              <tr class="border-b border-blush/20">
+                <td class="py-3 font-semibold text-navy">#1002</td>
+                <td class="py-3">لوحة فنية</td>
+                <td class="py-3">199 SAR</td>
+                <td class="py-3"><span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">مكتمل</span></td>
+                <td class="py-3">2024-05-15</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recommended Products Grid -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-6 shadow-sm">
+        <h2 class="text-base font-bold text-navy mb-5">منتجات مقترحة لكِ</h2>
+        
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center hover:shadow-sm transition">
+            <span class="text-3xl">🕯️</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">شمعة معطرة</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">89 SAR</p>
+          </div>
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center hover:shadow-sm transition">
+            <span class="text-3xl">👜</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">حقيبة كروشيه</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">245 SAR</p>
+          </div>
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center hover:shadow-sm transition">
+            <span class="text-3xl">🎨</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">لوحة فنية</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">199 SAR</p>
+          </div>
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center hover:shadow-sm transition">
+            <span class="text-3xl">🖌️</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">طقم أدوات رسم</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">129 SAR</p>
+          </div>
+          <div class="bg-cream/30 border border-blush/20 rounded-2xl p-4 text-center hover:shadow-sm transition">
+            <span class="text-3xl">🏺</span>
+            <h3 class="text-xs font-bold text-text-dark mt-2">فازة سيراميك</h3>
+            <p class="text-[10px] text-terracotta font-semibold mt-1">79 SAR</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Sidebar Section (Secondary Widgets) -->
+    <div class="w-full lg:w-80 space-y-6 order-1 lg:order-2">
+      
+      <!-- Welcome Panel -->
+      <div class="bg-gradient-to-br from-[#2c1a0e] to-[#472d1a] text-white rounded-3xl p-6 relative overflow-hidden shadow-md">
+        <div class="absolute -right-10 -bottom-10 w-36 h-36 bg-white/5 rounded-full blur-2xl"></div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-2.5">
+            <span class="text-lg">🌸</span>
+            <span class="bg-white/10 text-white/90 text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">
+              مشتري
+            </span>
+          </div>
+          <h2 class="text-xl font-bold mt-3">مرحباً، {{ auth.user()?.firstName ?? 'بكِ' }}</h2>
+          <p class="text-white/70 text-xs mt-2 leading-relaxed">
+            اكتشف منتجات وخدمات رائعة من الحرفيات المبدعات.
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Access Links -->
+      <div class="bg-white border border-blush/60 rounded-3xl p-5 shadow-sm">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-text-light mb-4">وصول سريع</h3>
+        <div class="space-y-3">
+          <a routerLink="/marketplace/catalog" class="flex items-center gap-3 p-3.5 bg-cream/30 border border-blush/20 rounded-2xl hover:border-terracotta transition">
+            <span class="text-2xl bg-white w-10 h-10 flex items-center justify-center rounded-xl shadow-sm">🛒</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-text-dark">السوق</p>
+              <p class="text-[9px] text-text-light mt-0.5">تصفح المنتجات اليدوية</p>
+            </div>
+          </a>
+
+          <a routerLink="/marketplace/catalog" class="flex items-center gap-3 p-3.5 bg-cream/30 border border-blush/20 rounded-2xl hover:border-terracotta transition">
+            <span class="text-2xl bg-white w-10 h-10 flex items-center justify-center rounded-xl shadow-sm">📦</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-text-dark">طلباتي</p>
+              <p class="text-[9px] text-text-light mt-0.5">تتبع وإدارة الطلبات</p>
+            </div>
+          </a>
+
+          <a routerLink="/marketplace/catalog" class="flex items-center gap-3 p-3.5 bg-cream/30 border border-blush/20 rounded-2xl hover:border-terracotta transition">
+            <span class="text-2xl bg-white w-10 h-10 flex items-center justify-center rounded-xl shadow-sm">❤️</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-bold text-text-dark">المفضلة</p>
+              <p class="text-[9px] text-text-light mt-0.5">منتجاتك المفضلة</p>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Switch Role component -->
+      <app-switch-role />
+    </div>
+
+  </main>
+</div>

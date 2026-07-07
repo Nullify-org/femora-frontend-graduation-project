@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { ApiClient } from '../../../core/services/api-client.service';
 import { LessonDetails } from '../../../core/models/api.model';
 
+<<<<<<< HEAD
 /** Body used to create a new lesson inside a module (POST /api/lessons). */
 export interface CreateLessonRequest {
   moduleId: string;
@@ -15,6 +16,8 @@ export interface CreateLessonRequest {
   isPreview: boolean;
 }
 
+=======
+>>>>>>> origin/master
 @Injectable({ providedIn: 'root' })
 export class LessonService {
   private readonly api = inject(ApiClient);
@@ -25,6 +28,7 @@ export class LessonService {
   }
 
   update(id: string, body: any): Observable<any> {
+<<<<<<< HEAD
     return this.api.put(`/api/lessons/${id}`, body);
   }
 
@@ -47,3 +51,8 @@ export class LessonService {
     return this.api.put(`${this.base}/${lessonId}/reorder`, { orderIndex });
   }
 }
+=======
+  return this.api.put(`/api/lessons/${id}`, body);
+}
+}
+>>>>>>> origin/master

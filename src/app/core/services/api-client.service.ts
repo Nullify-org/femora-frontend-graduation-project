@@ -54,6 +54,15 @@ export class ApiClient {
     );
   }
 
+  patch<T>(url: string, body: any, options?: any): Observable<T> {
+    const fullUrl = this.getBaseUrl(url);
+    const opts = this.getRequestOptions(options);
+
+    return (this.http.patch(fullUrl, body, opts) as Observable<T>).pipe(
+      catchError((error: HttpErrorResponse) => this.handleErrorOrFallback<T>('PATCH', url, error, body, opts))
+    );
+  }
+
   delete<T>(url: string, options?: any): Observable<T> {
     const fullUrl = this.getBaseUrl(url);
     const opts = this.getRequestOptions(options);
@@ -86,7 +95,7 @@ export class ApiClient {
     }
 
     // Display error notification
-    const errorMsg = error.error?.message || error.message || 'حدث خطأ في الاتصال بالخادم';
+    const errorMsg = error.error?.message || error.message || 'حدث خطأ فى الاتصال بالخادم';
     this.notifications.error(errorMsg);
 
     return throwError(() => error);
@@ -147,11 +156,29 @@ export class ApiClient {
       }
     }
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
     // ENROLLMENTS
     if (cleanUrl.match(/\/api\/enrollments$/)) {
       return seed.MOCK_ENROLLMENTS;
 =======
+=======
+
+    const lessonDetailMatch = cleanUrl.match(/\/api\/lessons\/([^/]+)$/);
+    if (lessonDetailMatch && method === 'GET') {
+      return {
+        id: lessonDetailMatch[1],
+        moduleId: 'module_1',
+        title: 'درس تجريبى (وضع عدم الاتصال)',
+        type: 'Video',
+        contentUrl: null,
+        articleContent: 'هذا محتوى تجريبى لأن السيرفر غير متاح حاليًا.',
+        durationSeconds: 300,
+        orderIndex: 1,
+        isPreview: true,
+      };
+    }
+>>>>>>> origin/master
 
     const enrollmentDetailMatch = cleanUrl.match(/\/api\/enrollments\/([^/]+)$/);
     if (enrollmentDetailMatch) {
@@ -165,11 +192,14 @@ export class ApiClient {
       };
     }
 
+<<<<<<< HEAD
     const markLessonCompleteMatch = cleanUrl.match(/\/api\/enrollments\/lessons\/([^/]+)\/complete$/);
     if (markLessonCompleteMatch && method === 'POST') {
       return null;
     }
 
+=======
+>>>>>>> origin/master
     if (cleanUrl.match(/\/api\/quizzes\/generate$/)) {
       return { quizId: 'quiz_mock_id' };
     }
@@ -199,7 +229,10 @@ export class ApiClient {
         maxScore: 1,
         isPassed: true,
       };
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> origin/master
     }
 
     // RECOMMENDATIONS
@@ -229,12 +262,36 @@ export class ApiClient {
     if (cleanUrl.match(/\/api\/ai\/chat$/)) {
       return {
         conversationId: body?.conversationId || 'mock_conv_id',
-        reply: 'هذا رد تجريبي تلقائي من المساعد الذكي لـ Femora (وضع عدم الاتصال). يمكنك طرح أي سؤال!'
+        reply: 'هذا رد تجريبى تلقائى من المساعد الذكى لـ Femora (وضع عدم الاتصال). يمكنك طرح أى سؤال!'
+      };
+    }
+
+    const lessonChatMatch = cleanUrl.match(/\/api\/ai\/lessons\/([^/]+)\/chat$/);
+    if (lessonChatMatch) {
+      return {
+        conversationId: body?.conversationId || 'mock_lesson_conv_id',
+        answer: 'هذا رد تجريبى (وضع عدم الاتصال) على سؤالك بخصوص هذا الدرس. وصّل بالسيرفر عشان تاخد إجابة حقيقية مبنية على محتوى الدرس.'
+      };
+    }
+
+    const lessonSummarizeMatch = cleanUrl.match(/\/api\/ai\/lessons\/([^/]+)\/summarize$/);
+    if (lessonSummarizeMatch) {
+      return {
+        lessonId: lessonSummarizeMatch[1],
+        summary: 'هذا ملخّص تجريبى (وضع عدم الاتصال) لمحتوى الدرس. وصّل بالسيرفر عشان تاخد ملخص حقيقى.'
       };
     }
 
     if (cleanUrl.match(/\/api\/ai\/interests$/)) {
       return { success: true };
+    }
+
+    // USERS — match /api/users/{id} OR /api/auth/users/{id} OR /api/admin/users/{id}
+    const userDetailMatch = cleanUrl.match(/\/api\/(?:auth\/|admin\/)?users\/([^/]+)$/);
+    if (userDetailMatch && method === 'GET') {
+      const uid = userDetailMatch[1];
+      const found = seed.MOCK_USERS[uid];
+      return found ?? null;
     }
 
     // APPROVALS
@@ -244,7 +301,7 @@ export class ApiClient {
     if (cleanUrl.match(/\/api\/approvals\/sellers\/apply$/)) {
       return 'approval_sell_id';
     }
-    if (cleanUrl.match(/\/api\/approvals\/admin\/approvals\/pending$/)) {
+    if (cleanUrl.match(/\/api\/approvals\/admin\/approvals\/pending$/i)) {
       return seed.MOCK_APPROVALS;
     }
     const reviewMatch = cleanUrl.match(/\/api\/approvals\/admin\/approvals\/([^/]+)\/review$/);
@@ -274,6 +331,14 @@ export class ApiClient {
       if (method === 'POST') {
         return seed.MOCK_ORDERS[0];
       }
+    }
+
+    // ── Stripe Checkout Session (for both cart and orders) ──
+    if (cleanUrl.match(/\/api\/payments\/checkout$/)) {
+      return {
+        sessionId: 'cs_test_' + Math.random().toString(36).substring(7),
+        sessionUrl: `https://checkout.stripe.com/pay/cs_test_${Math.random().toString(36).substring(7)}#fidkdWxOYHwnPDMkYfKHf2R0SHZxUGZAVENkVE42a3d2eFc3Um81NWZGfDAxQHZgYHxxfHx3d3hGfHhxcHhwcHd3YHJ3cHB3d@end`
+      };
     }
 
     return undefined;

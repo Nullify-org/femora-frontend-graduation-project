@@ -1,7 +1,21 @@
-<aside class="w-64 shrink-0 bg-navy text-white min-h-screen p-6 hidden lg:flex lg:flex-col">
-  <!-- Logo -->
-  <div class="mb-8">
-    <a routerLink="/" class="text-xl font-bold text-terracotta font-display">✿ Femora</a>
+<div class="fixed top-4 right-0 z-50">
+  <button type="button" (click)="toggleSidebar()" class="translate-x-1/2 rounded-full bg-navy/90 p-3 text-white shadow-xl hover:bg-navy transition">
+    {{ sidebarOpen() ? '◀' : '☰' }}
+  </button>
+</div>
+
+<aside class="bg-navy text-white min-h-screen p-6 shrink-0 flex flex-col lg:sticky lg:top-0 lg:self-start overflow-hidden transform transition-all duration-300"
+  [class.w-64]="sidebarOpen()"
+  [class.w-0]="!sidebarOpen()"
+  [class.opacity-100]="sidebarOpen()"
+  [class.opacity-0]="!sidebarOpen()"
+  [class.pointer-events-auto]="sidebarOpen()"
+  [class.pointer-events-none]="!sidebarOpen()">
+  <div class="flex items-center justify-between mb-8">
+    <a routerLink="/" class="flex items-center gap-3 text-xl font-bold text-terracotta font-display">
+      <img src="/images/logo.jpg" alt="Femora Logo" class="w-10 h-10 rounded-full object-cover shadow-sm bg-white" />
+      <span>Femora</span>
+    </a>
   </div>
 
   <!-- Nav links -->
@@ -12,23 +26,28 @@
         routerLinkActive="bg-white/10 text-terracotta"
         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-white/80 hover:bg-white/5 hover:text-white transition"
       >
-        <span class="w-5 h-5 text-white/80">
-          @if (link.path === '/dashboard') {
+        <span class="w-5 h-5 text-white/80 flex items-center justify-center">
+          @if (link.icon === 'dashboard') {
             <svg lucideLayoutDashboard [size]="18"></svg>
-          }
-          @if (link.path === '/lms/catalog') {
+          } @else if (link.icon === 'courses') {
             <svg lucideBookOpen [size]="18"></svg>
-          }
-          @if (link.path === '/marketplace/catalog') {
+          } @else if (link.icon === 'products') {
             <svg lucidePackage [size]="18"></svg>
-          }
-          @if (link.path === '/ai/chat') {
+          } @else if (link.icon === 'chat') {
             <svg lucideCpu [size]="18"></svg>
-          }
-          @if (link.path === '/messaging') {
-            <svg lucideBell [size]="18"></svg>
-          }
-          @if (link.path === '/profile/trainee') {
+          } @else if (link.icon === 'users') {
+            <svg lucideUsers [size]="18"></svg>
+          } @else if (link.icon === 'orders' || link.icon === 'bag') {
+            <svg lucideShoppingCart [size]="18"></svg>
+          } @else if (link.icon === 'quizzes') {
+            <svg lucideClipboardList [size]="18"></svg>
+          } @else if (link.icon === 'wishlist') {
+            <svg lucideHeart [size]="18"></svg>
+          } @else if (link.icon === 'reports') {
+            <svg lucideFileText [size]="18"></svg>
+          } @else if (link.icon === 'settings') {
+            <svg lucideSettings [size]="18"></svg>
+          } @else {
             <svg lucideUser [size]="18"></svg>
           }
         </span>
@@ -37,15 +56,64 @@
     }
   </nav>
 
+  <!-- Switch Role -->
+  @if (auth.pendingProfiles().length > 1) {
+    <div class="border-t border-white/10 pt-4 mt-2">
+      <p class="text-[10px] text-white/40 uppercase tracking-wider px-2 mb-2">تبديل الدور</p>
+      @for (p of auth.pendingProfiles(); track p.type) {
+        @if (p.type !== auth.activeProfile()) {
+          <button
+            type="button"
+            (click)="switchProfile(p.type)"
+            class="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm text-white/70 hover:bg-white/10 hover:text-white transition mb-1"
+          >
+            <span class="w-2 h-2 rounded-full shrink-0"
+              [class.bg-blue-400]="p.type === 'Trainee' || p.type === 'student'"
+              [class.bg-purple-400]="p.type === 'Instructor' || p.type === 'instructor'"
+              [class.bg-amber-400]="p.type === 'Seller'"
+              [class.bg-red-400]="p.type === 'Admin'"
+            ></span>
+            {{ p.displayName ?? p.label ?? p.type }}
+          </button>
+        }
+      }
+      @if (auth.activeProfile()) {
+        <div class="px-4 py-1.5">
+          <span class="text-[10px] text-white/40">الدور الحالي: </span>
+          <span class="text-[10px] text-terracotta font-semibold">
+            {{ auth.activeProfileConfig()?.label ?? auth.activeProfile() }}
+          </span>
+        </div>
+      }
+    </div>
+  }
+
   <!-- User info + logout -->
   <div class="border-t border-white/10 pt-4 mt-4">
     <div class="flex items-center gap-3 px-2 mb-3">
-      <div class="w-8 h-8 rounded-full bg-terracotta/20 flex items-center justify-center text-terracotta text-xs font-bold shrink-0">
-        {{ (auth.user()?.firstName ?? '؟')[0] }}
+      <div class="relative shrink-0">
+        <div class="w-9 h-9 rounded-full bg-terracotta/20 flex items-center justify-center text-terracotta text-sm font-bold"
+          [class.ring-2]="auth.activeProfile()"
+          [class.ring-offset-1]="auth.activeProfile()"
+          [class.ring-amber-400]="auth.activeProfile() === 'Seller'"
+          [class.ring-blue-400]="auth.activeProfile() === 'Trainee' || auth.activeProfile() === 'student'"
+          [class.ring-purple-400]="auth.activeProfile() === 'Instructor' || auth.activeProfile() === 'instructor'"
+          [class.ring-red-400]="auth.activeProfile() === 'Admin'"
+        >
+          {{ (auth.user()?.firstName ?? '؟')[0] }}
+        </div>
+        @if (auth.activeProfile()) {
+          <span class="absolute -bottom-0.5 -end-0.5 w-2.5 h-2.5 rounded-full border-2 border-navy"
+            [class.bg-amber-400]="auth.activeProfile() === 'Seller'"
+            [class.bg-blue-400]="auth.activeProfile() === 'Trainee' || auth.activeProfile() === 'student'"
+            [class.bg-purple-400]="auth.activeProfile() === 'Instructor' || auth.activeProfile() === 'instructor'"
+            [class.bg-red-400]="auth.activeProfile() === 'Admin'"
+          ></span>
+        }
       </div>
       <div class="min-w-0">
         <p class="text-sm text-white font-medium truncate">{{ auth.user()?.firstName }} {{ auth.user()?.lastName }}</p>
-        <p class="text-xs text-white/50 truncate">{{ auth.user()?.email }}</p>
+        <p class="text-xs text-white/50 truncate">{{ auth.activeProfileConfig()?.label ?? 'مشتري' }}</p>
       </div>
     </div>
     <button

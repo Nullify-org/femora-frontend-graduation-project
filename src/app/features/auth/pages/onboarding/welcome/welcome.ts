@@ -12,9 +12,10 @@ import { StorageService } from '../../../../../core/services/storage.service';
 export class Welcome {
   private readonly storage = inject(StorageService);
 
+  // After registration onboarding, always go to login.
+  // The backend will return the correct profiles on signin
+  // and the login flow handles single vs. multi-profile routing.
   get startRoute(): string {
-    const roles = (this.storage.get('femora_onboarding_roles') as string[]) ?? [];
-    const isBuyerOnly = roles.length === 0 || (roles.length === 1 && roles[0] === 'buyer');
-    return isBuyerOnly ? '/' : '/dashboard';
+    return '/login';
   }
 }

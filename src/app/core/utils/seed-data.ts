@@ -5,7 +5,7 @@ export const MOCK_COURSES: Course[] = [
   {
     id: '1',
     title: 'صناعة الكروشيه للمبتدئين',
-    description: 'تعلّمي أساسيات الكروشيه خطوة بخطوة، بدءاً من مسك الإبرة وحتى إنتاج أول شال شتوي لكِ.',
+    description: 'تعلّمى أساسيات الكروشيه خطوة بخطوة، بدءاً من مسك الإبرة وحتى إنتاج أول شال شتوي لكِ.',
     price: 150,
     category: 'crochet',
     level: 'Beginner',
@@ -52,7 +52,7 @@ export const MOCK_COURSES: Course[] = [
         title: 'المواد الخام والتجهيز',
         orderIndex: 1,
         lessons: [
-          { id: 'l4', title: 'أنواع الشموع الطبيعية والصناعية', orderIndex: 1, durationMinutes: 18 },
+          { id: 'l4', title: 'أنواع الشموع الطبيعىة والصناعية', orderIndex: 1, durationMinutes: 18 },
           { id: 'l5', title: 'درجات الحرارة ونسب العطور الآمنة', orderIndex: 2, durationMinutes: 22 }
         ]
       }
@@ -61,7 +61,7 @@ export const MOCK_COURSES: Course[] = [
   {
     id: '3',
     title: 'صناعة الإكسسوارات والمجوهرات المنزلية',
-    description: 'تعلّمي كيفية تنسيق الخرز، لف الأسلاك النحاسية وصناعة سلاسل وخواتم عصرية تناسب كل الأذواق.',
+    description: 'تعلّمى كيفية تنسيق الخرز، لف الأسلاك النحاسية وصناعة سلاسل وخواتم عصرية تناسب كل الأذواق.',
     price: 180,
     category: 'jewelry',
     level: 'Intermediate',
@@ -105,8 +105,8 @@ export const MOCK_PRODUCTS: RecommendedProduct[] = [
     id: 'p2',
     productId: 'p2',
     productVariantId: 'v2',
-    name: 'طقم شموع الصويا الطبيعية المعطرة',
-    title: 'طقم شموع الصويا الطبيعية المعطرة',
+    name: 'طقم شموع الصويا الطبيعىة المعطرة',
+    title: 'طقم شموع الصويا الطبيعىة المعطرة',
     price: 180,
     sellerName: 'شمع وورد',
     category: 'decor',
@@ -136,29 +136,6 @@ export const MOCK_PRODUCTS: RecommendedProduct[] = [
     category: 'food',
     imageUrl: '/images/about-brand-story.png',
     score: 9.2
-  }
-];
-
-export const MOCK_ENROLLMENTS: Enrollment[] = [
-  {
-    enrollmentId: 'e1',
-    id: 'e1',
-    courseId: '1',
-    courseTitle: 'صناعة الكروشيه للمبتدئين',
-    title: 'صناعة الكروشيه للمبتدئين',
-    progressPercent: 40,
-    progress: 0.4,
-    thumbnailUrl: '/images/learning-section.png'
-  },
-  {
-    enrollmentId: 'e2',
-    id: 'e2',
-    courseId: '2',
-    courseTitle: 'فن صناعة الشموع المعطرة',
-    title: 'فن صناعة الشموع المعطرة',
-    progressPercent: 0,
-    progress: 0,
-    thumbnailUrl: '/images/hero.png'
   }
 ];
 
@@ -226,9 +203,34 @@ export const MOCK_CONVERSATIONS: ConversationSummary[] = [
 ];
 
 export const MOCK_APPROVALS: PendingApproval[] = [
-  { id: 'app_1', type: 'Instructor', status: 'Pending', userId: '101', createdAt: new Date().toISOString() },
-  { id: 'app_2', type: 'Seller', status: 'Pending', userId: '102', createdAt: new Date().toISOString() }
+  {
+    id: 'app_1',
+    type: 'InstructorVerification',
+    status: 'Pending',
+    userId: '101',
+    userFullName: 'سارة محمد',
+    userEmail: 'sara@example.com',
+    createdAt: new Date().toISOString(),
+    bio: 'مدربة كروشيه محترفة بخبرة 5 سنوات في تعليم الحرف اليدوية',
+    portfolioUrl: 'https://portfolio.example.com/sara',
+  },
+  {
+    id: 'app_2',
+    type: 'SellerVerification',
+    status: 'Pending',
+    userId: '102',
+    userFullName: 'نورة أحمد',
+    userEmail: 'nora@example.com',
+    createdAt: new Date().toISOString(),
+    shopName: 'متجر نورة للحرف اليدوية',
+    description: 'متجر متخصص في بيع مستلزمات الكروشيه والتطريز',
+  },
 ];
+
+export const MOCK_USERS: Record<string, { id: string; firstName: string; lastName: string; email: string }> = {
+  '101': { id: '101', firstName: 'سارة',  lastName: 'محمد', email: 'sara@example.com' },
+  '102': { id: '102', firstName: 'نورة',  lastName: 'أحمد', email: 'nora@example.com' },
+};
 
 export const MOCK_SUBSCRIPTION = {
   planName: 'متقدّم',
@@ -238,20 +240,20 @@ export const MOCK_SUBSCRIPTION = {
 
 export const MOCK_ORDERS: Order[] = [
   {
-    orderId: 'o1',
-    id: 'o1',
-    status: 'Delivered',
+    id: 'order_mock_001',
+    orderId: 'order_mock_001',
+    status: 'Pending',
+    totalAmount: 350,
     total: 350,
+    userId: '101',
     createdAt: new Date().toISOString(),
-    items: [
+    orderItems: [
       {
-        cartItemId: 'ci1',
-        productId: 'p1',
-        productName: 'شال صوف كروشيه يدوي دافئ',
-        name: 'شال صوف كروشيه يدوي دافئ',
+        id: 'order_item_1',
+        orderId: 'order_mock_001',
+        productVariantId: 'v1',
         quantity: 1,
         unitPrice: 350,
-        price: 350
       }
     ]
   }

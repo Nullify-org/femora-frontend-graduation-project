@@ -2,36 +2,23 @@
 
   <!-- Left Side: Brand Panel -->
   <div class="hidden lg:flex w-1/2 bg-[#FDF0EA] items-center justify-center p-12 relative overflow-hidden">
-    <svg class="absolute top-0 left-0 w-64 opacity-20" viewBox="0 0 200 200" fill="none">
-      <path d="M5 5 Q80 60 5 200 Q80 130 200 5Z" fill="#C8956C"/>
-      <path d="M5 5 Q90 90 5 200" stroke="#B07855" stroke-width="1.5" fill="none"/>
-    </svg>
-    <svg class="absolute bottom-0 right-0 w-64 opacity-20" viewBox="0 0 200 200" fill="none">
-      <path d="M195 195 Q120 140 195 0 Q120 70 0 195Z" fill="#D4856A"/>
-    </svg>
+    <img
+      src="/images/hero.png"
+      alt="Femora decoration"
+      class="absolute inset-0 object-cover w-full h-full opacity-10"
+    />
+    <img
+      src="/images/learning-section.png"
+      alt=""
+      class="absolute bottom-0 right-0 w-64 opacity-20"
+    />
 
     <div class="relative z-10 max-w-sm text-center">
-      <div class="mb-8">
-        <h1 class="text-4xl font-bold text-[#7A4B2A] tracking-wide">✿ Femora</h1>
-        <p class="text-sm text-[#A07060] mt-2 tracking-widest uppercase">تعلم · إبداع · كسب</p>
-      </div>
-
-      <div class="flex justify-center mb-8">
-        <div class="w-52 h-52 rounded-full bg-white/60 flex items-center justify-center shadow-inner">
-          <svg viewBox="0 0 160 160" fill="none" class="w-40 h-40">
-            <ellipse cx="80" cy="120" rx="38" ry="28" fill="#E8C4A0"/>
-            <path d="M45 105 Q60 90 80 88 Q100 90 115 105 L118 135 Q80 145 42 135Z" fill="#C8956C"/>
-            <circle cx="80" cy="62" r="24" fill="#E8C4A0"/>
-            <ellipse cx="80" cy="58" rx="26" ry="20" fill="#3D2314"/>
-            <ellipse cx="80" cy="74" rx="28" ry="14" fill="#3D2314" opacity="0.85"/>
-            <ellipse cx="74" cy="64" rx="2.5" ry="3" fill="#3D2314"/>
-            <ellipse cx="86" cy="64" rx="2.5" ry="3" fill="#3D2314"/>
-            <path d="M75 72 Q80 76 85 72" stroke="#B07855" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-            <ellipse cx="58" cy="108" rx="10" ry="8" fill="#F5DDD0" opacity="0.8"/>
-            <ellipse cx="102" cy="108" rx="10" ry="8" fill="#F5DDD0" opacity="0.8"/>
-            <text x="20" y="50" font-size="12" fill="#C8956C">✦</text>
-            <text x="128" y="46" font-size="10" fill="#D4856A">✦</text>
-          </svg>
+      <div class="flex items-center justify-center gap-4 mb-8">
+        <img src="/images/logo.jpg" alt="Femora Logo" class="w-16 h-16 rounded-full object-cover shadow-inner bg-white" />
+        <div class="text-left">
+          <h1 class="text-4xl font-bold text-[#7A4B2A] tracking-wide">Femora</h1>
+          <p class="text-sm text-[#A07060] mt-2 tracking-widest uppercase">تعلم · إبداع · كسب</p>
         </div>
       </div>
 
@@ -65,8 +52,13 @@
 
       <!-- Mobile logo -->
       <div class="lg:hidden text-center mb-8">
-        <h1 class="text-3xl font-bold text-[#C8956C]">✿ Femora</h1>
-        <p class="text-xs text-[#A07060] mt-1 tracking-widest uppercase">تعلم · إبداع · كسب</p>
+        <div class="inline-flex items-center justify-center gap-3">
+          <img src="/images/logo.jpg" alt="Femora Logo" class="w-12 h-12 rounded-full object-cover bg-white" />
+          <div>
+            <h1 class="text-3xl font-bold text-[#C8956C]">Femora</h1>
+            <p class="text-xs text-[#A07060] mt-1 tracking-widest uppercase">تعلم · إبداع · كسب</p>
+          </div>
+        </div>
       </div>
 
       <h2 class="text-2xl font-bold text-[#3D2314] mb-1">تسجيل الدخول</h2>
@@ -113,10 +105,9 @@
 
         <!-- Password -->
         <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <label class="text-sm font-semibold text-[#3D2314]" for="login-password">كلمة المرور</label>
-            <a href="#" class="text-xs text-[#C8956C] hover:text-[#B07855] hover:underline transition">نسيتِ كلمة المرور؟</a>
-          </div>
+          <label class="block text-sm font-semibold text-[#3D2314] mb-1.5" for="login-password">
+            كلمة المرور
+          </label>
           <div class="relative">
             <input
               id="login-password"
@@ -154,6 +145,13 @@
             </button>
           </div>
           <app-validation-message [control]="passwordCtrl" [submitted]="submitted" />
+
+          <!-- ✅ نسيت كلمة المرور — moved below the input -->
+          <div class="text-start mt-1.5">
+            <a routerLink="/forgot-password" class="text-xs text-[#C8956C] hover:text-[#B07855] hover:underline transition">
+              نسيتِ كلمة المرور؟
+            </a>
+          </div>
         </div>
 
         <!-- Remember me -->
@@ -178,14 +176,14 @@
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
             </svg>
           }
-          {{ isLoading() ? 'جاري الدخول...' : 'تسجيل الدخول' }}
+          {{ isLoading() ? 'جارى الدخول...' : 'تسجيل الدخول' }}
         </button>
 
       </form>
 
       <div class="flex items-center gap-3 my-6">
         <div class="flex-1 h-px bg-[#F0E6DE]"></div>
-        <span class="text-xs text-[#A07060] px-1">أو سجّلي بـ</span>
+        <span class="text-xs text-[#A07060] px-1">أو سجّلى بـ</span>
         <div class="flex-1 h-px bg-[#F0E6DE]"></div>
       </div>
 
@@ -221,11 +219,10 @@
       <p class="text-center text-sm text-[#8B6355] mt-6">
         ليس لديكِ حساب؟
         <a routerLink="/register" class="font-semibold text-[#C8956C] hover:text-[#B07855] hover:underline transition mr-1">
-          أنشئي حسابك مجاناً
+          أنشئى حسابك مجاناً
         </a>
       </p>
 
     </div>
   </div>
 
-</div>

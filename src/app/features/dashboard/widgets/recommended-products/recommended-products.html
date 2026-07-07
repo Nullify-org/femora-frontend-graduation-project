@@ -1,11 +1,11 @@
 <app-card title="منتجات مقترحة" subtitle="بناءً على اهتماماتك">
-  @if (isLoading) {
-    <p class="text-xs text-terracotta-dark text-center">جاري التحميل...</p>
-  } @else if (products.length === 0) {
+  @if (isLoading()) {
+    <p class="text-xs text-terracotta-dark text-center">جارى التحميل...</p>
+  } @else if (products().length === 0) {
     <p class="text-xs text-terracotta-dark text-center">لا توجد منتجات مقترحة حالياً</p>
   } @else {
     <div class="grid grid-cols-2 gap-3">
-      @for (p of products; track p.id) {
+      @for (p of products(); track p.id) {
         <a [routerLink]="['/marketplace/product', p.id]" class="p-3 bg-cream rounded-xl hover:bg-blush/30 transition text-center">
           <span class="text-2xl block mb-1">{{ productEmoji(p.category) }}</span>
           <p class="text-xs font-semibold text-navy">{{ p.name }}</p>

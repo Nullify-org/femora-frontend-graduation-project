@@ -1,4 +1,5 @@
-import { Component, ElementRef, inject, AfterViewInit, OnDestroy, effect, viewChild, NgZone, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, ElementRef, inject, AfterViewInit, OnDestroy, effect, viewChild, NgZone, ChangeDetectorRef, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Navbar } from '../../../../shared/components/navbar/navbar';
@@ -31,6 +32,7 @@ import {
   selector: 'app-landing',
   standalone: true,
   imports: [
+    CommonModule,
     RouterLink,
     Navbar,
     TranslatePipe,
@@ -46,7 +48,7 @@ export class Landing implements AfterViewInit, OnDestroy {
   private readonly coursesApi  = inject(CourseService);
   private readonly productsApi = inject(ProductService);
   private readonly chatApi     = inject(ChatService);
-  private readonly auth        = inject(AuthService);
+  readonly auth        = inject(AuthService);
   private readonly language    = inject(LanguageService);
   private readonly translate   = inject(TranslateService);
   private readonly subscriptionsApi = inject(SubscriptionService);
@@ -80,7 +82,7 @@ export class Landing implements AfterViewInit, OnDestroy {
     },
     {
       q: 'هل الشهادات المقدمة معتمدة؟',
-      a: 'نعم، جميع الدورات التي تكملينها بنجاح وتحصلين فيها على درجة مرور في الاختبارات المرفقة تمنحكِ شهادة إتمام رقمية معتمدة من المنصة تظهر في ملفكِ الشخصي.',
+      a: 'نعم، جميع الدورات التي تكملينها بنجاح وتحصلين فيها على درجة مرور في الاختبارات المرفقة تمنحكِ شهادة إتمام رقمية معتمدة من المنصة تظهر في ملفكِ الشخصى.',
     },
     {
       q: 'كيف تعمل الرسوم والاشتراكات؟',
@@ -147,7 +149,7 @@ export class Landing implements AfterViewInit, OnDestroy {
     },
   ];
 
-  courses: (Course | RecommendedCourse)[] = [];
+  readonly courses = signal<(Course | RecommendedCourse)[]>([]);
   products: RecommendedProduct[] = [];
   billingCycle: 'Monthly' | 'Annual' = 'Monthly';
   currentPlanName = '';
@@ -158,21 +160,40 @@ export class Landing implements AfterViewInit, OnDestroy {
   readonly courseEmoji  = courseEmoji;
   readonly productEmoji = productEmoji;
 
+  // ── Course Pagination (3 per row × 2 rows = 6 per page) ──────────────────
+  readonly coursePage  = signal(0);
+  readonly pageSize    = 6;
+  readonly pagedCourses = computed(() => {
+    const start = this.coursePage() * this.pageSize;
+    return this.courses().slice(start, start + this.pageSize);
+  });
+  readonly totalPages = computed(() => Math.max(1, Math.ceil(this.courses().length / this.pageSize)));
+  readonly pageNumbers = computed(() => Array.from({ length: this.totalPages() }, (_, i) => i));
+
+  nextPage(): void {
+    if (this.coursePage() < this.totalPages() - 1) this.coursePage.update(p => p + 1);
+  }
+  prevPage(): void {
+    if (this.coursePage() > 0) this.coursePage.update(p => p - 1);
+  }
+  goToPage(p: number): void { this.coursePage.set(p); }
+
   constructor() {
     runInBrowser(() => {
-      if (this.auth.isAuthenticated()) {
-        // Buyer (no activeProfile) has no TraineeProfile → skip AI recommendations
-        if (this.auth.activeProfile()) {
-          this.chatApi.recommendedCourses(6).subscribe({
-            next: (courses) => {
-              this.courses = courses.slice(0, 6);
+      // Always load courses — use AI recommendations if authenticated with profile, else fallback
+      this.loadFallbackCourses();
+      if (this.auth.isAuthenticated() && this.auth.activeProfile()) {
+        this.chatApi.recommendedCourses(6).subscribe({
+          next: (courses) => {
+            if (courses?.length) {
+              this.courses.set(courses.slice(0, 6));
               this.animateCardsStagger();
-            },
-            error: () => this.loadFallbackCourses(),
-          });
-        } else {
-          this.loadFallbackCourses();
-        }
+            }
+          },
+          error: () => {}, // fallback already loaded above
+        });
+      }
+      if (this.auth.isAuthenticated()) {
         this.subscriptionsApi.getStatus().subscribe({
           next: (s) => {
             this.currentPlanName = s.planName;
@@ -180,6 +201,7 @@ export class Landing implements AfterViewInit, OnDestroy {
             if (s.billingCycle === 'Annual' || s.billingCycle === 'Yearly') {
               this.billingCycle = 'Annual';
             }
+            this.cdr.detectChanges();
           },
           error: () => {},
         });
@@ -191,10 +213,12 @@ export class Landing implements AfterViewInit, OnDestroy {
         next: (products) => {
           this.products = products.slice(0, 3);
           this.animateCardsStagger();
+          this.cdr.detectChanges();
         },
         error: () => {
           this.products = MOCK_PRODUCTS.slice(0, 3);
           this.animateCardsStagger();
+          this.cdr.detectChanges();
         },
       });
     });
@@ -204,8 +228,7 @@ export class Landing implements AfterViewInit, OnDestroy {
     runInBrowser(() => {
       gsap.registerPlugin(ScrollTrigger);
       this.initHeroSwiper();
-      this.initCoursesSwiper();
-      this.initCountUp();
+        this.initCountUp();
       this.initScrollAnimations();
       // Animate static cards (value props, pricing) that are in the DOM at load time
       this.animateCardsStagger();
@@ -259,10 +282,12 @@ export class Landing implements AfterViewInit, OnDestroy {
         this.upgradingPlanKey = null;
         this.currentPlanName = plan.planKey;
         this.notifications.success('تم ترقية الاشتراك بنجاح');
+        this.cdr.detectChanges();
       },
       error: () => {
         this.upgradingPlanKey = null;
         this.notifications.error('تعذّر ترقية الاشتراك. حاولي مرة أخرى.');
+        this.cdr.detectChanges();
       },
     });
   }
@@ -341,14 +366,23 @@ export class Landing implements AfterViewInit, OnDestroy {
     this.heroTypingTimers = [];
   }
 
-  private loadFallbackCourses(): void {
-    this.coursesApi.list({ PageSize: 6 }).subscribe({
-      next: (courses) => {
-        this.courses = courses.slice(0, 6);
-        this.animateCardsStagger();
-      },
-    });
-  }
+ private loadFallbackCourses(): void {
+  this.coursesApi.getCourses({
+    pageSize: 6,
+    pageNumber: 1,
+  }).subscribe({
+    next: (response) => {
+      const data = Array.isArray(response.data) ? response.data :
+                   Array.isArray((response as any).items) ? (response as any).items : [];
+      this.courses.set(data);
+      this.animateCardsStagger(); // ← move inside the callback
+    },
+    error: () => {
+      this.courses.set([]);
+    },
+  });
+}
+  
 
   // ── Swiper ──────────────────────────────────────────────────────────────────
   private initHeroSwiper(): void {

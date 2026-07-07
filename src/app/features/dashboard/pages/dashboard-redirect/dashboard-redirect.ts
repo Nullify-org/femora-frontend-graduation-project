@@ -11,7 +11,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         <svg class="w-8 h-8 animate-spin text-[#C8956C] mx-auto mb-3" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/>
         </svg>
-        <p class="text-sm text-[#8B6355]">جاري التحميل...</p>
+        <p class="text-sm text-[#8B6355]">جارى التحميل...</p>
       </div>
     </div>
   `,

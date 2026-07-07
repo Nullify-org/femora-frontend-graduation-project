@@ -1,11 +1,11 @@
-<app-card title="تابعي التعلّم" subtitle="دوراتك الجارية">
+<app-card title="تابعى التعلّم" subtitle="دوراتك الجارية">
   <div class="space-y-4">
-    @if (isLoading) {
-      <p class="text-xs text-terracotta-dark text-center">جاري التحميل...</p>
-    } @else if (enrollments.length === 0) {
-      <p class="text-xs text-terracotta-dark text-center">لم تسجّلي في أي دورة بعد</p>
+    @if (isLoading()) {
+      <p class="text-xs text-terracotta-dark text-center">جارى التحميل...</p>
+    } @else if (enrollments().length === 0) {
+      <p class="text-xs text-terracotta-dark text-center">لم تسجّلى فى أى دورة بعد</p>
     } @else {
-      @for (enrollment of enrollments; track enrollment.enrollmentId ?? enrollment.courseId) {
+      @for (enrollment of enrollments(); track enrollment.enrollmentId ?? enrollment.courseId) {
         <div class="flex items-center gap-4 p-3 bg-cream rounded-xl">
           <span class="text-3xl">{{ courseEmoji() }}</span>
           <div class="flex-1">
@@ -15,12 +15,16 @@
             </div>
             <p class="text-xs text-terracotta-dark mt-1">{{ progress(enrollment) }}% مكتمل</p>
           </div>
+<<<<<<< HEAD
           <a [routerLink]="['/lms/player', enrollment.enrollmentId]" class="text-xs bg-terracotta text-white px-3 py-1.5 rounded-lg shrink-0">متابعة</a>
+=======
+          <a [routerLink]="['/lms/player', enrollment.enrollmentId || enrollment.courseId]" class="text-xs bg-terracotta text-white px-3 py-1.5 rounded-lg shrink-0">متابعة</a>
+>>>>>>> origin/master
         </div>
       }
     }
     <p class="text-xs text-terracotta-dark text-center">
-      <a routerLink="/lms/catalog" class="text-terracotta hover:underline">استكشفي المزيد من الدورات</a>
+      <a routerLink="/lms/catalog" class="text-terracotta hover:underline">استكشفى المزيد من الدورات</a>
     </p>
   </div>
 </app-card>
