@@ -1,21 +1,18 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+﻿﻿import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ApprovalService } from '../../../../core/services/approval.service';
 import { CourseService } from '../../../lms/services/course.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { InstructorStatsService, InstructorStats } from '../../../../core/services/instructor-stats.service';
 import { Course } from '../../../../core/models/api.model';
-import { formatPrice, courseEmoji } from '../../../../core/utils/api-response.util';
 import { runInBrowser } from '../../../../core/utils/platform.util';
-import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [Sidebar, FormsModule, SwitchRole],
+  imports: [Sidebar, FormsModule, RouterLink],
   templateUrl: './instructor-dashboard.html',
 })
 export class InstructorDashboard implements OnInit {
@@ -23,43 +20,30 @@ export class InstructorDashboard implements OnInit {
   private readonly coursesApi = inject(CourseService);
   private readonly approvalsApi = inject(ApprovalService);
   private readonly notifications = inject(NotificationService);
-  private readonly statsApi = inject(InstructorStatsService);
-  private readonly router = inject(Router);
 
   readonly courses = signal<Course[]>([]);
   readonly showApply = signal(false);
-
-  readonly stats = signal<InstructorStats | null>(null);
-  readonly statsLoading = signal(true);
-
-  readonly formatPrice = formatPrice;
-  readonly courseEmoji = courseEmoji;
+  readonly showCreate = signal(false);
 
   applyBio = '';
   applyPortfolio = '';
+  newCourse = {
+    title: '',
+    description: '',
+    price: 0,
+    category: 'Development',
+    language: 'ar',
+    level: 'Beginner',
+  };
 
   ngOnInit(): void {
-    runInBrowser(() => {
-      this.loadCourses();
-      this.loadStats();
-    });
+    runInBrowser(() => this.loadCourses());
   }
 
   loadCourses(): void {
-    this.coursesApi.getCourses({
-      pageSize: 50,
-      pageNumber: 1,
-    }).subscribe({
-      next: (response) => this.courses.set(response.data),
+    this.coursesApi.list({ PageSize: 50 }).subscribe({
+      next: (items) => this.courses.set(items),
       error: () => this.courses.set([]),
-    });
-  }
-
-  loadStats(): void {
-    this.statsLoading.set(true);
-    this.statsApi.get().subscribe({
-      next: (data) => { this.stats.set(data); this.statsLoading.set(false); },
-      error: () => { this.statsLoading.set(false); },
     });
   }
 
@@ -78,9 +62,25 @@ export class InstructorDashboard implements OnInit {
     });
   }
 
-  /** يودّي المستخدم على صفحة إنشاء الدورة المنفصلة */
-  goToCreateCourse(): void {
-    this.router.navigate(['/dashboard/instructor/course-create']);
+  createCourse(): void {
+    if (!this.newCourse.title.trim()) {
+      this.notifications.error('عنوان الدورة مطلوب');
+      return;
+    }
+    this.coursesApi
+      .create({
+        instructorProfileId: this.auth.user()?.id,
+        ...this.newCourse,
+      })
+      .subscribe({
+        next: () => {
+          this.notifications.success('تم إنشاء الدورة');
+          this.showCreate.set(false);
+          this.newCourse = { title: '', description: '', price: 0, category: 'Development', language: 'ar', level: 'Beginner' };
+          this.loadCourses();
+        },
+        error: () => this.notifications.error('فشل إنشاء الدورة'),
+      });
   }
 
   publishCourse(id: string): void {
@@ -88,7 +88,6 @@ export class InstructorDashboard implements OnInit {
       next: () => {
         this.notifications.success('تم إرسال الدورة للموافقة');
         this.loadCourses();
-        this.loadStats();
       },
       error: () => this.notifications.error('فشل نشر الدورة'),
     });
