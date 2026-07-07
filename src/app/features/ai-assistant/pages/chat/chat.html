@@ -1,4 +1,4 @@
-<div class="flex min-h-screen bg-cream-light">
+<div class="flex min-h-screen bg-cream-light" dir="rtl">
   <app-sidebar />
   <main class="flex-1 p-4 md:p-8">
     <div class="max-w-6xl mx-auto h-[calc(100vh-2rem)] md:h-[calc(100vh-4rem)] flex flex-col">
@@ -138,7 +138,7 @@
             @if (isLoading()) {
               <div class="space-y-4">
                 @for (i of [1,2,3]; track i) {
-                  <div class="max-w-[70%] h-16 rounded-2xl bg-cream animate-pulse" [class.ml-auto]="i % 2 === 0"></div>
+                  <div class="max-w-[70%] h-16 rounded-2xl bg-cream animate-pulse" [class.ms-auto]="i % 2 === 0"></div>
                 }
               </div>
             } @else if (messages().length === 0) {
@@ -150,10 +150,23 @@
                 <p class="text-terracotta-dark text-sm max-w-xs">
                   اسألينى عن الدورات، المنتجات، أو أى شيء يخص مشروعكِ المنزلي.
                 </p>
+                @if (suggestedQuestions().length > 0) {
+                  <div class="mt-2 max-w-md">
+                    <app-suggestions
+                      [questions]="suggestedQuestions()"
+                      [disabled]="isSending()"
+                      (questionClick)="sendSuggested($event)"
+                    />
+                  </div>
+                }
               </div>
             } @else {
               @for (msg of messages(); track $index) {
-                <div class="flex items-end gap-2 femora-fade-in" [class.flex-row-reverse]="msg.role === 'user'">
+                <div
+                  class="flex items-end gap-2 max-w-[85%] femora-fade-in"
+                  [class.flex-row-reverse]="msg.role === 'user'"
+                  [class.ms-auto]="msg.role === 'user'"
+                >
                   <div
                     class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-bold"
                     [class.bg-terracotta]="msg.role === 'user'"
@@ -167,7 +180,7 @@
                     }
                   </div>
 
-                  <div class="flex flex-col max-w-[75%]" [class.items-end]="msg.role === 'user'">
+                  <div class="flex flex-col min-w-0" [class.items-end]="msg.role === 'user'">
                     <div
                       class="px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap break-words"
                       [class.bg-terracotta]="msg.role === 'user'"

@@ -31,6 +31,7 @@
           <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-8 text-center">
             <p class="text-4xl mb-4">{{ result.isPassed ? '🎉' : '📘' }}</p>
             <p class="text-xl font-bold text-navy">{{ result.score }} / {{ result.maxScore }}</p>
+            <p class="text-sm text-terracotta-dark mt-1">{{ result.percentage }}%</p>
             <p class="text-terracotta-dark mt-2">
               {{ result.isPassed ? 'نجحتِ في الاختبار!' : 'لم تنجحي هذه المرة — حاولي مرة أخرى' }}
             </p>
@@ -66,19 +67,41 @@
             @for (question of quiz.questions ?? []; track question.questionId) {
               <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
                 <p class="font-semibold text-navy mb-4">{{ question.text }}</p>
-                <div class="space-y-2">
-                  @for (choice of question.choices ?? []; track choice.choiceId) {
-                    <label class="flex items-center gap-3 rounded-xl border border-transparent p-3 transition hover:bg-cream cursor-pointer">
-                      <input
-                        type="radio"
-                        [name]="question.questionId"
-                        [value]="choice.choiceId"
-                        [(ngModel)]="answers[question.questionId]"
-                      />
-                      <span class="text-sm text-terracotta-dark">{{ choice.text }}</span>
-                    </label>
-                  }
-                </div>
+                @if (question.type === 'TrueFalse') {
+                  <div class="flex gap-3">
+                    @for (choice of question.choices ?? []; track choice.choiceId) {
+                      <label
+                        class="flex-1 flex items-center justify-center gap-2 rounded-xl border p-3 text-sm font-semibold cursor-pointer transition"
+                        [class.border-terracotta]="answers[question.questionId] === choice.choiceId"
+                        [class.bg-cream]="answers[question.questionId] === choice.choiceId"
+                        [class.border-blush]="answers[question.questionId] !== choice.choiceId"
+                      >
+                        <input
+                          type="radio"
+                          class="sr-only"
+                          [name]="question.questionId"
+                          [value]="choice.choiceId"
+                          [(ngModel)]="answers[question.questionId]"
+                        />
+                        <span class="text-terracotta-dark">{{ choice.text === 'True' ? 'صح' : choice.text === 'False' ? 'خطأ' : choice.text }}</span>
+                      </label>
+                    }
+                  </div>
+                } @else {
+                  <div class="space-y-2">
+                    @for (choice of question.choices ?? []; track choice.choiceId) {
+                      <label class="flex items-center gap-3 rounded-xl border border-transparent p-3 transition hover:bg-cream cursor-pointer">
+                        <input
+                          type="radio"
+                          [name]="question.questionId"
+                          [value]="choice.choiceId"
+                          [(ngModel)]="answers[question.questionId]"
+                        />
+                        <span class="text-sm text-terracotta-dark">{{ choice.text }}</span>
+                      </label>
+                    }
+                  </div>
+                }
               </div>
             }
           </div>

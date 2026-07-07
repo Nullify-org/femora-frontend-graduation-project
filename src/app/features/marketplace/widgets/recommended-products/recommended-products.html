@@ -1,0 +1,57 @@
+@if (!hasError() && (isLoading() || products().length > 0)) {
+  <section class="mb-8">
+    <div class="flex items-baseline justify-between mb-4">
+      <div>
+        <p class="text-sm text-terracotta-dark font-semibold">✨ مقترحة لكِ</p>
+        <p class="text-stone-500 text-sm mt-1">بناءً على اهتماماتك، جربي هذه المنتجات</p>
+      </div>
+    </div>
+
+    <div class="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 snap-x snap-mandatory">
+      @if (isLoading()) {
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="shrink-0 w-56 bg-white rounded-3xl overflow-hidden border border-blush/30 femora-shadow animate-pulse">
+            <div class="h-32 bg-blush/40"></div>
+            <div class="p-4 space-y-2">
+              <div class="h-4 bg-blush/40 rounded w-20"></div>
+              <div class="h-4 bg-blush/40 rounded w-3/4"></div>
+            </div>
+          </div>
+        }
+      } @else {
+        @for (product of products(); track idOf(product)) {
+          <a
+            [routerLink]="['/marketplace/product', idOf(product)]"
+            class="group shrink-0 w-56 snap-start bg-white rounded-3xl overflow-hidden border border-blush/30 femora-shadow hover:-translate-y-1 hover:shadow-xl transition-all duration-300 block"
+          >
+            @if (imageOf(product); as img) {
+              <div class="relative h-32 bg-stone-100 overflow-hidden">
+                <img [src]="img" [alt]="nameOf(product)" class="h-full w-full object-cover group-hover:scale-[1.06] transition duration-300" />
+                <span class="absolute bottom-2 right-2 text-xs font-bold text-white bg-sage rounded-full px-2.5 py-1 femora-shadow">
+                  {{ formatPrice(priceOf(product)) }}
+                </span>
+              </div>
+            } @else {
+              <div class="relative h-32 bg-gradient-to-br from-terracotta/20 via-blush/30 to-sand/50 flex items-center justify-center text-4xl">
+                {{ productEmoji(categoryOf(product)) }}
+                <span class="absolute bottom-2 right-2 text-xs font-bold text-white bg-sage rounded-full px-2.5 py-1 femora-shadow">
+                  {{ formatPrice(priceOf(product)) }}
+                </span>
+              </div>
+            }
+            <div class="p-4">
+              @if (categoryOf(product)) {
+                <span class="inline-block text-[10px] font-semibold text-terracotta-dark bg-blush/30 rounded-full px-2 py-0.5 mb-1.5">
+                  {{ categoryOf(product) }}
+                </span>
+              }
+              <p class="font-bold text-navy text-sm font-display leading-snug truncate group-hover:text-terracotta-dark transition">
+                {{ nameOf(product) }}
+              </p>
+            </div>
+          </a>
+        }
+      }
+    </div>
+  </section>
+}

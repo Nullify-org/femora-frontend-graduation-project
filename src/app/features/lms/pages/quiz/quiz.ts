@@ -6,6 +6,7 @@ import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { QuizService } from '../../services/quiz.service';
 import { EnrollmentService } from '../../services/enrollment.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { AuthService } from '../../../../core/auth/auth.service';
 import { Quiz as QuizModel, QuizAnswerRequest, SubmitQuizResult } from '../../../../core/models/api.model';
 import { runInBrowser } from '../../../../core/utils/platform.util';
 
@@ -59,7 +60,7 @@ export class Quiz {
   readonly canRetry = computed(() => {
     return !!this.moduleId() && !!this.enrollmentId() && !!this.result() && !this.result()!.isPassed && (this.remainingAttempts() ?? 0) > 0;
   });
-  auth: any;
+  private readonly auth = inject(AuthService);
 
   constructor() {
     runInBrowser(() => {
@@ -143,6 +144,7 @@ export class Quiz {
           this.result.set({
             ...result,
             maxScore: result.maxScore ?? quiz.questions?.length ?? 0,
+            percentage: result.percentage ?? 0,
           });
           this.isSubmitting.set(false);
 

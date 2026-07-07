@@ -94,14 +94,15 @@ export class ProductService {
     );
   }
 
-  private normalizeProduct(product: RecommendedProduct & { minPrice?: number }): RecommendedProduct {
+  private normalizeProduct(product: RecommendedProduct): RecommendedProduct {
     const id = product.productId ?? product.id ?? product.productVariantId ?? '';
     return {
       ...product,
       id: String(id),
       productId: String(product.productId ?? product.id ?? id),
       name: product.name ?? product.title ?? 'منتج',
-      price: product.price ?? product.minPrice,
+      // Ensure `price` is a number or undefined (convert null -> undefined)
+      price: product.price ?? (product.minPrice ?? undefined),
     };
   }
 }

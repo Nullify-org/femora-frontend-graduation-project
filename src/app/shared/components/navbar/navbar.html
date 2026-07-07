@@ -126,6 +126,12 @@
                 <svg lucideUser [size]="16"></svg> {{ 'NAV.PROFILE' | translate }}
               </a>
 
+              <!-- My Interests (available to every logged-in user, including buyers) -->
+              <a routerLink="/profile/preferences" (click)="closeDropdown()"
+                class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">
+                <svg lucideHeart [size]="16"></svg> اهتماماتي
+              </a>
+
               <!-- Dashboard -->
               <a [routerLink]="dashboardRoute()" (click)="closeDropdown()"
                 class="flex items-center gap-2 px-4 py-2 text-sm text-text-medium hover:bg-cream transition">

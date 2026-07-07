@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { SwitchRole } from '../../widgets/switch-role/switch-role';
+import { RecommendedCourses } from '../../widgets/recommended-courses/recommended-courses';
 import { EnrollmentService } from '../../../lms/services/enrollment.service';
 import { OrderService } from '../../../marketplace/services/order.service';
 import { SubscriptionService, SubscriptionStatus } from '../../../../core/services/subscription.service';
@@ -12,7 +13,7 @@ import { Enrollment, Order } from '../../../../core/models/api.model';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, Sidebar, SwitchRole],
+  imports: [RouterLink, Sidebar, SwitchRole, RecommendedCourses],
   templateUrl: './dashboard.html',
 })
 export class Dashboard {

@@ -1,0 +1,37 @@
+<app-card title="دورات مقترحة لكِ" subtitle="بناءً على اهتماماتك ومستواكِ">
+  @if (isLoading()) {
+    <div class="space-y-2">
+      @for (i of [1,2]; track i) {
+        <div class="h-14 bg-cream rounded-xl animate-pulse"></div>
+      }
+    </div>
+  } @else if (courses().length === 0) {
+    <div class="text-center py-2">
+      <p class="text-xs text-terracotta-dark mb-2">لا توجد توصيات حالياً</p>
+      <a routerLink="/lms/catalog" class="text-xs font-medium text-terracotta hover:underline">تصفحى كل الدورات</a>
+    </div>
+  } @else {
+    <div class="space-y-2">
+      @for (c of courses(); track c.courseId) {
+        <a [routerLink]="['/lms/course', c.courseId]" class="flex items-center gap-3 p-2.5 bg-cream rounded-xl hover:bg-blush/30 transition">
+          <div class="w-10 h-10 rounded-lg overflow-hidden shrink-0 bg-blush/40 flex items-center justify-center">
+            @if (c.thumbnailUrl) {
+              <img [src]="c.thumbnailUrl" [alt]="c.title ?? ''" class="w-full h-full object-cover" />
+            } @else {
+              <span class="text-lg">📖</span>
+            }
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold text-navy truncate">{{ c.title }}</p>
+            <div class="flex items-center gap-2 mt-0.5">
+              @if (categoryOf(c)) {
+                <span class="text-[10px] text-terracotta-dark/70">{{ categoryOf(c) }}</span>
+              }
+              <span class="text-[10px] text-terracotta font-semibold">{{ formatPrice(c.price) }}</span>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</app-card>

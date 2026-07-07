@@ -1,6 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { LessonAiPanel } from '../../../ai-assistant/components/lesson-ai-panel/lesson-ai-panel.component';
@@ -23,7 +23,7 @@ interface FlatLesson {
 @Component({
   selector: 'app-lesson-player',
   standalone: true,
-  imports: [CommonModule, RouterLink, Sidebar, LessonAiPanel],
+  imports: [CommonModule, RouterModule, Sidebar, LessonAiPanel] as const,
   templateUrl: './lesson-player.html',
 })
 export class LessonPlayer {
@@ -41,6 +41,8 @@ export class LessonPlayer {
   readonly isLoadingLesson = signal(true);
   readonly isMarkingComplete = signal(false);
   readonly errorMessage = signal('');
+  readonly videoError = signal(false);
+  readonly videoLoading = signal(true);
 
   /** Controls the visibility of the "محتوى الدورة" sidebar on the lesson page. */
   readonly isContentSidebarOpen = signal(true);
@@ -129,6 +131,8 @@ export class LessonPlayer {
 
   private loadLesson(lessonId: string): void {
     this.isLoadingLesson.set(true);
+    this.videoError.set(false);
+    this.videoLoading.set(true);
     this.lesson.set(null);
 
     this.lessonsApi.getById(lessonId).subscribe({
@@ -141,6 +145,21 @@ export class LessonPlayer {
         this.isLoadingLesson.set(false);
       },
     });
+  }
+
+  onVideoError(): void {
+    this.videoError.set(true);
+    this.videoLoading.set(false);
+  }
+
+  onVideoReady(): void {
+    this.videoLoading.set(false);
+  }
+
+  /** Re-fetches the lesson to get a fresh (non-expired) SAS URL and retries playback. */
+  retryVideo(): void {
+    if (!this.lessonId) return;
+    this.loadLesson(this.lessonId);
   }
 
   goToLesson(target: FlatLesson): void {

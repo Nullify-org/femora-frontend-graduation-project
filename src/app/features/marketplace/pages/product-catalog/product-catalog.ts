@@ -2,6 +2,7 @@
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
+import { RecommendedProducts } from '../../widgets/recommended-products/recommended-products';
 import { ProductService } from '../../services/product.service';
 import { ProductCategory, RecommendedProduct } from '../../../../core/models/api.model';
 import { formatPrice, productEmoji } from '../../../../core/utils/api-response.util';
@@ -12,7 +13,7 @@ const PAGE_SIZE = 12;
 @Component({
   selector: 'app-product-catalog',
   standalone: true,
-  imports: [CommonModule, RouterLink, Sidebar],
+  imports: [CommonModule, RouterLink, Sidebar, RecommendedProducts],
   templateUrl: './product-catalog.html',
 })
 export class ProductCatalog {

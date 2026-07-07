@@ -29,17 +29,17 @@
     <div class="flex flex-col items-center justify-center"> -->
     <!-- </div> -->
     <h2 class="text-2xl font-bold text-[#3D2314] text-center mb-1">ما هو هدفك الرئيسي؟</h2>
-    <p class="text-sm text-[#8B6355] text-center mb-6">اختارى هدفاً واحداً يناسب طموحاتك</p>
+    <p class="text-sm text-[#8B6355] text-center mb-6">اختارى هدفاً واحداً أو أكثر يناسب طموحاتك</p>
 
     <!-- Options List -->
     <div class="space-y-3 mb-8">
       <button
         *ngFor="let option of options"
         type="button"
-        (click)="select(option.label)"
-        [class.border-[#C8956C]]="selected === option.label"
-        [class.bg-[#FDF0EA]]="selected === option.label"
-        [class.border-[#E8D5CB]]="selected !== option.label"
+        (click)="toggle(option.label)"
+        [class.border-[#C8956C]]="selectedGoals.includes(option.label)"
+        [class.bg-[#FDF0EA]]="selectedGoals.includes(option.label)"
+        [class.border-[#E8D5CB]]="!selectedGoals.includes(option.label)"
         class="w-full flex items-center gap-4 border-2 rounded-2xl px-4 py-3.5 text-right transition hover:border-[#C8956C] hover:bg-[#FDF7F4]"
       >
         <span class="text-2xl shrink-0">{{ option.emoji }}</span>
@@ -47,13 +47,13 @@
           <p class="text-sm font-semibold text-[#3D2314]">{{ option.label }}</p>
           <p class="text-xs text-[#8B6355]">{{ option.desc }}</p>
         </div>
-        <!-- Radio -->
+        <!-- Checkbox -->
         <span
           class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0"
-          [class.border-[#C8956C]]="selected === option.label"
-          [class.border-[#E8D5CB]]="selected !== option.label"
+          [class.border-[#C8956C]]="selectedGoals.includes(option.label)"
+          [class.border-[#E8D5CB]]="!selectedGoals.includes(option.label)"
         >
-          <span *ngIf="selected === option.label" class="w-2.5 h-2.5 rounded-full bg-[#C8956C]"></span>
+          <span *ngIf="selectedGoals.includes(option.label)" class="w-2.5 h-2.5 rounded-full bg-[#C8956C]"></span>
         </span>
       </button>
     </div>
@@ -61,7 +61,7 @@
     <button
       type="button"
       (click)="next()"
-      [disabled]="!selected"
+      [disabled]="!isValid"
       class="w-full bg-[#C8956C] text-white py-3 rounded-xl font-semibold hover:bg-[#B07855] transition disabled:opacity-40 disabled:cursor-not-allowed mb-3"
     >
       التالي

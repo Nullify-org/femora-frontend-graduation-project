@@ -1,4 +1,4 @@
-﻿<div class="fixed bottom-6 left-6 z-40 flex flex-col items-start gap-3" dir="rtl">
+﻿<div class="fixed bottom-24 left-6 z-40 flex flex-col items-start gap-3" dir="rtl">
 
   <!-- Expanded panel -->
   @if (isPanelOpen) {
@@ -54,6 +54,13 @@
         <div class="flex-1 overflow-y-auto px-4 py-3 space-y-4">
           @if (turns().length === 0 && !isLoading()) {
             <p class="text-sm text-stone-500">اسأل أي سؤال عن محتوى الدرس ده وهيجاوبك المساعد الذكي.</p>
+            @if (suggestedQuestions().length > 0) {
+              <app-suggestions
+                [questions]="suggestedQuestions()"
+                [disabled]="isLoading()"
+                (questionClick)="askSuggested($event)"
+              />
+            }
           }
 
           @for (turn of turns(); track $index) {

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ApprovalService } from '../../../../core/services/approval.service';
@@ -15,7 +15,7 @@ import { SwitchRole } from '../../../dashboard/widgets/switch-role/switch-role';
 @Component({
   selector: 'app-instructor-dashboard',
   standalone: true,
-  imports: [Sidebar, FormsModule, RouterLink, SwitchRole],
+  imports: [Sidebar, FormsModule, SwitchRole],
   templateUrl: './instructor-dashboard.html',
 })
 export class InstructorDashboard implements OnInit {

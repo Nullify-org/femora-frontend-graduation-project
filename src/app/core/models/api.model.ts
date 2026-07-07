@@ -94,10 +94,14 @@ export interface RecommendedProduct {
   name?: string | null;
   title?: string | null;
   price?: number;
+  /** Matches RecommendedProductDto.MinPrice from GET /api/ai/recommendations/products. */
+  minPrice?: number | null;
   sellerName?: string | null;
   category?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
+  /** Matches RecommendedProductDto.PrimaryImageUrl from GET /api/ai/recommendations/products. */
+  primaryImageUrl?: string | null;
   score?: number;
   /** Product category id â€” matches ProductSummaryDto.CategoryId, used to filter the catalog. */
   categoryId?: string | null;
@@ -124,12 +128,41 @@ export interface ProductCategory {
   productCount?: number;
 }
 
+/** Matches Femora.Application.Features.LMS.Categories.Queries.GetCourseCategories.CourseCategoryDto (GET /api/course-categories) */
+export interface CourseCategory {
+  id: string;
+  name: string;
+  description?: string | null;
+  courseCount?: number;
+}
+
+/** A single interest category with the current user's selection state - shared shape for both course and product categories. */
+export interface InterestCategory {
+  id: string;
+  name: string;
+  isSelected: boolean;
+}
+
+/** Matches Femora.Application.Features.Identity.Queries.GetMyInterests.MyInterestsResponse (GET /api/ai/interests) */
+export interface MyInterestsResponse {
+  courseCategories: InterestCategory[];
+  productCategories: InterestCategory[];
+}
+
+/** Matches Femora.Application.Common.DTOs.SuggestedQuestionDto (GET /api/ai/suggested-questions, GET /api/ai/lessons/{id}/suggested-questions) */
+export interface SuggestedQuestion {
+  question: string;
+}
+
 export interface RecommendedCourse {
   courseId: string;
   title?: string | null;
+  description?: string | null;
+  categoryName?: string | null;
   category?: string | null;
   level?: string | null;
   price?: number;
+  thumbnailUrl?: string | null;
   score?: number;
   reasons?: string[] | null;
 }
@@ -204,6 +237,7 @@ export interface GenerateQuizResponse {
 export interface QuizQuestion {
   questionId: string;
   text?: string | null;
+  type?: 'MultipleChoice' | 'TrueFalse' | null;
   orderIndex?: number;
   choices?: QuizChoice[] | null;
 }
@@ -228,6 +262,9 @@ export interface SubmitQuizResult {
   quizAttemptId?: string;
   score: number;
   maxScore?: number;
+  // 0-100 pass/fail percentage - separate from score/maxScore which are
+  // "correct answers out of total questions" (e.g. 7/10).
+  percentage?: number;
   isPassed: boolean;
   attemptNumber?: number;
   maxAttempts?: number;
@@ -315,6 +352,7 @@ export interface EnrollmentModule {
   title: string;
   orderIndex: number;
   isUnlocked: boolean;
+  allLessonsCompleted: boolean;
   isCompleted: boolean;
   quizPassed: boolean;
   lessons: EnrollmentLesson[];

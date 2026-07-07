@@ -13,6 +13,7 @@ import {
 } from '@lucide/angular';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { Modal } from '../../../../shared/components/modal/modal';
+import { Suggestions } from '../../components/suggestions/suggestions';
 import { ChatService } from '../../services/chat.service';
 import { AiService } from '../../services/ai.service';
 import { ChatMessage, ConversationSummary } from '../../../../core/models/api.model';
@@ -28,6 +29,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
     FormsModule,
     Sidebar,
     Modal,
+    Suggestions,
     LucideSend,
     LucidePlus,
     LucidePencil,
@@ -59,6 +61,7 @@ export class Chat implements AfterViewChecked {
   readonly isSending = signal(false);
   readonly isLoadingConversations = signal(false);
   readonly errorMessage = signal('');
+  readonly suggestedQuestions = signal<string[]>([]);
 
   // Rename state
   readonly renamingId = signal<string | null>(null);
@@ -73,7 +76,23 @@ export class Chat implements AfterViewChecked {
   private shouldScroll = false;
 
   constructor() {
-    runInBrowser(() => this.loadConversations());
+    runInBrowser(() => {
+      this.loadConversations();
+      this.loadSuggestedQuestions();
+    });
+  }
+
+  private loadSuggestedQuestions(): void {
+    this.chatApi.getSuggestedQuestions(5).subscribe({
+      next: (res) => this.suggestedQuestions.set((res ?? []).map((q) => q.question)),
+      error: () => this.suggestedQuestions.set([]),
+    });
+  }
+
+  /** Sends a tapped suggestion chip exactly like a typed message. */
+  sendSuggested(question: string): void {
+    this.draft = question;
+    this.send();
   }
 
   ngAfterViewChecked(): void {
@@ -114,7 +133,7 @@ export class Chat implements AfterViewChecked {
     this.errorMessage.set('');
     this.chatApi.getConversation(id).subscribe({
       next: (conversation) => {
-        this.messages.set(conversation.messages ?? []);
+        this.messages.set(this.normalizeMessages(conversation.messages ?? []));
         this.isLoading.set(false);
         this.shouldScroll = true;
       },
@@ -156,6 +175,25 @@ export class Chat implements AfterViewChecked {
         this.errorMessage.set(err?.error?.title ?? err?.error?.detail ?? 'تعذّر إرسال الرسالة');
       },
     });
+  }
+
+  private normalizeMessages(messages: ChatMessage[]): ChatMessage[] {
+    return messages.map((msg) => ({
+      ...msg,
+      role: this.normalizeRole(msg.role ?? (msg as any).sender ?? (msg as any).author ?? ''),
+    }));
+  }
+
+  private normalizeRole(role: unknown): 'user' | 'assistant' | string {
+    if (typeof role !== 'string') return '';
+    const normalized = role.trim().toLowerCase();
+    if (['user', 'me', 'client', 'you'].includes(normalized)) {
+      return 'user';
+    }
+    if (['assistant', 'ai', 'bot', 'system'].includes(normalized)) {
+      return 'assistant';
+    }
+    return normalized;
   }
 
   // ============================================================

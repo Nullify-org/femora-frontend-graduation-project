@@ -32,7 +32,7 @@
 
     <!-- Interests Grid -->
     <div class="grid grid-cols-2 gap-3 mb-6">
-      @for (item of interests; track item.id) {
+      @for (item of interests(); track item.id) {
         <button
           type="button"
           (click)="toggle(item.id)"

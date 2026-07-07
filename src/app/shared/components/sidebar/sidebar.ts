@@ -73,6 +73,7 @@ export class Sidebar {
         { label: 'الطلاب', path: '/dashboard/instructor/students', icon: 'users' },
         { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
         { label: 'الملف الشخصى', path: '/profile/instructor', icon: 'user' },
+        { label: 'اهتماماتي', path: '/profile/preferences', icon: 'wishlist' },
         { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
       ];
     }
@@ -85,6 +86,7 @@ export class Sidebar {
         { label: 'الفواتير', path: '/dashboard/seller/invoices', icon: 'reports' },
         { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
         { label: 'الملف الشخصى', path: '/profile/seller', icon: 'user' },
+        { label: 'اهتماماتي', path: '/profile/preferences', icon: 'wishlist' },
         { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
       ];
     }
@@ -96,6 +98,7 @@ export class Sidebar {
         { label: 'طلباتي', path: '/marketplace/orders', icon: 'orders' },
         { label: 'المفضلة', path: '/marketplace/wishlist', icon: 'wishlist' },
         { label: 'الملف الشخصى', path: '/profile/buyer', icon: 'user' },
+        { label: 'اهتماماتي', path: '/profile/preferences', icon: 'wishlist' },
         { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
       ];
     }
@@ -103,11 +106,12 @@ export class Sidebar {
     // Default to Trainee/Student (No 'الرسائل' / 'messaging' links are present)
     return [
       { label: 'لوحة التحكم', path: '/dashboard/trainee', icon: 'dashboard' },
+      { label: 'الدورات', path: '/lms/catalog', icon: 'courses' },
       { label: 'دوراتي', path: '/lms/my-learning', icon: 'courses' },
-      { label: 'الاختبارات', path: '/lms/quiz/demo-quiz', icon: 'quizzes' },
       { label: 'المساعد الذكي', path: '/ai/chat', icon: 'chat' },
       { label: 'السوق', path: '/marketplace/catalog', icon: 'products' },
       { label: 'الملف الشخصى', path: '/profile/trainee', icon: 'user' },
+      { label: 'اهتماماتي', path: '/profile/preferences', icon: 'wishlist' },
       { label: 'الإعدادات', path: '/profile/preferences', icon: 'settings' },
     ];
   });

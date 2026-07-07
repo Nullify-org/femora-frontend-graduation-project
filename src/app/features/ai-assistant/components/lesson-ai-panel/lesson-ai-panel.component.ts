@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ChatService } from '../../services/chat.service';
+import { Suggestions } from '../suggestions/suggestions';
 import { NotificationService } from '../../../../core/services/notification.service';
 
 interface QaTurn {
@@ -15,7 +16,7 @@ type PanelTab = 'summarize' | 'ask' | null;
 @Component({
   selector: 'app-lesson-ai-panel',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Suggestions],
   templateUrl: './lesson-ai-panel.component.html',
 })
 export class LessonAiPanel {
@@ -47,6 +48,7 @@ export class LessonAiPanel {
   readonly conversationId = signal<string | undefined>(undefined);
   readonly turns = signal<QaTurn[]>([]);
   readonly draftQuestion = signal('');
+  readonly suggestedQuestions = signal<string[]>([]);
 
   get isPanelOpen(): boolean {
     return this.activeTab() !== null;
@@ -61,7 +63,23 @@ export class LessonAiPanel {
 
     if (tab === 'ask') {
       queueMicrotask(() => this.questionInput()?.nativeElement.focus());
+      if (this.turns().length === 0 && this.suggestedQuestions().length === 0) {
+        this.loadSuggestedQuestions();
+      }
     }
+  }
+
+  private loadSuggestedQuestions(): void {
+    this.chat.getLessonSuggestedQuestions(this.lessonId(), 4).subscribe({
+      next: (res) => this.suggestedQuestions.set((res ?? []).map((q) => q.question)),
+      error: () => this.suggestedQuestions.set([]),
+    });
+  }
+
+  /** Sends a tapped suggestion chip exactly like a typed question. */
+  askSuggested(question: string): void {
+    this.draftQuestion.set(question);
+    this.askQuestion();
   }
 
   close(): void {

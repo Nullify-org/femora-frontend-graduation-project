@@ -75,23 +75,69 @@ export class QuizService {
   }
 
   private mapSubmitResult(response: Record<string, unknown>): SubmitQuizResult {
-    const score = typeof response['score'] === 'number' ? response['score'] : 0;
-    const maxScore = typeof response['maxScore'] === 'number' ? response['maxScore'] : undefined;
+    const payload = this.getResultPayload(response);
+    const score = this.getNumber(payload, ['score', 'totalScore', 'obtainedScore', 'earnedScore', 'points']) ?? 0;
+    const maxScore = this.getNumber(payload, ['maxScore', 'maximumScore', 'totalMaxScore', 'fullMarks', 'totalScorePossible']) ?? undefined;
+    const isPassed = this.getBoolean(payload, ['isPassed', 'passed', 'success', 'succeeded'])
+      ?? (typeof payload['status'] === 'string' ? payload['status'].toLowerCase() === 'passed' : false);
 
     return {
-      quizAttemptId: typeof response['quizAttemptId'] === 'string' ? response['quizAttemptId'] : undefined,
+      quizAttemptId: typeof payload['quizAttemptId'] === 'string' ? payload['quizAttemptId'] : undefined,
       score,
       maxScore,
-      isPassed: response['isPassed'] === true,
-      attemptNumber: typeof response['attemptNumber'] === 'number' ? response['attemptNumber'] : undefined,
-      maxAttempts: typeof response['maxAttempts'] === 'number' ? response['maxAttempts'] : undefined,
-      answerResults: Array.isArray(response['answerResults'])
-        ? (response['answerResults'] as Array<Record<string, unknown>>).map((item) => ({
+      isPassed,
+      attemptNumber: this.getNumber(payload, ['attemptNumber', 'attempt', 'currentAttempt']) ?? undefined,
+      maxAttempts: this.getNumber(payload, ['maxAttempts', 'allowedAttempts']) ?? undefined,
+      answerResults: Array.isArray(payload['answerResults'])
+        ? (payload['answerResults'] as Array<Record<string, unknown>>).map((item) => ({
             questionId: String(item['questionId'] ?? ''),
             isCorrect: item['isCorrect'] === true,
           }))
         : [],
     };
+  }
+
+  private getResultPayload(response: Record<string, unknown>): Record<string, unknown> {
+    const candidates = [response['data'], response['result'], response['quizResult']];
+    for (const candidate of candidates) {
+      if (this.isRecord(candidate)) {
+        return candidate;
+      }
+    }
+    return response;
+  }
+
+  private getNumber(payload: Record<string, unknown>, keys: string[]): number | undefined {
+    for (const key of keys) {
+      const value = payload[key];
+      if (typeof value === 'number') {
+        return value;
+      }
+    }
+    return undefined;
+  }
+
+  private getBoolean(payload: Record<string, unknown>, keys: string[]): boolean | undefined {
+    for (const key of keys) {
+      const value = payload[key];
+      if (typeof value === 'boolean') {
+        return value;
+      }
+      if (typeof value === 'string') {
+        const normalized = value.toLowerCase();
+        if (normalized === 'true' || normalized === 'passed' || normalized === 'success') {
+          return true;
+        }
+        if (normalized === 'false' || normalized === 'failed') {
+          return false;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  private isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
   }
 
   // Backward-compatible wrappers for any older page/component usage.
