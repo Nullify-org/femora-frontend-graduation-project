@@ -6,6 +6,7 @@ import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browse
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 import { LessonAiPanel } from '../../../ai-assistant/components/lesson-ai-panel/lesson-ai-panel.component';
 import { EnrollmentService } from '../../services/enrollment.service';
+import { LearningService } from '../../services/learning.service';
 import { QuizService } from '../../services/quiz.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -26,11 +27,13 @@ export class CoursePlayer {
   private readonly router = inject(Router);
   private readonly sanitizer = inject(DomSanitizer);
   private readonly enrollmentsApi = inject(EnrollmentService);
+  private readonly learningApi = inject(LearningService);
   private readonly quizApi = inject(QuizService);
   private readonly auth = inject(AuthService);
   private readonly notifications = inject(NotificationService);
 
   readonly enrollment = signal<EnrollmentDetailsResponse | null>(null);
+  readonly isMarkingComplete = signal(false);
   readonly isLoading = signal(true);
   readonly errorMessage = signal('');
   readonly isUnlocking = signal(false);
@@ -39,6 +42,11 @@ export class CoursePlayer {
   readonly selectedLessonId = signal('');
   readonly fromQuizModuleId = signal('');
   readonly autoQuizTriggered = signal(false);
+  // Guards maybeAutoUnlockAfterQuiz so it only ever runs ONCE per navigation.
+  // Without this, every loadEnrollment() call (including the one triggered by
+  // unlockNextModule's own success handler) would see the same fromQuizModuleId
+  // query param still set and call unlockNextModule again -> infinite toast loop.
+  readonly autoUnlockHandled = signal(false);
   readonly showDebug = signal(false);
 
   readonly isTraineeProfile = computed(() => {
@@ -159,6 +167,14 @@ export class CoursePlayer {
   }
 
   selectModule(module: EnrollmentModule): void {
+    // A module stays locked in the UI until the previous module's quiz is passed.
+    // Without this guard, users could click straight into a locked module and
+    // read/watch its lessons even though isUnlocked is false.
+    if (!module.isUnlocked) {
+      this.notifications.info('هذه الوحدة مقفلة. أكملي دروس الوحدة الحالية واجتازي اختبارها لفتحها.');
+      return;
+    }
+
     this.selectedModuleId.set(module.moduleId);
     const nextLesson = module.lessons.find((lesson) => !lesson.isCompleted) ?? module.lessons[0];
     if (nextLesson) {
@@ -170,21 +186,39 @@ export class CoursePlayer {
     this.selectedLessonId.set(lesson.lessonId);
   }
 
-  /** Advance to the next lesson (no complete-lesson endpoint exists on this backend) */
   completeAndNext(): void {
-    const next = this.nextLesson();
-    if (next) {
-      this.selectedLessonId.set(next.lessonId);
+    const lesson = this.selectedLesson();
+    if (!lesson || lesson.isCompleted) {
+      return;
     }
-    // Refresh enrollment to pick up any server-side progress updates
-    this.loadEnrollment();
+
+    this.isMarkingComplete.set(true);
+    this.learningApi.markLessonComplete(lesson.lessonId).subscribe({
+      next: () => {
+        this.isMarkingComplete.set(false);
+        this.loadEnrollment();
+
+        const next = this.nextLesson();
+        if (next) {
+          this.selectedLessonId.set(next.lessonId);
+        }
+      },
+      error: (err) => {
+        this.isMarkingComplete.set(false);
+        this.notifications.error(err?.error?.title ?? err?.error?.detail ?? 'تعذر إتمام الدرس');
+      },
+    });
   }
 
   private maybeLaunchQuiz(data: EnrollmentDetailsResponse): void {
     if (!this.isTraineeProfileAllowed() || this.autoQuizTriggered()) return;
 
     const module = this.selectedModule();
-    if (!module || !module.isCompleted || module.quizPassed) return;
+    // BUG FIX: module.isCompleted is only true once the quiz is ALSO passed, so
+    // gating on it here made this condition impossible to satisfy - the quiz could
+    // never auto-launch. What we actually need is "all lessons watched, quiz not
+    // passed yet", which is exactly what allLessonsCompleted + !quizPassed gives us.
+    if (!module || !module.allLessonsCompleted || module.quizPassed) return;
 
     this.autoQuizTriggered.set(true);
     this.startModuleQuiz(module.moduleId, data.enrollmentId);
@@ -192,12 +226,44 @@ export class CoursePlayer {
 
   private maybeAutoUnlockAfterQuiz(data: EnrollmentDetailsResponse): void {
     const moduleId = this.fromQuizModuleId();
-    if (!moduleId) return;
+    // Only ever handle this once. The quiz page has *already* unlocked the next
+    // module and shown its own success toast before navigating here with
+    // fromQuizModuleId - this is only a safety-net for the rare case that call
+    // didn't go through. Without this guard, unlockNextModule()'s own
+    // loadEnrollment() call would see the same query param again on every
+    // subsequent load and re-trigger itself forever (the infinite toast loop).
+    if (!moduleId || this.autoUnlockHandled()) return;
 
     const module = data.modules.find((item) => item.moduleId === moduleId);
-    if (!module || !module.quizPassed) return;
+    if (!module || !module.quizPassed) {
+      return;
+    }
+
+    this.autoUnlockHandled.set(true);
+    this.clearFromQuizQueryParam();
+
+    // If the next module (by order) is already unlocked - most likely because
+    // the quiz page's own unlock call already succeeded - there's nothing left
+    // to do, and calling the endpoint again would just show a duplicate toast.
+    const sortedModules = [...data.modules].sort((a, b) => a.orderIndex - b.orderIndex);
+    const currentIndex = sortedModules.findIndex((item) => item.moduleId === moduleId);
+    const nextModule = currentIndex >= 0 ? sortedModules[currentIndex + 1] : undefined;
+
+    if (!nextModule || nextModule.isUnlocked) {
+      return;
+    }
 
     this.unlockNextModule(module.moduleId);
+  }
+
+  /** Removes fromQuizModuleId from the URL without reloading, so refreshing the page can't retrigger the auto-unlock. */
+  private clearFromQuizQueryParam(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { fromQuizModuleId: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   startModuleQuiz(moduleId: string, enrollmentId = this.enrollmentId): void {

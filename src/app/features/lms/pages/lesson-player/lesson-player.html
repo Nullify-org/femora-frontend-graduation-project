@@ -36,15 +36,49 @@
           <p class="text-terracotta-dark mt-4">جارى تحميل الدرس...</p>
         } @else if (lesson(); as l) {
 
-          <h1 class="text-2xl font-bold text-navy font-display mt-2 mb-4">{{ l.title }}</h1>
+          <div class="flex items-center gap-2 mt-2 mb-4">
+            <h1 class="text-2xl font-bold text-navy font-display">{{ l.title }}</h1>
+            @if (l.isPreview) {
+              <span class="text-[11px] font-medium text-sage bg-sage/10 border border-sage/30 rounded-full px-2 py-0.5">
+                معاينة مجانية
+              </span>
+            }
+          </div>
 
           <!-- Video lesson -->
           @if (l.type === 'Video' && l.contentUrl) {
-            <video
-              [src]="l.contentUrl"
-              controls
-              class="w-full rounded-2xl femora-shadow bg-black aspect-video"
-            ></video>
+            <div class="relative w-full rounded-2xl overflow-hidden femora-shadow bg-black aspect-video">
+              @if (videoLoading() && !videoError()) {
+                <div class="absolute inset-0 flex items-center justify-center text-white/80 text-sm gap-2 bg-black">
+                  <span class="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                  جارى تحميل الفيديو...
+                </div>
+              }
+
+              @if (videoError()) {
+                <div class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/90 text-sm bg-black px-6 text-center">
+                  <span>تعذّر تشغيل الفيديو. ممكن الرابط يكون منتهى الصلاحية.</span>
+                  <button
+                    type="button"
+                    (click)="retryVideo()"
+                    class="text-xs rounded-lg bg-terracotta px-4 py-2 text-white font-medium hover:opacity-90 transition"
+                  >
+                    إعادة المحاولة
+                  </button>
+                </div>
+              }
+
+              <video
+                [src]="l.contentUrl"
+                controls
+                preload="metadata"
+                playsinline
+                [class.opacity-0]="videoLoading() || videoError()"
+                class="w-full h-full transition-opacity"
+                (loadeddata)="onVideoReady()"
+                (error)="onVideoError()"
+              ></video>
+            </div>
           }
 
           <!-- Article lesson -->

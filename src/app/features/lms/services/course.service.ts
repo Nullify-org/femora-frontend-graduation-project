@@ -7,6 +7,7 @@ import { CourseDetails } from '../models/course-details.model';
 import { GetCoursesRequest } from '../models/get-courses-request.model';
 import { PagedResponse } from '../models/paged-response.model';
 import { CourseFilterOptions } from '../models/course-filter-options.model';
+import { CourseCategory } from '../../../core/models/api.model';
 
 @Injectable({ providedIn: 'root' })
 export class CourseService {
@@ -28,6 +29,11 @@ export class CourseService {
 
   getById(id: string): Observable<Course> {
     return this.getCourseById(id);
+  }
+
+  /** Every course category (id, name, published course count) — powers the "edit my interests" category picker. */
+  getCategories(): Observable<CourseCategory[]> {
+    return this.api.get<CourseCategory[]>('/api/course-categories');
   }
 
   getCourses(request?: GetCoursesRequest): Observable<PagedResponse<Course>> {

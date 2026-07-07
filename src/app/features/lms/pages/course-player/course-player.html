@@ -64,7 +64,7 @@
                   @if (selectedModule(); as module) {
                     @if (module.quizPassed) {
                       <span class="rounded-full bg-green-50 text-green-700 px-3 py-1 text-xs font-semibold">✓ تم اجتياز الاختبار</span>
-                    } @else if (module.isCompleted) {
+                    } @else if (module.allLessonsCompleted) {
                       <span class="rounded-full bg-amber-50 text-amber-700 px-3 py-1 text-xs font-semibold">⏳ بانتظار الاختبار</span>
                     }
                   }
@@ -167,9 +167,11 @@
                         id="btn-complete-lesson"
                         type="button"
                         (click)="completeAndNext()"
-                        class="flex items-center gap-2 rounded-xl bg-terracotta px-6 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-terracotta-dark"
+                        [disabled]="isMarkingComplete()"
+                        class="flex items-center gap-2 rounded-xl bg-terracotta px-6 py-2.5 text-sm font-semibold text-white shadow transition hover:bg-terracotta-dark disabled:opacity-60 disabled:cursor-wait"
                       >
-                        ✓ إتمام الدرس
+                        <span *ngIf="!isMarkingComplete()">✓ إتمام الدرس</span>
+                        <span *ngIf="isMarkingComplete()">جاري الإتمام...</span>
                         @if (nextLesson()) { والانتقال للتالي }
                       </button>
                     } @else if (nextLesson()) {
@@ -210,12 +212,21 @@
                     class="w-full text-right border rounded-2xl p-4 transition"
                     [class.border-terracotta]="selectedModuleId() === module.moduleId"
                     [class.bg-terracotta/5]="selectedModuleId() === module.moduleId"
-                    [class.border-blush/30]="selectedModuleId() !== module.moduleId"
+                    [class.border-blush/30]="selectedModuleId() !== module.moduleId && module.isUnlocked"
+                    [class.border-stone-200]="!module.isUnlocked"
+                    [class.opacity-60]="!module.isUnlocked"
+                    [class.cursor-not-allowed]="!module.isUnlocked"
+                    [attr.aria-disabled]="!module.isUnlocked"
                   >
                     <div class="flex items-center justify-between gap-3">
-                      <div>
-                        <p class="font-semibold text-navy">{{ module.title }}</p>
-                        <p class="text-xs text-stone-500">{{ module.lessons.length }} درس</p>
+                      <div class="flex items-center gap-2">
+                        @if (!module.isUnlocked) {
+                          <span class="text-stone-400" title="مقفلة">🔒</span>
+                        }
+                        <div>
+                          <p class="font-semibold text-navy">{{ module.title }}</p>
+                          <p class="text-xs text-stone-500">{{ module.lessons.length }} درس</p>
+                        </div>
                       </div>
                       <span
                         class="text-xs font-semibold rounded-full px-2.5 py-1"
@@ -224,7 +235,7 @@
                         [class.bg-stone-100]="!module.quizPassed"
                         [class.text-stone-500]="!module.quizPassed"
                       >
-                        {{ module.quizPassed ? '✓ تم' : (module.isCompleted ? 'بانتظار الاختبار' : 'جارٍ') }}
+                        {{ !module.isUnlocked ? 'مقفلة' : (module.quizPassed ? '✓ تم' : (module.allLessonsCompleted ? 'بانتظار الاختبار' : 'جارٍ')) }}
                       </span>
                     </div>
                   </button>

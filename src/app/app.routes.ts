@@ -82,7 +82,7 @@ export const routes: Routes = [
     path: 'onboarding/interests',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/auth/pages/onboarding/interests/interests').then((m) => m.Interests),
+      import('./features/auth/pages/onboarding/interests/interests.api').then((m) => m.Interests),
   },
   {
     path: 'onboarding/goal',

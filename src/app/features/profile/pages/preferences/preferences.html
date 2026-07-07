@@ -1,0 +1,98 @@
+<div class="flex min-h-screen bg-cream-light" dir="rtl">
+  <app-sidebar />
+  <main class="flex-1 p-4 md:p-8">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-xl md:text-2xl font-bold text-navy font-display mb-1">الإعدادات — اهتماماتي</h1>
+      <p class="text-terracotta-dark text-sm mb-6">
+        اختارى الفئات اللى تهمّك، وهنستخدمها عشان نرشحلك الكورسات والمنتجات المناسبة ليكِ.
+      </p>
+
+      @if (isLoading()) {
+        <div class="space-y-3">
+          @for (i of [1,2,3,4]; track i) {
+            <div class="h-10 rounded-xl bg-white/60 animate-pulse"></div>
+          }
+        </div>
+      } @else {
+        @if (errorMessage()) {
+          <p class="text-red-600 text-xs mb-4">{{ errorMessage() }}</p>
+        }
+
+        <!-- Course categories -->
+        <section class="bg-white rounded-2xl femora-shadow border border-blush/30 p-5 mb-5">
+          <h2 class="font-bold text-navy mb-3">فئات الكورسات</h2>
+
+          @if (courseCategories().length === 0) {
+            <p class="text-sm text-stone-500">لا توجد فئات كورسات متاحة حالياً.</p>
+          } @else {
+            <div class="flex flex-wrap gap-2">
+              @for (cat of courseCategories(); track cat.id) {
+                <button
+                  type="button"
+                  (click)="toggleCourseCategory(cat.id)"
+                  [class.bg-terracotta]="isCourseCategorySelected(cat.id)"
+                  [class.text-white]="isCourseCategorySelected(cat.id)"
+                  [class.border-terracotta]="isCourseCategorySelected(cat.id)"
+                  [class.bg-cream]="!isCourseCategorySelected(cat.id)"
+                  [class.text-navy]="!isCourseCategorySelected(cat.id)"
+                  [class.border-blush]="!isCourseCategorySelected(cat.id)"
+                  class="text-sm font-medium rounded-full px-4 py-2 border transition"
+                >
+                  {{ cat.name }}
+                  @if (cat.count) {
+                    <span class="opacity-70 text-xs">({{ cat.count }})</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </section>
+
+        <!-- Product categories -->
+        <section class="bg-white rounded-2xl femora-shadow border border-blush/30 p-5 mb-6">
+          <h2 class="font-bold text-navy mb-3">فئات المتجر</h2>
+
+          @if (productCategories().length === 0) {
+            <p class="text-sm text-stone-500">لا توجد فئات منتجات متاحة حالياً.</p>
+          } @else {
+            <div class="flex flex-wrap gap-2">
+              @for (cat of productCategories(); track cat.id) {
+                <button
+                  type="button"
+                  (click)="toggleProductCategory(cat.id)"
+                  [class.bg-navy]="isProductCategorySelected(cat.id)"
+                  [class.text-white]="isProductCategorySelected(cat.id)"
+                  [class.border-navy]="isProductCategorySelected(cat.id)"
+                  [class.bg-cream]="!isProductCategorySelected(cat.id)"
+                  [class.text-navy]="!isProductCategorySelected(cat.id)"
+                  [class.border-blush]="!isProductCategorySelected(cat.id)"
+                  class="text-sm font-medium rounded-full px-4 py-2 border transition"
+                >
+                  {{ cat.name }}
+                  @if (cat.count) {
+                    <span class="opacity-70 text-xs">({{ cat.count }})</span>
+                  }
+                </button>
+              }
+            </div>
+          }
+        </section>
+
+        <button
+          type="button"
+          (click)="save()"
+          [disabled]="isSaving()"
+          class="bg-terracotta text-white px-6 py-3 rounded-xl font-semibold hover:bg-terracotta-dark transition disabled:opacity-60"
+        >
+          {{ isSaving() ? 'جارِ الحفظ...' : 'حفظ الاهتمامات' }}
+        </button>
+
+        @if (!hasAnySelection()) {
+          <p class="text-xs text-stone-500 mt-3">
+            من غير اختيار أى اهتمام، هتشوفى اقتراحات عامة بدل المخصصة ليكِ.
+          </p>
+        }
+      }
+    </div>
+  </main>
+</div>

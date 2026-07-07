@@ -19,7 +19,7 @@ interface GoalOption {
 export class Goal {
   private readonly router = inject(Router);
 
-  selected: string | null = null;
+  selectedGoals: string[] = [];
 
   options: GoalOption[] = [
     {
@@ -49,8 +49,13 @@ export class Goal {
     },
   ];
 
-  select(label: string): void {
-    this.selected = label;
+  toggle(label: string): void {
+    const index = this.selectedGoals.indexOf(label);
+    if (index === -1) {
+      this.selectedGoals = [...this.selectedGoals, label];
+      return;
+    }
+    this.selectedGoals = this.selectedGoals.filter((item) => item !== label);
   }
 
   next(): void {
@@ -58,6 +63,6 @@ export class Goal {
   }
 
   get isValid(): boolean {
-    return this.selected !== null;
+    return this.selectedGoals.length > 0;
   }
 }

@@ -5,8 +5,11 @@ import {
   ChatWithLessonResult,
   ConversationDetail,
   ConversationSummary,
+  MyInterestsResponse,
   RecommendedCourse,
+  RecommendedProduct,
   SendMessageResult,
+  SuggestedQuestion,
   SummarizeLessonResult,
 } from '../../../core/models/api.model';
 
@@ -45,8 +48,34 @@ export class ChatService {
     );
   }
 
+  /** Current user's course/product category interests, each flagged with isSelected — prefills the edit-interests screen. */
+  getMyInterests(): Observable<MyInterestsResponse> {
+    return this.api.get<MyInterestsResponse>(`${this.base}/interests`);
+  }
+
+  /** Rotating "quick question" chips for the general chatbot's empty state. */
+  getSuggestedQuestions(count = 5): Observable<SuggestedQuestion[]> {
+    return this.api.get<SuggestedQuestion[]>(`${this.base}/suggested-questions`, {
+      params: { count: String(count) },
+    });
+  }
+
+  /** Rotating "quick question" chips for a specific lesson's Q&A panel. */
+  getLessonSuggestedQuestions(lessonId: string, count = 4): Observable<SuggestedQuestion[]> {
+    return this.api.get<SuggestedQuestion[]>(`${this.base}/lessons/${lessonId}/suggested-questions`, {
+      params: { count: String(count) },
+    });
+  }
+
   recommendedCourses(top = 6): Observable<RecommendedCourse[]> {
     return this.api.get<RecommendedCourse[]>(`${this.base}/recommendations/courses`, {
+      params: { top: String(top) },
+    });
+  }
+
+  /** AI-ranked product recommendations, based on the user's preferred product categories. */
+  recommendedProducts(top = 8): Observable<RecommendedProduct[]> {
+    return this.api.get<RecommendedProduct[]>(`${this.base}/recommendations/products`, {
       params: { top: String(top) },
     });
   }

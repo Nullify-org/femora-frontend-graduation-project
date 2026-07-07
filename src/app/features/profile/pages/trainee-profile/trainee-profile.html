@@ -1,4 +1,4 @@
-<div class="flex min-h-screen bg-cream-light">
+<div class="flex min-h-screen bg-cream-light" dir="rtl">
   <app-sidebar />
   <main class="flex-1 p-8">
     <div class="max-w-3xl mx-auto">
@@ -11,7 +11,7 @@
               <div class="w-16 h-16 rounded-full bg-blush flex items-center justify-center text-2xl">👤</div>
               <div>
                 <p class="text-xl font-bold text-navy">{{ user.firstName }} {{ user.lastName }}</p>
-                <p class="text-sm text-terracotta-dark">{{ user.email }}</p>
+                <p class="text-sm text-terracotta-dark" dir="ltr">{{ maskedEmail(user.email) }}</p>
               </div>
             </div>
             <a
@@ -24,34 +24,97 @@
         </div>
       }
 
+      <!-- دوراتي -->
       <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6 mb-6">
-        <h2 class="font-bold text-navy mb-4">دوراتي</h2>
-        @if (enrollments().length === 0) {
-          <p class="text-sm text-terracotta-dark">لم تسجّلى فى دورات بعد.</p>
-          <a routerLink="/lms/catalog" class="text-sm text-terracotta hover:underline mt-2 inline-block">استكشفى الدورات</a>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-bold text-navy">دوراتي</h2>
+          <a routerLink="/lms/catalog" class="text-xs font-medium text-terracotta hover:underline">تصفح كل الدورات</a>
+        </div>
+
+        @if (isLoadingCourses()) {
+          <div class="space-y-3">
+            @for (i of [1,2]; track i) {
+              <div class="h-20 bg-cream rounded-xl animate-pulse"></div>
+            }
+          </div>
+        } @else if (enrollments().length === 0) {
+          <div class="text-center py-8">
+            <p class="text-sm text-terracotta-dark mb-2">لم تسجّلى فى دورات بعد.</p>
+            <a routerLink="/lms/catalog" class="text-sm text-white bg-terracotta px-4 py-2 rounded-xl hover:opacity-90 transition inline-block">استكشفى الدورات</a>
+          </div>
         } @else {
           <div class="space-y-3">
             @for (e of enrollments(); track e.enrollmentId ?? e.courseId) {
-              <a [routerLink]="['/lms/player', e.enrollmentId || e.courseId]" class="block p-3 bg-cream rounded-xl hover:bg-blush/30 transition">
-                <p class="text-sm font-semibold text-navy">{{ e.courseTitle }}</p>
+              <a
+                [routerLink]="['/lms/player', e.enrollmentId || e.courseId]"
+                class="flex items-center gap-4 p-3 bg-cream rounded-xl hover:bg-blush/30 transition group"
+              >
+                <div class="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-blush/40 flex items-center justify-center">
+                  @if (e.thumbnailUrl) {
+                    <img [src]="e.thumbnailUrl" [alt]="e.courseTitle" class="w-full h-full object-cover" />
+                  } @else {
+                    <span class="text-xl">📚</span>
+                  }
+                </div>
+
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between gap-2">
+                    <p class="text-sm font-semibold text-navy truncate">{{ e.courseTitle }}</p>
+                    @if (e.isCompleted) {
+                      <span class="text-[11px] font-medium text-sage bg-sage/10 border border-sage/30 rounded-full px-2 py-0.5 shrink-0">مكتملة</span>
+                    } @else {
+                      <span class="text-[11px] font-medium text-terracotta shrink-0">{{ e.progressPercent }}%</span>
+                    }
+                  </div>
+
+                  <div class="mt-2 h-1.5 rounded-full bg-blush/40 overflow-hidden">
+                    <div
+                      class="h-full rounded-full bg-terracotta transition-all"
+                      [style.width.%]="e.progressPercent"
+                    ></div>
+                  </div>
+
+                  <p class="text-[11px] text-stone-400 mt-1">{{ e.completedLessons }} / {{ e.totalLessons }} درس مكتمل</p>
+                </div>
               </a>
             }
           </div>
         }
       </div>
 
+      <!-- طلباتي -->
       <div class="bg-white rounded-2xl femora-shadow border border-blush/30 p-6">
         <h2 class="font-bold text-navy mb-4">طلباتي</h2>
         @if (isLoading()) {
-          <p class="text-sm text-terracotta-dark">جارى التحميل...</p>
+          <div class="space-y-3">
+            @for (i of [1,2]; track i) {
+              <div class="h-16 bg-cream rounded-xl animate-pulse"></div>
+            }
+          </div>
         } @else if (orders().length === 0) {
-          <p class="text-sm text-terracotta-dark">لا توجد طلبات بعد.</p>
+          <p class="text-sm text-terracotta-dark text-center py-6">لا توجد طلبات بعد.</p>
         } @else {
           <div class="space-y-3">
             @for (order of orders(); track order.orderId ?? order.id) {
-              <div class="p-3 bg-cream rounded-xl flex justify-between items-center">
-                <span class="text-sm text-navy">طلب #{{ (order.orderId ?? order.id)?.slice(0, 8) }}</span>
-                <span class="text-sm text-terracotta font-semibold">{{ formatPrice(order.total) }}</span>
+              <div class="p-4 bg-cream rounded-xl">
+                <div class="flex justify-between items-start gap-3">
+                  <div>
+                    <p class="text-sm font-semibold text-navy">
+                      طلب #{{ (order.orderId ?? order.id) ? (order.orderId ?? order.id)!.slice(0, 8) : '—' }}
+                    </p>
+                    @if (orderDate(order)) {
+                      <p class="text-[11px] text-stone-400 mt-0.5">{{ orderDate(order) }}</p>
+                    }
+                    <p class="text-[11px] text-stone-400 mt-0.5">{{ orderItemsCount(order) }} منتج</p>
+                  </div>
+
+                  <div class="flex flex-col items-end gap-1.5 shrink-0">
+                    <span class="text-sm text-terracotta font-semibold">{{ formatPrice(order.total ?? order.totalAmount) }}</span>
+                    <span class="text-[11px] font-medium rounded-full px-2 py-0.5 border" [ngClass]="orderStatusClasses(order)">
+                      {{ orderStatusLabel(order) }}
+                    </span>
+                  </div>
+                </div>
               </div>
             }
           </div>
