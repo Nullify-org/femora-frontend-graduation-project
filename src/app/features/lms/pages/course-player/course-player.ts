@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-﻿import { Component, inject } from '@angular/core';
-=======
 import { Component, computed, inject, signal } from '@angular/core';
->>>>>>> origin/master
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser';
@@ -15,22 +10,6 @@ import { QuizService } from '../../services/quiz.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { runInBrowser } from '../../../../core/utils/platform.util';
-=======
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
-
-import { CoursePlayerEngine } from './course-player.engine';
-import { ModuleSidebar } from './components/module-sidebar/module-slidebar';
-import { LessonViewer } from './components/lesson-viewer/lesson-viewer';
-import { LessonProgress } from './components/lesson-progress/lesson-prograss';
-import { LessonNavigation } from './components/lesson-navigation/lesson-navigation';
-import { AiChatPane } from './components/ai-chat-pane/ai-chat-pane';
-import { QuizPanel } from './components/quiz-panel/quiz-panel';
-import { ChatService } from '../../../ai-assistant/services/chat.service';
-import { QuizService } from '../../services/quiz.service';
-import { ChatMessage, Quiz as QuizModel } from '../../../../core/models/api.model';
->>>>>>> Stashed changes
 
 import { EnrollmentDetailsResponse, EnrollmentLesson, EnrollmentModule } from '../../../../core/models/api.model';
 
@@ -39,14 +18,9 @@ type LessonContentKind = 'video' | 'pdf' | 'text' | 'link' | 'unknown';
 @Component({
   selector: 'app-course-player',
   standalone: true,
-<<<<<<< HEAD
-  imports: [CommonModule, RouterLink, ModuleSidebar, LessonViewer, LessonProgress, LessonNavigation, QuizPanel, AiChatPane],
-=======
   imports: [CommonModule, RouterLink, Sidebar, LessonAiPanel],
->>>>>>> origin/master
   templateUrl: './course-player.html',
 })
-<<<<<<< Updated upstream
 export class CoursePlayer {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -138,74 +112,6 @@ export class CoursePlayer {
     });
   }
 
-<<<<<<< HEAD
-  selectLesson(lesson: CourseLesson): void {
-    this.selectedLesson = lesson;
-=======
-export class CoursePlayer implements OnInit {
-  readonly route = inject(ActivatedRoute);
-  readonly engine = inject(CoursePlayerEngine);
-  private readonly chat = inject(ChatService);
-  private readonly quizService = inject(QuizService);
-
-  readonly messages = signal<ChatMessage[]>([]);
-  readonly isChatTyping = signal(false);
-  readonly currentQuiz = signal<QuizModel | null>(null);
-  readonly isQuizLoading = signal(false);
-  readonly quizError = signal('');
-  private readonly conversationId = signal<string | undefined>(undefined);
-
-  ngOnInit(): void {
-    const enrollmentId = this.route.snapshot.paramMap.get('enrollmentId');
-    if (!enrollmentId) {
-      this.engine.error.set('معرّف التسجيل غير صالح');
-      return;
-    }
-    this.engine.load(enrollmentId);
-  }
-
-  sendChat(question: string): void {
-    const lesson = this.engine.currentLesson();
-    if (!lesson) return;
-
-    this.messages.update((list) => [
-      ...list,
-      {
-        messageId: `${Date.now()}-user`,
-        role: 'user',
-        content: question,
-        sentAt: new Date().toISOString(),
-      },
-    ]);
-
-    this.isChatTyping.set(true);
-
-    this.chat.chatWithLesson(lesson.lessonId, question, this.conversationId()).subscribe({
-      next: (result) => {
-        this.conversationId.set(result.conversationId);
-        this.isChatTyping.set(false);
-        this.messages.update((list) => [
-          ...list,
-          {
-            messageId: `${Date.now()}-assistant`,
-            role: 'assistant',
-            content: result.answer,
-            sentAt: new Date().toISOString(),
-          },
-        ]);
-      },
-      error: () => {
-        this.isChatTyping.set(false);
-        this.messages.update((list) => [
-          ...list,
-          {
-            messageId: `${Date.now()}-assistant-error`,
-            role: 'assistant',
-            content: 'تعذّر الوصول للمساعد الذكى. حاول مرة أخرى.',
-            sentAt: new Date().toISOString(),
-          },
-        ]);
-=======
   toggleDebug(): void {
     this.showDebug.set(!this.showDebug());
   }
@@ -230,55 +136,10 @@ export class CoursePlayer implements OnInit {
       error: () => {
         this.errorMessage.set('تعذر تحميل بيانات التسجيل');
         this.isLoading.set(false);
->>>>>>> origin/master
       },
     });
   }
 
-<<<<<<< HEAD
-  generateQuiz(): void {
-    const module = this.engine.currentModule();
-    if (!module) return;
-
-    this.isQuizLoading.set(true);
-    this.quizError.set('');
-
-    this.quizService.generate({ moduleId: module.moduleId, questionCount: 8 }).subscribe({
-      next: (res) => {
-        this.quizService.getById(res.quizId).subscribe({
-          next: (quiz) => {
-            this.currentQuiz.set({ ...quiz, quizId: quiz.quizId ?? res.quizId });
-            this.isQuizLoading.set(false);
-          },
-          error: () => {
-            this.isQuizLoading.set(false);
-            this.quizError.set('تعذّر تحميل الكويز المولَّد');
-          },
-        });
-      },
-      error: () => {
-        this.isQuizLoading.set(false);
-        this.quizError.set('تعذّر إنشاء الكويز');
-      },
-    });
->>>>>>> Stashed changes
-  }
-
-  onQuizPassed(): void {
-    const module = this.engine.currentModule();
-    if (!module) return;
-    this.currentQuiz.set(null);
-    this.engine.unlockNextModuleAfterQuiz(module.moduleId);
-  }
-
-  get shouldShowQuizAction(): boolean {
-    const module = this.engine.currentModule();
-    return !!module && module.isUnlocked && this.moduleLessonsCompleted(module) && !module.quizPassed;
-  }
-
-  private moduleLessonsCompleted(module: { lessons: Array<{ isCompleted: boolean }> }): boolean {
-    return module.lessons.length > 0 && module.lessons.every((lesson) => lesson.isCompleted);
-=======
   private initializeSelection(data: EnrollmentDetailsResponse): void {
     const preferredModule = data.modules.find((module) => module.isUnlocked && !module.isCompleted)
       ?? data.modules.find((module) => module.isUnlocked)
@@ -455,6 +316,5 @@ export class CoursePlayer implements OnInit {
       u.includes('youtu.be') ||
       u.includes('vimeo.com')
     );
->>>>>>> origin/master
   }
 }

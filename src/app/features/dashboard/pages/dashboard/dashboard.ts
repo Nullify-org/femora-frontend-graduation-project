@@ -17,11 +17,6 @@ import { Enrollment, Order } from '../../../../core/models/api.model';
 })
 export class Dashboard {
   readonly auth = inject(AuthService);
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> origin/master
 
   private readonly enrollmentService  = inject(EnrollmentService);
   private readonly orderService       = inject(OrderService);
@@ -66,11 +61,7 @@ export class Dashboard {
       subscription: this.subscriptionService.getStatusOrNull(),
     }).subscribe({
       next: ({ enrollments, orders, subscription }) => {
-<<<<<<< HEAD
-        this.enrollments.set(enrollments.items ?? []);
-=======
         this.enrollments.set(enrollments.data ?? []);
->>>>>>> origin/master
         this.orders.set(orders ?? []);
         this.subscription.set(subscription);
         this.isLoading.set(false);
@@ -81,8 +72,4 @@ export class Dashboard {
       },
     });
   }
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> origin/master
 }
